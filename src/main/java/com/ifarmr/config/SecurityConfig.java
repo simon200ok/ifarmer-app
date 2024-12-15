@@ -1,6 +1,5 @@
 package com.ifarmr.config;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,7 +16,6 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 
 @Configuration
 @EnableWebSecurity
-
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 

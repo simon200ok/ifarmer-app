@@ -34,7 +34,7 @@ public class Inventory extends BaseClass {
     private String photoUpload;
 
     @ManyToOne (fetch = FetchType.LAZY)
-    @JoinColumn(name = "farmer_id")
-    private Farmer farmer;
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }
