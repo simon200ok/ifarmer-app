@@ -47,6 +47,6 @@ public class AnimalDetails extends BaseClass{
     private String photoFilePath;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "farmer_id")
-    private Farmer farmer;
+    @JoinColumn(name = "user_id")
+    private User user;
 }
