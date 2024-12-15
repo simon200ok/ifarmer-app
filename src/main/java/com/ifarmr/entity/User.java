@@ -18,7 +18,7 @@ import java.util.List;
 
 
 @Entity
-@Table(name = "farmer_tbl")
+@Table(name = "user_tbl")
 @Builder
 @Getter
 @Setter
