@@ -75,13 +75,34 @@ public class Farmer extends BaseClass implements UserDetails, Serializable {
     }
 
     @Override
-    public String getUsername() {
-        return userName;
+    public String getPassword() {
+        return password;
     }
 
     @Override
-    public String getPassword() {
-
-        return password;
+    public String getUsername() {
+        return email;
     }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+
 }
