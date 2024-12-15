@@ -24,7 +24,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Farmer extends BaseClass implements UserDetails, Serializable {
+public class User extends BaseClass implements UserDetails, Serializable {
 
     @NotBlank(message = "First Name is required")
     @Size(min = 3, max = 50, message = "First name must be between 3 and 50 Characters")
@@ -56,17 +56,23 @@ public class Farmer extends BaseClass implements UserDetails, Serializable {
     @Enumerated(EnumType.STRING)
     private Roles role;
 
-    @OneToMany(mappedBy = "farmer", cascade = CascadeType.ALL)
+    private String displayPhoto;
+
+    @Column(nullable = false)
+    private String BusinessName;
+
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<SupportTicket> supportTickets;
 
-    @OneToMany(mappedBy = "farmer", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<CropDetails> crops;
 
-    @OneToMany(mappedBy = "farmer", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<AnimalDetails> animals;
 
-    @OneToOne(mappedBy = "farmer", cascade = CascadeType.ALL)
-    private UserProfile userProfile;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Inventory> inventory;
 
 
     @Override
