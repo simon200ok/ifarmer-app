@@ -1,12 +1,14 @@
 package com.ifarmr.service.Impl;
 
 import com.ifarmr.config.JwtService;
-import com.ifarmr.dto.AuthResponse;
-import com.ifarmr.dto.RegistrationInfo;
-import com.ifarmr.dto.RegistrationRequestDto;
 import com.ifarmr.entity.User;
 import com.ifarmr.entity.enums.Gender;
 import com.ifarmr.entity.enums.Roles;
+import com.ifarmr.exception.customExceptions.EmailAlreadyExistsException;
+import com.ifarmr.exception.customExceptions.InvalidPasswordException;
+import com.ifarmr.payload.response.RegistrationInfo;
+import com.ifarmr.payload.request.RegistrationRequest;
+import com.ifarmr.payload.response.AuthResponse;
 import com.ifarmr.repository.UserRepository;
 import com.ifarmr.service.UserService;
 import com.ifarmr.utils.AccountUtils;
@@ -20,20 +22,25 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository farmerRepository;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-//    private final EmailService emailService;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
     @Override
-    public AuthResponse register(RegistrationRequestDto request) {
+    public AuthResponse register(RegistrationRequest request) {
 
-
-        if (farmerRepository.findByEmail(request.getEmail()).isPresent()){
-            throw new RuntimeException("Email already exists, kindly log into your account");
+        //check if Email Already exists
+        if (userRepository.findByEmail(request.getEmail()).isPresent()){
+            throw new EmailAlreadyExistsException("Email already exists, kindly log into your account");
         }
 
+        // Validate the password
+        if (!isValidPassword(request.getPassword())) {
+            throw new InvalidPasswordException("Password must be at least 8 characters long and contain at least one special character.");
+        }
+
+        // Create and save the user
         User newUser = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
@@ -43,23 +50,33 @@ public class UserServiceImpl implements UserService {
                 .businessName(request.getBusinessName())
                 .gender(Gender.valueOf(request.getGender().toUpperCase()))
                 .userName(request.getUserName())
-
                 .displayPhoto(request.getDisplayPhoto())
 
                 .build();
 
-        User saveNewUser = farmerRepository.save(newUser);
+        //save the user to the database
+        User savedUser = userRepository.save(newUser);
+
+        // Generate JWT Token for the registered User
+        String token = jwtService.generateToken(savedUser);
 
 
-
+        //Build and return the response
         return AuthResponse.builder()
                 .responseCode(AccountUtils.ACCOUNT_CREATION_SUCCESS_CODE)
                 .responseMessage(AccountUtils.ACCOUNT_CREATION_SUCCESS_MESSAGE)
                 .registrationInfo(RegistrationInfo.builder()
-                        .firstName(saveNewUser.getFirstName())
-                        .lastName(saveNewUser.getLastName())
-                        .email(saveNewUser.getEmail())
+                        .firstName(savedUser.getFirstName())
+                        .lastName(savedUser.getLastName())
+                        .email(savedUser.getEmail())
                         .build())
+                .token(token) // i included the token in this response
                 .build();
+    }
+
+    // Helper method to validate the password
+    private boolean isValidPassword(String password) {
+        // Example validation: Minimum 8 characters, at least one special character
+        return password != null && password.length() >= 8 && password.matches(".*[!@#$%^&*()].*");
     }
 }
