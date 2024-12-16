@@ -1,11 +1,9 @@
 package com.ifarmr.payload.response;
 
-import lombok.Data;
-
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
-@Data
+
 public class ApiResponse<T> {
     private String responseMessage;
     private T responseData;
@@ -13,13 +11,14 @@ public class ApiResponse<T> {
     private boolean success;
 
     public ApiResponse(String message, T data) {
-        this.responseMessage = responseMessage;
+        this.responseMessage = message;
         this.responseData = data;
         this.timestamp = convertDateToFormat();
         this.success = true;
     }
 
     public ApiResponse() {
+        this.responseMessage = "success";
         this.timestamp = convertDateToFormat();
         this.success = true;
     }
@@ -27,7 +26,41 @@ public class ApiResponse<T> {
     private String convertDateToFormat() {
         String dateFormat = "yyyy-MM-dd HH:mm:ss";
         LocalDateTime localDateTime = LocalDateTime.now();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
-        return simpleDateFormat.format(localDateTime);
+        DateTimeFormatter simpleDateFormat = DateTimeFormatter.ofPattern(dateFormat);
+        String formattedDate = localDateTime.format(simpleDateFormat);
+        System.out.println(formattedDate);
+        return formattedDate;
+    }
+
+    public String getResponseMessage() {
+        return responseMessage;
+    }
+
+    public void setResponseMessage(String responseMessage) {
+        this.responseMessage = responseMessage;
+    }
+
+    public T getResponseData() {
+        return responseData;
+    }
+
+    public void setResponseData(T responseData) {
+        this.responseData = responseData;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
     }
 }

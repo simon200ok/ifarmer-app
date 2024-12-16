@@ -1,7 +1,8 @@
 package com.ifarmr.controller;
 
-import com.ifarmr.dto.LoginRequestDto;
-import com.ifarmr.dto.LoginResponse;
+
+import com.ifarmr.payload.response.AuthResponse;
+import com.ifarmr.payload.request.RegistrationRequest;
 import com.ifarmr.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +18,10 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequestDto request) {
-        return ResponseEntity.ok(userService.login(request));
+    @PostMapping("/register")
+    public ResponseEntity<AuthResponse> register
+            (@RequestBody RegistrationRequest request){
+        return ResponseEntity.ok(userService.register(request));
     }
 
 }
