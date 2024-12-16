@@ -1,9 +1,9 @@
 package com.ifarmr.service;
 
-import com.ifarmr.dto.AuthResponse;
-import com.ifarmr.dto.RegistrationRequestDto;
+import com.ifarmr.payload.response.AuthResponse;
+import com.ifarmr.payload.request.RegistrationRequest;
 
 public interface UserService {
 
-    AuthResponse register(RegistrationRequestDto request);
+    AuthResponse register(RegistrationRequest request);
 }
