@@ -1,4 +1,4 @@
-package com.ifarmr.dto;
+package com.ifarmr.payload.request;
 
 
 import lombok.AllArgsConstructor;
