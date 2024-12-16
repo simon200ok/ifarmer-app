@@ -6,4 +6,6 @@ import com.ifarmr.payload.request.RegistrationRequest;
 public interface UserService {
 
     AuthResponse register(RegistrationRequest request);
+    LoginResponse login(LoginRequestDto request);
 }
+
