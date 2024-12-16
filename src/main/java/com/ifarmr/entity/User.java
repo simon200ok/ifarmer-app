@@ -59,7 +59,7 @@ public class User extends BaseClass implements UserDetails, Serializable {
     private String displayPhoto;
 
     @Column(nullable = false)
-    private String BusinessName;
+    private String businessName;
 
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
