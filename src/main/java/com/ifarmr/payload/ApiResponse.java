@@ -1,4 +1,4 @@
-package com.ifarmr.payload.response;
+package com.ifarmr.payload;
 
 import lombok.Data;
 
