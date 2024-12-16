@@ -1,4 +1,4 @@
-package com.ifarmr.dto;
+package com.ifarmr.payload.response;
 
 
 import lombok.AllArgsConstructor;
@@ -10,9 +10,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RegistrationInfo {
-    private String firstName;
-    private String lastName;
-    private String email;
+public class AuthResponse {
+
+    private String responseCode;
+    private String responseMessage;
+    private RegistrationInfo registrationInfo;
     private String token;
 }

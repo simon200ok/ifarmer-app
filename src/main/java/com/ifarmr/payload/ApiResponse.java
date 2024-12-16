@@ -1,4 +1,4 @@
-package com.ifarmr.payload.response;
+package com.ifarmr.payload;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

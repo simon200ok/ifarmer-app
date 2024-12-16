@@ -1,4 +1,4 @@
-package com.ifarmr.dto;
+package com.ifarmr.payload.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RegistrationRequestDto {
+public class RegistrationRequest {
 
     private String firstName;
 
