@@ -1,4 +1,4 @@
-package com.ifarmr.dto;
+package com.ifarmr.payload.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,8 +12,6 @@ import lombok.NoArgsConstructor;
 public class LoginInfo {
 
     private String email;
-
-//    private String password;
 
     private String token;
 }

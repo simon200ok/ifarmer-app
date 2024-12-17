@@ -1,4 +1,4 @@
-package com.ifarmr.dto;
+package com.ifarmr.payload.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
