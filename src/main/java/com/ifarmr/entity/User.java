@@ -74,6 +74,9 @@ public class User extends BaseClass implements UserDetails, Serializable {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Inventory> inventory;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private TokenVerification tokenVerification;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
