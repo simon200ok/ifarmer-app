@@ -7,6 +7,7 @@ import com.ifarmr.entity.enums.Roles;
 import com.ifarmr.exception.customExceptions.EmailAlreadyExistsException;
 import com.ifarmr.exception.customExceptions.InvalidPasswordException;
 import com.ifarmr.payload.request.LoginRequestDto;
+import com.ifarmr.payload.request.UpdateUserRequestDto;
 import com.ifarmr.payload.response.LoginInfo;
 import com.ifarmr.payload.response.LoginResponse;
 import com.ifarmr.payload.response.RegistrationInfo;
@@ -21,6 +22,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 
 @Service
@@ -115,5 +118,44 @@ public class UserServiceImpl implements UserService {
                         .token(jwtToken)
                         .build())
                 .build();
+    }
+    // Method to update user details
+    @Override
+    public User updateUser(Long userId, UpdateUserRequestDto request) {
+        // Find the user by ID
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Update fields if provided in the request
+        if (request.getFirstName() != null) {
+            user.setFirstName(request.getFirstName());
+        }
+        if (request.getLastName() != null) {
+            user.setLastName(request.getLastName());
+        }
+        if (request.getUserName() != null) {
+            user.setUserName(request.getUserName());
+        }
+        if (request.getEmail() != null) {
+            // Check if the new email is unique
+            Optional<User> existingUser = userRepository.findByEmail(request.getEmail());
+            if (existingUser.isPresent() && existingUser.get().getId() !=userId) {
+                throw new RuntimeException("Email already exists, please choose another one");
+            }
+            user.setEmail(request.getEmail());
+        }
+        if (request.getPassword() != null) {
+            // Encode the password before saving it
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+        if (request.getBusinessName() != null) {
+            user.setBusinessName(request.getBusinessName());
+        }
+        if (request.getDisplayPhoto() != null) {
+            user.setDisplayPhoto(request.getDisplayPhoto());
+        }
+
+        // Save the updated user to the database
+        return userRepository.save(user);
     }
 }
