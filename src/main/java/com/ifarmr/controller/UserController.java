@@ -1,17 +1,16 @@
 package com.ifarmr.controller;
 
 
+import com.ifarmr.entity.User;
 import com.ifarmr.payload.request.LoginRequestDto;
+import com.ifarmr.payload.request.UpdateUserRequestDto;
 import com.ifarmr.payload.response.AuthResponse;
 import com.ifarmr.payload.request.RegistrationRequest;
 import com.ifarmr.payload.response.LoginResponse;
 import com.ifarmr.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -29,6 +28,14 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequestDto request) {
         return ResponseEntity.ok(userService.login(request));
+    }
+
+    @PutMapping("/user/{id}")
+    public ResponseEntity<User> updateUser(
+            @PathVariable Long id,
+            @RequestBody UpdateUserRequestDto updateUserRequest) {
+        User updatedUser = userService.updateUser(id, updateUserRequest); // Call the service to handle the update
+        return ResponseEntity.ok(updatedUser); // Return the updated user
     }
 
 
