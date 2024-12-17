@@ -13,13 +13,13 @@ jobs:
   build_test:
     runs-on: ubuntu-latest
 
-    services: # Added PostgreSQL service configuration
+    services:
       postgres:
         image: postgres:latest
         env:
           POSTGRES_DB: ifarm
-          POSTGRES_USER: root
-          POSTGRES_PASSWORD: root
+          POSTGRES_USER: ${DATABASE_USERNAME}
+          POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
         ports:
           - 5432:5432
         options: >- # Health check to ensure PostgreSQL is ready
@@ -28,10 +28,10 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
-    env: # Added environment variables for Spring Boot
+    env:
       SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/ifarm
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_DATASOURCE_USERNAME: ${DATABASE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DATABASE_PASSWORD}
 
     steps:
       - uses: actions/checkout@v3
@@ -43,9 +43,9 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Wait for PostgreSQL to be ready # Ensures PostgreSQL is up before proceeding
+      - name: Wait for PostgreSQL to be ready
         run: |
-          until pg_isready -h localhost -p 5432 -U root; do
+          until pg_isready -h localhost -p 5432 -U ${DATABASE_USERNAME}; do
             echo "Waiting for PostgreSQL..."
             sleep 2
           done
@@ -57,13 +57,13 @@ jobs:
     runs-on: ubuntu-latest
     needs: build_test
 
-    services: # Added PostgreSQL service for this job
+    services:
       postgres:
         image: postgres:latest
         env:
           POSTGRES_DB: ifarm
-          POSTGRES_USER: root
-          POSTGRES_PASSWORD: root
+          POSTGRES_USER: ${DATABASE_USERNAME}
+          POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
         ports:
           - 5432:5432
         options: >-
@@ -72,10 +72,10 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
-    env: # Added environment variables for Spring Boot
+    env: #
       SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/ifarm
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_DATASOURCE_USERNAME: ${DATABASE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DATABASE_PASSWORD}
 
     steps:
       - uses: actions/checkout@v3
@@ -86,9 +86,9 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Wait for PostgreSQL to be ready # Ensures PostgreSQL is up before proceeding
+      - name: Wait for PostgreSQL to be ready
         run: |
-          until pg_isready -h localhost -p 5432 -U root; do
+          until pg_isready -h localhost -p 5432 -U ${DATABASE_USERNAME}; do
             echo "Waiting for PostgreSQL..."
             sleep 2
           done
