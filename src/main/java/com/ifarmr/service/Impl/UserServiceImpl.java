@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService {
                         .lastName(savedUser.getLastName())
                         .email(savedUser.getEmail())
                         .build())
-                .token(token) // i included the token in this response
+                .token(token) // I included the token in this response
                 .build();
     }
 
