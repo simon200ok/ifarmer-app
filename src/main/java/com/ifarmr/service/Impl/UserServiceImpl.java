@@ -7,13 +7,11 @@ import com.ifarmr.entity.enums.Roles;
 import com.ifarmr.exception.customExceptions.EmailAlreadyExistsException;
 import com.ifarmr.exception.customExceptions.InvalidPasswordException;
 import com.ifarmr.payload.request.LoginRequestDto;
-import com.ifarmr.payload.request.UpdateUserRequestDto;
-import com.ifarmr.payload.response.LoginInfo;
-import com.ifarmr.payload.response.LoginResponse;
-import com.ifarmr.payload.response.RegistrationInfo;
 import com.ifarmr.payload.request.RegistrationRequest;
-import com.ifarmr.payload.response.AuthResponse;
+import com.ifarmr.payload.request.UpdateUserRequestDto;
+import com.ifarmr.payload.response.*;
 import com.ifarmr.repository.UserRepository;
+import com.ifarmr.service.EmailService;
 import com.ifarmr.service.UserService;
 import com.ifarmr.utils.AccountUtils;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +32,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final EmailService emailService;
 
     @Override
     public AuthResponse register(RegistrationRequest request) {
@@ -69,6 +68,41 @@ public class UserServiceImpl implements UserService {
         String token = jwtService.generateToken(savedUser);
 
 
+        // URL for token verification
+        String verificationUrl = "http://localhost:8080/api/v1/auth/verify?token=" + token;
+        // Send an email containing the token
+        String emailMessageBody = String.format(
+                "Dear %s \n" +
+                        "\n" +
+                        "Thank you for registering on iFarmr, the platform that connects and empowers farmers worldwide. To complete your registration, please verify your email address by clicking the link below:\n" +
+                        "\n" +
+                        "Verification Link: %s\n" +
+                        "\n" +
+                        "If the link doesn’t work, copy and paste the URL into your browser.\n" +
+                        "\n" +
+                        "This step helps us ensure the security of your account. \n" +
+                        "\n" +
+                        "If you did not create an account on iFarmr, please disregard this email.\n" +
+                        "\n" +
+                        "For any assistance, feel free to reach out to us at support@ifarmr.com.\n" +
+                        "\n" +
+                        "Welcome to the iFarmr community!\n" +
+                        "\n" +
+                        "Best regards,\n" +
+                        "iFarmr Team\n",
+                savedUser.getFirstName(),
+                verificationUrl
+        );
+
+        EmailDetails sendTokenForRegistration = EmailDetails.builder()
+                .recipient(request.getEmail())
+                .subject("Verify Your iFarmr Account")
+                .messageBody(emailMessageBody)
+                .build();
+        emailService.sendEmailToken(sendTokenForRegistration);
+
+
+
         //Build and return the response
         return AuthResponse.builder()
                 .responseCode(AccountUtils.ACCOUNT_CREATION_SUCCESS_CODE)
@@ -78,7 +112,7 @@ public class UserServiceImpl implements UserService {
                         .lastName(savedUser.getLastName())
                         .email(savedUser.getEmail())
                         .build())
-                .token(token) // i included the token in this response
+//                .token(token) // i included the token in this response
                 .build();
     }
 
