@@ -13,11 +13,15 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 @Service
 public class JwtService {
     private final String SECRET_KEY = "MIHcAgEBBEIAi9oBwuqEzYFdh8ly8oWdsgFOsYjv+4PQUG29kXAHeFwhD4R1JGwzM2sIQ1TIV0CzvkLvKlz+ApmoklnmCst1teKgBwYFK4EEACOhgYkDgYYABABLnZ8o4KVkAfAHmOZ3AQStgqajw4kL3LoL1Njs2d2ACPIvJ157uOFj92K5QaPHJiSnesVqLscpm0yBFip75vW6tAHVSkwpuebXatT840+0WvFni0xnzONuP+gbgp0iXFEYlTcvk/+DvLebrBuwHGRCWj2Oasawz3NbGDFh+rYtArSP7A==";
+    private final Set<String> blacklistedTokens = ConcurrentHashMap.newKeySet();
+
 
 //    public JwtService(@Value("${SECRET_KEY}") String SECRET_KEY) {
 //        this.SECRET_KEY = SECRET_KEY;
@@ -85,6 +89,14 @@ public class JwtService {
 
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
+    }
+
+    public void blacklistToken(String token) {
+        blacklistedTokens.add(token);
+    }
+
+    public boolean isBlacklisted(String token) {
+        return blacklistedTokens.contains(token);
     }
 
 }

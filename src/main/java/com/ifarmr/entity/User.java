@@ -61,6 +61,9 @@ public class User extends BaseClass implements UserDetails, Serializable {
     @Column(nullable = false)
     private String businessName;
 
+    @Column(nullable = false)
+    private boolean isActive = false;
+
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<SupportTicket> supportTickets;

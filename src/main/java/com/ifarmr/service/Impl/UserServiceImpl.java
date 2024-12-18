@@ -4,6 +4,7 @@ import com.ifarmr.config.JwtService;
 import com.ifarmr.entity.User;
 import com.ifarmr.entity.enums.Gender;
 import com.ifarmr.entity.enums.Roles;
+import com.ifarmr.exception.customExceptions.AccountNotVerifiedException;
 import com.ifarmr.exception.customExceptions.EmailAlreadyExistsException;
 import com.ifarmr.exception.customExceptions.InvalidPasswordException;
 import com.ifarmr.payload.request.LoginRequestDto;
@@ -12,6 +13,7 @@ import com.ifarmr.payload.request.UpdateUserRequestDto;
 import com.ifarmr.payload.response.*;
 import com.ifarmr.repository.UserRepository;
 import com.ifarmr.service.EmailService;
+import com.ifarmr.service.TokenVerificationService;
 import com.ifarmr.service.UserService;
 import com.ifarmr.utils.AccountUtils;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +35,7 @@ public class UserServiceImpl implements UserService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
+    private final TokenVerificationService tokenVerificationService;
 
     @Override
     public AuthResponse register(RegistrationRequest request) {
@@ -58,6 +61,7 @@ public class UserServiceImpl implements UserService {
                 .gender(Gender.valueOf(request.getGender().toUpperCase()))
                 .userName(request.getUserName())
                 .displayPhoto(request.getDisplayPhoto())
+                .isActive(false)
 
                 .build();
 
@@ -65,7 +69,7 @@ public class UserServiceImpl implements UserService {
         User savedUser = userRepository.save(newUser);
 
         // Generate JWT Token for the registered User
-        String token = jwtService.generateToken(savedUser);
+        String token = tokenVerificationService.generateVerificationToken(savedUser);
 
 
         // URL for token verification
@@ -112,7 +116,7 @@ public class UserServiceImpl implements UserService {
                         .lastName(savedUser.getLastName())
                         .email(savedUser.getEmail())
                         .build())
-                .token(token) // I included the token in this response
+                .token(null)
                 .build();
     }
 
@@ -141,6 +145,10 @@ public class UserServiceImpl implements UserService {
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow();
+
+        if (!user.isActive()) {
+            throw new AccountNotVerifiedException("Account not verified. Please check your email.");
+        }
 
         var jwtToken = jwtService.generateToken(user);
 
