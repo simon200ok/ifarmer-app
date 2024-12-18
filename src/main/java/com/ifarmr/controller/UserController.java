@@ -4,11 +4,13 @@ package com.ifarmr.controller;
 import com.ifarmr.config.JwtService;
 import com.ifarmr.entity.TokenVerification;
 import com.ifarmr.entity.User;
+import com.ifarmr.entity.enums.Gender;
+import com.ifarmr.entity.enums.Roles;
 import com.ifarmr.exception.customExceptions.InvalidTokenException;
 import com.ifarmr.payload.request.LoginRequestDto;
+import com.ifarmr.payload.request.RegistrationRequest;
 import com.ifarmr.payload.request.UpdateUserRequestDto;
 import com.ifarmr.payload.response.AuthResponse;
-import com.ifarmr.payload.request.RegistrationRequest;
 import com.ifarmr.payload.response.LoginResponse;
 import com.ifarmr.repository.UserRepository;
 import com.ifarmr.service.TokenVerificationService;
@@ -31,9 +33,12 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register
-            (@RequestBody RegistrationRequest request){
-        return ResponseEntity.ok(userService.register(request));
+            (@RequestBody RegistrationRequest request,
+             @RequestParam Gender gender,
+             @RequestParam Roles role){
+        return ResponseEntity.ok(userService.register(request, gender, role));
     }
+
     @GetMapping("/verify")
     public ResponseEntity<String> verifyUser(@RequestParam("token") String token) {
         TokenVerification tokenVerification = tokenVerificationService.validateToken(token);
@@ -60,8 +65,8 @@ public class UserController {
     public ResponseEntity<User> updateUser(
             @PathVariable Long id,
             @RequestBody UpdateUserRequestDto updateUserRequest) {
-        User updatedUser = userService.updateUser(id, updateUserRequest);
-        return ResponseEntity.ok(updatedUser);
+        User updatedUser = userService.updateUser(id, updateUserRequest); // Call the service to handle the update
+        return ResponseEntity.ok(updatedUser); // Return the updated user
     }
 
     @PostMapping("/logout")
@@ -76,4 +81,6 @@ public class UserController {
         return ResponseEntity.ok("Logged out successfully");
     }
 
+
 }
+

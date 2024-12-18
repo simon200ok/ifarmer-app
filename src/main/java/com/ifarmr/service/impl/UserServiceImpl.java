@@ -1,4 +1,4 @@
-package com.ifarmr.service.Impl;
+package com.ifarmr.service.impl;
 
 import com.ifarmr.config.JwtService;
 import com.ifarmr.entity.User;
@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
     private final TokenVerificationService tokenVerificationService;
 
     @Override
-    public AuthResponse register(RegistrationRequest request) {
+    public AuthResponse register(RegistrationRequest request, Gender gender, Roles role) {
 
         //check if Email Already exists
         if (userRepository.findByEmail(request.getEmail()).isPresent()){
@@ -56,9 +56,9 @@ public class UserServiceImpl implements UserService {
                 .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Roles.FARMER)
+                .role(role)
                 .businessName(request.getBusinessName())
-                .gender(Gender.valueOf(request.getGender().toUpperCase()))
+                .gender(gender)
                 .userName(request.getUserName())
                 .displayPhoto(request.getDisplayPhoto())
                 .isActive(false)
