@@ -17,11 +17,11 @@ import java.util.function.Function;
 
 @Service
 public class JwtService {
-    private final String SECRET_KEY;
+    private final String SECRET_KEY = "MIHcAgEBBEIAi9oBwuqEzYFdh8ly8oWdsgFOsYjv+4PQUG29kXAHeFwhD4R1JGwzM2sIQ1TIV0CzvkLvKlz+ApmoklnmCst1teKgBwYFK4EEACOhgYkDgYYABABLnZ8o4KVkAfAHmOZ3AQStgqajw4kL3LoL1Njs2d2ACPIvJ157uOFj92K5QaPHJiSnesVqLscpm0yBFip75vW6tAHVSkwpuebXatT840+0WvFni0xnzONuP+gbgp0iXFEYlTcvk/+DvLebrBuwHGRCWj2Oasawz3NbGDFh+rYtArSP7A==";
 
-    public JwtService(@Value("${SECRET_KEY}") String SECRET_KEY) {
-        this.SECRET_KEY = SECRET_KEY;
-    }
+//    public JwtService(@Value("${SECRET_KEY}") String SECRET_KEY) {
+//        this.SECRET_KEY = SECRET_KEY;
+//    }
 
     public String getSecretKey() {
         return SECRET_KEY;
