@@ -1,4 +1,4 @@
-package com.ifarmr.service.Impl;
+package com.ifarmr.service.impl;
 
 import com.ifarmr.payload.response.EmailDetails;
 import com.ifarmr.service.EmailService;
