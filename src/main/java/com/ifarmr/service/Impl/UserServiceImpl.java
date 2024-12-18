@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
     private final EmailService emailService;
 
     @Override
-    public AuthResponse register(RegistrationRequest request) {
+    public AuthResponse register(RegistrationRequest request, Gender gender, Roles role) {
 
         //check if Email Already exists
         if (userRepository.findByEmail(request.getEmail()).isPresent()){
@@ -53,9 +53,9 @@ public class UserServiceImpl implements UserService {
                 .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Roles.FARMER)
+                .role(role)
                 .businessName(request.getBusinessName())
-                .gender(Gender.valueOf(request.getGender().toUpperCase()))
+                .gender(gender)
                 .userName(request.getUserName())
                 .displayPhoto(request.getDisplayPhoto())
 

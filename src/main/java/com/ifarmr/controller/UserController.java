@@ -2,10 +2,12 @@ package com.ifarmr.controller;
 
 
 import com.ifarmr.entity.User;
+import com.ifarmr.entity.enums.Gender;
+import com.ifarmr.entity.enums.Roles;
 import com.ifarmr.payload.request.LoginRequestDto;
+import com.ifarmr.payload.request.RegistrationRequest;
 import com.ifarmr.payload.request.UpdateUserRequestDto;
 import com.ifarmr.payload.response.AuthResponse;
-import com.ifarmr.payload.request.RegistrationRequest;
 import com.ifarmr.payload.response.LoginResponse;
 import com.ifarmr.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +23,10 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register
-            (@RequestBody RegistrationRequest request){
-        return ResponseEntity.ok(userService.register(request));
+            (@RequestBody RegistrationRequest request,
+             @RequestParam Gender gender,
+             @RequestParam Roles role){
+        return ResponseEntity.ok(userService.register(request, gender, role));
     }
 
     @PostMapping("/login")
