@@ -13,6 +13,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -64,6 +65,12 @@ public class User extends BaseClass implements UserDetails, Serializable {
     @Column(nullable = false)
     private boolean isActive = false;
 
+    @Column
+    private String resetPasswordToken;
+
+    @Column
+    private LocalDateTime resetTokenExpiry;
+
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<SupportTicket> supportTickets;
@@ -79,6 +86,8 @@ public class User extends BaseClass implements UserDetails, Serializable {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private TokenVerification tokenVerification;
+
+
 
 
     @Override
