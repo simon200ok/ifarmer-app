@@ -14,4 +14,8 @@ public class AccountUtils {
 
     public final static String LOGIN_FAILED_MESSAGE =  "Invalid email or password";
 
+    public final static String FORGOT_PASSWORD_SUCCESS_CODE = "004";
+    public final static String FORGOT_PASSWORD_SUCCESS_MESSAGE = "Password reset instructions sent successfully.";
+
+
 }

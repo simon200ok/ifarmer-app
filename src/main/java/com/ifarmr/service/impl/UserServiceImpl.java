@@ -20,9 +20,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 
@@ -200,4 +202,32 @@ public class UserServiceImpl implements UserService {
         // Save the updated user to the database
         return userRepository.save(user);
     }
+
+    @Override
+    public ForgotPasswordResponse generateResetToken(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        // Ensure the user is an admin
+        if (!Roles.ADMIN.equals(user.getRole())) {
+            throw new IllegalArgumentException("User is not an admin");
+        }
+
+        // Generate JWT reset token
+        String resetToken = jwtService.generateToken(user);
+
+        // Update user with reset token and expiry
+        user.setResetPasswordToken(resetToken);
+        user.setResetTokenExpiry(LocalDateTime.now().plusHours(1));
+        userRepository.save(user);
+
+        return ForgotPasswordResponse.builder()
+                .responseCode(AccountUtils.FORGOT_PASSWORD_SUCCESS_CODE)
+                .responseMessage(AccountUtils.FORGOT_PASSWORD_SUCCESS_MESSAGE)
+                .build();
+
+//        return new ForgotPasswordResponse(resetToken, "Reset token generated successfully.");
+    }
+
+
 }
