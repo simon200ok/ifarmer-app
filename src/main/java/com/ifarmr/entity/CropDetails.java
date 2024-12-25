@@ -2,9 +2,7 @@ package com.ifarmr.entity;
 
 import com.ifarmr.entity.enums.CropType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -14,7 +12,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 @NoArgsConstructor
-
+@Getter
+@Setter
 public class CropDetails extends BaseClass {
 
     @Column(name = "crop_name", nullable = false)
