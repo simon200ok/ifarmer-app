@@ -16,9 +16,12 @@ public interface UserService {
 
     LoginResponse login(LoginRequestDto request);
 
-    User updateUser(Long userId, UpdateUserRequestDto request);
+    AuthResponse updateUser(UpdateUserRequestDto request);
 
     ForgotPasswordResponse generateResetToken(String email);
+
+    String verifyUser(String token);
+    String logout(String authHeader);
 
 }
 

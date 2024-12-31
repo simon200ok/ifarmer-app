@@ -1,4 +1,4 @@
-package com.ifarmr.config;
+package com.ifarmr.auth;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
