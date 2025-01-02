@@ -1,5 +1,7 @@
-package com.ifarmr.config;
+package com.ifarmr.auth.config;
 
+import com.ifarmr.auth.JwtAuthenticationEntryPoint;
+import com.ifarmr.auth.service.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
