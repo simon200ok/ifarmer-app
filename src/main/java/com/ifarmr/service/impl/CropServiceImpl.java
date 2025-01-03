@@ -8,24 +8,22 @@ import com.ifarmr.payload.response.CropResponse;
 import com.ifarmr.repository.CropDetailsRepository;
 import com.ifarmr.repository.UserRepository;
 import com.ifarmr.service.CropService;
-import jakarta.persistence.EntityNotFoundException;
-import lombok.Data;
+import com.ifarmr.utils.SecurityUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-@Data
+
 @Service
+@RequiredArgsConstructor
 public class CropServiceImpl implements CropService {
 
     private final CropDetailsRepository cropDetailsRepository;
     private final UserRepository userRepository;
+    private final SecurityUtils securityUtils;
 
     @Override
     public ApiResponse<CropResponse> addCrop(CropRequest cropRequest) {
-
-        User user = userRepository.findByEmail(cropRequest.getEmail())
-                .orElseThrow(() -> new EntityNotFoundException("User Not Found: " + cropRequest.getEmail()));
-
-//        CropDetails crop = new CropDetails();
+        User user = securityUtils.getLoggedInUser();
         CropDetails crop = CropDetails.builder()
                 .cropName(cropRequest.getCropName())
                 .cropType(cropRequest.getCropType())
