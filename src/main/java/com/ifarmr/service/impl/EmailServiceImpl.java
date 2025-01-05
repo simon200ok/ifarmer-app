@@ -38,6 +38,22 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    public void forgetPasswordAlert(EmailDetails emailDetails) {
+        try {
+            SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+            simpleMailMessage.setFrom(senderEmail);
+            simpleMailMessage.setTo(emailDetails.getRecipient());
+            simpleMailMessage.setText(emailDetails.getMessageBody());
+            simpleMailMessage.setSubject(emailDetails.getSubject());
+
+            javaMailSender.send(simpleMailMessage);
+            System.out.println("Token Email sent successfully!");
+        } catch (MailException e) {
+            throw new RuntimeException("Token Email not sent");
+        }
+    }
+
+    @Override
     public void sendEmailAlert(EmailDetails emailDetails) {
 
         try {

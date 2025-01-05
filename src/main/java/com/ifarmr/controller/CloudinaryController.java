@@ -1,21 +1,20 @@
 package com.ifarmr.controller;
 
 import com.ifarmr.service.CloudinaryService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/api/v1/uploads")
-public class CloudinaryController {
+@RequiredArgsConstructor
+public class CloudinaryController{
 
     private final CloudinaryService cloudinaryService;
-
-    @Autowired
-    public CloudinaryController(CloudinaryService cloudinaryService) {
-        this.cloudinaryService = cloudinaryService;
-    }
 
     @PostMapping
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {

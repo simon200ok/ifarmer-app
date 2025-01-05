@@ -1,4 +1,4 @@
-package com.ifarmr.config;
+package com.ifarmr.auth.config;
 
 import com.ifarmr.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
