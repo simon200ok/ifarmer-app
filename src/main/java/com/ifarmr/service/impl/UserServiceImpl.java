@@ -162,7 +162,7 @@ public class UserServiceImpl implements UserService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String jwtToken = jwtService.generateToken(authentication);
+        String jwtToken = jwtService.generateToken(authentication, user.getId());
 
 
         // Return login response
@@ -228,7 +228,7 @@ public class UserServiceImpl implements UserService {
                 user.getEmail(), null, List.of(new SimpleGrantedAuthority(user.getRole().name()))
         );
 
-        String resetToken = jwtService.generateToken(authentication);
+        String resetToken = jwtService.generateToken(authentication, user.getId());
 
 
         // Update user with reset token and expiry
@@ -306,13 +306,13 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    private void validateEmailUniqueness(Long userId, String email) {
-        userRepository.findByEmail(email).ifPresent(existingUser -> {
-            if (!Objects.equals(existingUser.getId(), userId)) {
-                throw new EmailAlreadyExistsException("Email already exists, please choose another one");
-            }
-        });
-    }
+//    private void validateEmailUniqueness(Long userId, String email) {
+//        userRepository.findByEmail(email).ifPresent(existingUser -> {
+//            if (!Objects.equals(existingUser.getId(), userId)) {
+//                throw new EmailAlreadyExistsException("Email already exists, please choose another one");
+//            }
+//        });
+//    }
 
 
 }
