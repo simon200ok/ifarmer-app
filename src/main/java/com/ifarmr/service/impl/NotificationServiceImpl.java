@@ -155,9 +155,22 @@ public class NotificationServiceImpl implements NotificationService {
                         + escapeJsonString(commentText) + "\"";
 
             case "NEW_FOLLOWER":
-                return details.getOrDefault("followerName", "Someone") + " is now following you!";
+                Long followerId = Long.parseLong(details.getOrDefault("followerId", "0"));
+                Optional<User> follower = userRepository.findById(followerId);
+
+                String followerFirstName = follower.map(User::getFirstName).orElse("Someone");
+                String followerLastName = follower.map(User::getLastName).orElse("");
+
+                return followerFirstName + " " + followerLastName + " is now following you!";
+
             case "POST_LIKE":
-                return details.getOrDefault("likerName", "Someone") + " liked your post.";
+                Long likerId = Long.parseLong(details.getOrDefault("likerId", "0"));
+                Optional<User> liker = userRepository.findById(likerId);
+
+                String likerFirstName = liker.map(User::getFirstName).orElse("Someone");
+                String likerLastName = liker.map(User::getLastName).orElse("");
+
+                return likerFirstName + " " + likerLastName + " liked your post.";
             default:
                 return "You have a new notification.";
         }
