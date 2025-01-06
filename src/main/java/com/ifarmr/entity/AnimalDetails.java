@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
 @Builder
 @AllArgsConstructor
@@ -31,6 +33,12 @@ public class AnimalDetails extends BaseClass{
     @Column(name = "age", nullable = false)
     private String age;
 
+    @Column(name = "location", nullable = false)
+    private LocalDate location;
+
+    @Column(name = "status", nullable = false)
+    private LocalDate status;
+
     @Column(name = "feeding_schedule", nullable = false)
     private String feedingSchedule;
 
@@ -42,6 +50,9 @@ public class AnimalDetails extends BaseClass{
 
     @Column(name = "health_issues", length = 500)
     private String healthIssues;
+
+    @Column(name = "description", length = 500)
+    private String description;
 
     @Column(name = "photo_file_path")
     private String photoFilePath;
