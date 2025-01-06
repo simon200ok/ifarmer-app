@@ -87,6 +87,8 @@ public class User extends BaseClass implements UserDetails, Serializable {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private TokenVerification tokenVerification;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<PushSubscription> pushSubscriptions;
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Post> posts;
 
