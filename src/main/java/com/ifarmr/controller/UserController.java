@@ -7,9 +7,7 @@ import com.ifarmr.entity.User;
 import com.ifarmr.entity.enums.Gender;
 import com.ifarmr.entity.enums.Roles;
 import com.ifarmr.exception.customExceptions.InvalidTokenException;
-import com.ifarmr.payload.request.LoginRequestDto;
-import com.ifarmr.payload.request.RegistrationRequest;
-import com.ifarmr.payload.request.UpdateUserRequestDto;
+import com.ifarmr.payload.request.*;
 import com.ifarmr.payload.response.AuthResponse;
 import com.ifarmr.payload.response.LoginResponse;
 import com.ifarmr.repository.UserRepository;
@@ -17,9 +15,11 @@ import com.ifarmr.service.TokenVerificationService;
 import com.ifarmr.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -61,12 +61,10 @@ public class UserController {
         return ResponseEntity.ok(userService.login(request));
     }
 
-    @PutMapping("/user/{id}")
-    public ResponseEntity<User> updateUser(
-            @PathVariable Long id,
-            @RequestBody UpdateUserRequestDto updateUserRequest) {
-        User updatedUser = userService.updateUser(id, updateUserRequest); // Call the service to handle the update
-        return ResponseEntity.ok(updatedUser); // Return the updated user
+    @PutMapping("/user")
+    public ResponseEntity<User> updateUser( @RequestBody UpdateUserRequestDto updateUserRequest) {
+        User updatedUser = userService.updateUser(updateUserRequest);
+        return ResponseEntity.ok(updatedUser);
     }
 
     @PostMapping("/logout")
@@ -81,6 +79,14 @@ public class UserController {
         return ResponseEntity.ok("Logged out successfully");
     }
 
+    @GetMapping("/posts")
+    public ResponseEntity<List<PostDto>> getUserPosts(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(userService.getPostsByUser(user.getId()));
+    }
 
+    @GetMapping("/{postId}")
+    public ResponseEntity<PostDetailsDto> getPostDetails(@PathVariable Long postId) {
+        return ResponseEntity.ok(userService.getPostDetails(postId));
+    }
 }
 

@@ -1,16 +1,17 @@
 package com.ifarmr.service.impl;
 
 import com.ifarmr.config.JwtService;
+import com.ifarmr.entity.Post;
 import com.ifarmr.entity.User;
 import com.ifarmr.entity.enums.Gender;
 import com.ifarmr.entity.enums.Roles;
 import com.ifarmr.exception.customExceptions.AccountNotVerifiedException;
 import com.ifarmr.exception.customExceptions.EmailAlreadyExistsException;
 import com.ifarmr.exception.customExceptions.InvalidPasswordException;
-import com.ifarmr.payload.request.LoginRequestDto;
-import com.ifarmr.payload.request.RegistrationRequest;
-import com.ifarmr.payload.request.UpdateUserRequestDto;
+import com.ifarmr.exception.customExceptions.ResourceNotFoundException;
+import com.ifarmr.payload.request.*;
 import com.ifarmr.payload.response.*;
+import com.ifarmr.repository.PostRepository;
 import com.ifarmr.repository.UserRepository;
 import com.ifarmr.service.EmailService;
 import com.ifarmr.service.TokenVerificationService;
@@ -20,12 +21,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -38,6 +43,7 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
     private final TokenVerificationService tokenVerificationService;
+    private final PostRepository postRepository;
 
     @Override
     public AuthResponse register(RegistrationRequest request, Gender gender, Roles role) {
@@ -165,43 +171,39 @@ public class UserServiceImpl implements UserService {
     }
     // Method to update user details
     @Override
-    public User updateUser(Long userId, UpdateUserRequestDto request) {
-        // Find the user by ID
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public User updateUser(UpdateUserRequestDto request) {
+        User authenticatedUser = getAuthenticatedUser();
 
-        // Update fields if provided in the request
         if (request.getFirstName() != null) {
-            user.setFirstName(request.getFirstName());
+            authenticatedUser.setFirstName(request.getFirstName());
         }
         if (request.getLastName() != null) {
-            user.setLastName(request.getLastName());
+            authenticatedUser.setLastName(request.getLastName());
         }
         if (request.getUserName() != null) {
-            user.setUserName(request.getUserName());
+            authenticatedUser.setUserName(request.getUserName());
         }
         if (request.getEmail() != null) {
-            // Check if the new email is unique
             Optional<User> existingUser = userRepository.findByEmail(request.getEmail());
-            if (existingUser.isPresent() && existingUser.get().getId() !=userId) {
+            if (existingUser.isPresent() && !Objects.equals(existingUser.get().getId(), authenticatedUser.getId())) {
                 throw new RuntimeException("Email already exists, please choose another one");
             }
-            user.setEmail(request.getEmail());
-        }
-        if (request.getPassword() != null) {
-            // Encode the password before saving it
-            user.setPassword(passwordEncoder.encode(request.getPassword()));
-        }
-        if (request.getBusinessName() != null) {
-            user.setBusinessName(request.getBusinessName());
-        }
-        if (request.getDisplayPhoto() != null) {
-            user.setDisplayPhoto(request.getDisplayPhoto());
+            authenticatedUser.setEmail(request.getEmail());
         }
 
-        // Save the updated user to the database
-        return userRepository.save(user);
+        if (request.getPassword() != null) {
+            authenticatedUser.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+        if (request.getBusinessName() != null) {
+            authenticatedUser.setBusinessName(request.getBusinessName());
+        }
+        if (request.getDisplayPhoto() != null) {
+            authenticatedUser.setDisplayPhoto(request.getDisplayPhoto());
+        }
+
+        return userRepository.save(authenticatedUser);
     }
+
 
     @Override
     public ForgotPasswordResponse generateResetToken(String email) {
@@ -227,6 +229,36 @@ public class UserServiceImpl implements UserService {
                 .build();
 
 //        return new ForgotPasswordResponse(resetToken, "Reset token generated successfully.");
+    }
+
+    @Override
+    public List<PostDto> getPostsByUser(long id) {
+        return postRepository.findByUserId(id)
+                .stream()
+                .map(post -> new PostDto(
+                        post.getId(),
+                        post.getTitle(),
+                        post.getContent()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public PostDetailsDto getPostDetails(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post", postId));
+        return new PostDetailsDto(
+                post.getId(),
+                post.getTitle(),
+                post.getContent(),
+                post.getLikes(),
+                post.getComments()
+        );
+    }
+
+    private User getAuthenticatedUser() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
     }
 
 

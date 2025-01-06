@@ -51,6 +51,12 @@ public class User extends BaseClass implements UserDetails, Serializable {
     )
     private String password;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Post> posts;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
+
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
