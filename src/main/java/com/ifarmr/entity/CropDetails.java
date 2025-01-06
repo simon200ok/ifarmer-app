@@ -27,9 +27,11 @@ public class CropDetails extends BaseClass {
     @Column(name = "planting_season", nullable = false)
     private LocalDate plantingSeason;
 
-    @Column(name = "harvest_time", nullable = false)
-    private LocalDate harvestTime;
+    @Column(name = "harvest_date", nullable = false)
+    private LocalDate harvestDate;
 
+    @Column(name = "sow_date", nullable = false)
+    private LocalDate sowDate;
 
     @Column(name = "number_of_seedlings", nullable = false)
     private Integer numberOfSeedlings;
@@ -45,6 +47,18 @@ public class CropDetails extends BaseClass {
 
     @Column(name = "pests_and_diseases", length = 500)
     private String pestsAndDiseases;
+
+    @Column(name = "quantity", nullable = false)
+    private LocalDate quantity;
+
+    @Column(name = "location", nullable = false)
+    private LocalDate location;
+
+    @Column(name = "status", nullable = false)
+    private LocalDate status;
+
+    @Column(name = "description", nullable = false)
+    private LocalDate description;
 
     @Column(name = "photo_file_path")
     private String photoFilePath;
