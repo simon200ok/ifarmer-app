@@ -1,5 +1,6 @@
 package com.ifarmr.entity;
 
+import com.ifarmr.entity.enums.CropStatus;
 import com.ifarmr.entity.enums.CropType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -25,7 +26,7 @@ public class CropDetails extends BaseClass {
     private CropType cropType;
 
     @Column(name = "planting_season", nullable = false)
-    private LocalDate plantingSeason;
+    private String plantingSeason;
 
     @Column(name = "harvest_date", nullable = false)
     private LocalDate harvestDate;
@@ -40,25 +41,26 @@ public class CropDetails extends BaseClass {
     private BigDecimal costOfSeedlings;
 
     @Column(name = "watering_frequency", nullable = false)
-    private Integer wateringFrequency;
+    private String wateringFrequency;
 
     @Column(name = "fertilizing_frequency", nullable = false)
-    private Integer fertilizingFrequency;
+    private String fertilizingFrequency;
 
     @Column(name = "pests_and_diseases", length = 500)
     private String pestsAndDiseases;
 
     @Column(name = "quantity", nullable = false)
-    private LocalDate quantity;
+    private String quantity;
 
     @Column(name = "location", nullable = false)
-    private LocalDate location;
+    private String location;
 
-    @Column(name = "status", nullable = false)
-    private LocalDate status;
+    @Column(name = "crop_status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private CropStatus cropStatus;
 
     @Column(name = "description", nullable = false)
-    private LocalDate description;
+    private String description;
 
     @Column(name = "photo_file_path")
     private String photoFilePath;

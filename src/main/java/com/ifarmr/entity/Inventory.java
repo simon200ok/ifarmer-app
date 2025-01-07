@@ -1,5 +1,6 @@
 package com.ifarmr.entity;
 
+import com.ifarmr.entity.enums.Category;
 import com.ifarmr.entity.enums.ItemType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -33,6 +34,9 @@ public class Inventory extends BaseClass {
 
     @Column(name = "location", length = 500)
     private String location;
+
+    @Column(name = "category", length = 500)
+    private Category category;
 
     @Column(name = "condition", length = 500)
     private String condition;

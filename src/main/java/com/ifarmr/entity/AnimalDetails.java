@@ -1,5 +1,6 @@
 package com.ifarmr.entity;
 
+import com.ifarmr.entity.enums.AnimalStatus;
 import com.ifarmr.entity.enums.AnimalType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -28,16 +29,17 @@ public class AnimalDetails extends BaseClass{
     private String breed;
 
     @Column(name = "quantity", nullable = false)
-    private Integer quantity;
+    private String quantity;
 
     @Column(name = "age", nullable = false)
     private String age;
 
     @Column(name = "location", nullable = false)
-    private LocalDate location;
+    private String location;
 
-    @Column(name = "status", nullable = false)
-    private LocalDate status;
+    @Column(name = "animal_status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private AnimalStatus animalStatus;
 
     @Column(name = "feeding_schedule", nullable = false)
     private String feedingSchedule;
@@ -46,7 +48,7 @@ public class AnimalDetails extends BaseClass{
     private String wateringFrequency;
 
     @Column(name = "vaccination_schedule", nullable = false)
-    private Integer vaccinationSchedule;
+    private String vaccinationSchedule;
 
     @Column(name = "health_issues", length = 500)
     private String healthIssues;
