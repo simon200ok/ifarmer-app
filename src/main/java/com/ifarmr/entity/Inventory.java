@@ -1,5 +1,6 @@
 package com.ifarmr.entity;
 
+import com.ifarmr.entity.enums.Category;
 import com.ifarmr.entity.enums.ItemType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "inventory_tbl")
@@ -25,10 +27,25 @@ public class Inventory extends BaseClass {
     private String name;
 
     @Column (nullable = false)
-    private int quantity;
+    private String quantity;
 
     @Column (nullable = false)
-    private BigDecimal price;
+    private BigDecimal cost;
+
+    @Column(name = "location", length = 500)
+    private String location;
+
+    @Column(name = "category", length = 500)
+    private Category category;
+
+    @Column(name = "condition", length = 500)
+    private String condition;
+
+    @Column(name = "date_acquired", length = 500)
+    private LocalDate dateAcquired;
+
+    @Column(name = "Description", length = 500)
+    private String description;
 
     @Column (nullable = false)
     private String photoUpload;

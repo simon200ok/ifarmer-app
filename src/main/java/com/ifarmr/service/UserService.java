@@ -16,12 +16,17 @@ public interface UserService {
 
     LoginResponse login(LoginRequestDto request);
 
-    User updateUser(UpdateUserRequestDto request);
+    AuthResponse updateUser(UpdateUserRequestDto request);
 
     ForgotPasswordResponse generateResetToken(String email);
 
     List<PostDto> getPostsByUser(long id);
 
     PostDetailsDto getPostDetails(Long postId);
+
+    String verifyUser(String token);
+
+    String logout(String authHeader);
+
 }
 

@@ -1,4 +1,4 @@
-package com.ifarmr.config;
+package com.ifarmr.auth.config;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
