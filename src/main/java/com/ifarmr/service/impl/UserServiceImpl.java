@@ -308,7 +308,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<PostDto> getPostsByUser(long id) {
+    public List<PostDto> getUserPosts(long id) {
         return postRepository.findByUserId(id).stream()
                 .map(post -> new PostDto(
                         post.getId(),

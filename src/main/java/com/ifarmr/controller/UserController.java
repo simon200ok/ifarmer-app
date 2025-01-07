@@ -5,7 +5,6 @@ import com.ifarmr.auth.service.JwtService;
 import com.ifarmr.entity.User;
 import com.ifarmr.entity.enums.Gender;
 import com.ifarmr.entity.enums.Roles;
-import com.ifarmr.exception.customExceptions.InvalidTokenException;
 import com.ifarmr.payload.request.*;
 import com.ifarmr.payload.request.LoginRequestDto;
 import com.ifarmr.payload.request.RegistrationRequest;
@@ -20,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -63,7 +61,7 @@ public class UserController {
 
     @GetMapping("/posts")
     public ResponseEntity<List<PostDto>> getUserPosts(@AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(userService.getPostsByUser(user.getId()));
+        return ResponseEntity.ok(userService.getUserPosts(user.getId()));
     }
 
     @GetMapping("/{postId}")

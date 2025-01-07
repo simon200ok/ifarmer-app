@@ -1,6 +1,5 @@
 package com.ifarmr.service;
 
-import com.ifarmr.entity.User;
 import com.ifarmr.entity.enums.Gender;
 import com.ifarmr.entity.enums.Roles;
 import com.ifarmr.payload.request.*;
@@ -20,7 +19,7 @@ public interface UserService {
 
     ForgotPasswordResponse generateResetToken(String email);
 
-    List<PostDto> getPostsByUser(long id);
+    List<PostDto> getUserPosts(long id);
 
     PostDetailsDto getPostDetails(Long postId);
 
