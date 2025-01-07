@@ -3,6 +3,7 @@ package com.ifarmr.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -17,9 +18,15 @@ public class Post extends BaseClass{
 
     private String description;
 
-    private List<String> image;
+    private String image;
 
-    private int likes = 0;
+    @ManyToMany
+    @JoinTable(
+            name = "post_likes", // Join table to manage the many-to-many relationship
+            joinColumns = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<User> likes = new ArrayList<>(); // This initializes the likes to an empty list
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

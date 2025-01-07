@@ -51,14 +51,14 @@ public class CentralizedExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<AuthResponse> handleGenericException(Exception ex) {
-        AuthResponse response = AuthResponse.builder()
-                .responseCode("500")
-                .responseMessage("An unexpected error occurred: " + ex.getMessage())
-                .build();
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<AuthResponse> handleGenericException(Exception ex) {
+//        AuthResponse response = AuthResponse.builder()
+//                .responseCode("500")
+//                .responseMessage("An unexpected error occurred: " + ex.getMessage())
+//                .build();
+//        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+//    }
 
 
 

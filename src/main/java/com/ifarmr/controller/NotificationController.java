@@ -1,12 +1,16 @@
 package com.ifarmr.controller;
 
+import com.ifarmr.entity.enums.NotificationStatus;
+import com.ifarmr.payload.request.NotificationDto;
 import com.ifarmr.payload.request.NotificationRequest;
 import com.ifarmr.payload.request.PushSubscriptionDTO;
 import com.ifarmr.service.NotificationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -35,7 +39,7 @@ public class NotificationController {
     @PostMapping("/send-notification")
     public ResponseEntity<String> sendNotification(@RequestBody NotificationRequest notificationRequest) {
         notificationService.sendNotification(notificationRequest);
-        return ResponseEntity.ok("Notification sent.");
+        return ResponseEntity.ok("Notifications sent.");
     }
 
     @GetMapping("/subscription-status")
@@ -50,6 +54,31 @@ public class NotificationController {
             @RequestParam("endpoint") String endpoint) {
         boolean isSubscribed = notificationService.checkSubscriptionStatusWithEndpoint(userId, endpoint);
         return ResponseEntity.ok(Map.of("exists", isSubscribed));
+    }
+
+    // Endpoint to get all notifications (without any specific user filtering)
+    @GetMapping("/get-all-notifications")
+    public ResponseEntity<List<NotificationDto>> getAllNotifications(
+            @RequestParam(value = "status", required = false) NotificationStatus status) {
+        List<NotificationDto> notifications = notificationService.getAllNotifications(status);
+        return ResponseEntity.ok(notifications);
+    }
+
+    // Endpoint to get notifications by userId (userId is passed as a query parameter)
+    @GetMapping("/get-notifications-by-user")
+    public ResponseEntity<List<NotificationDto>> getNotificationsByUserId(
+            @RequestParam Long userId,
+            @RequestParam(value = "status", required = false) NotificationStatus status) {
+        List<NotificationDto> notifications = notificationService.getNotificationsByUserId(userId, status);
+        return ResponseEntity.ok(notifications);
+    }
+
+    // Endpoint to mark a notification as read (notificationId passed as query parameter)
+    @CrossOrigin(origins = "http://localhost:5173")
+    @PatchMapping("/read")
+    public ResponseEntity<Void> markNotificationAsRead(@RequestParam Long notificationId) {
+        notificationService.markNotificationAsRead(notificationId);
+        return ResponseEntity.ok().build();
     }
 
 
