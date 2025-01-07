@@ -34,10 +34,13 @@ public class AnimalServiceImpl implements AnimalService {
                 .breed(animalRequest.getBreed())
                 .quantity(animalRequest.getQuantity())
                 .age(animalRequest.getAge())
+                .location(animalRequest.getLocation())
+                .status(animalRequest.getStatus())
                 .feedingSchedule(animalRequest.getFeedingSchedule())
                 .wateringFrequency(animalRequest.getWateringFrequency())
                 .vaccinationSchedule(animalRequest.getVaccinationSchedule())
                 .healthIssues(animalRequest.getHealthIssues())
+                .description(animalRequest.getDescription())
                 .photoFilePath(animalRequest.getPhotoFilePath())
                 .user(user)
                 .build();
@@ -53,9 +56,13 @@ public class AnimalServiceImpl implements AnimalService {
                 .breed(animalDetails.getBreed())
                 .quantity(animalDetails.getQuantity())
                 .age(animalDetails.getAge())
+                .location(animalDetails.getLocation())
+                .status(animalDetails.getStatus())
                 .feedingSchedule(animalDetails.getFeedingSchedule())
                 .wateringFrequency(animalDetails.getWateringFrequency())
                 .vaccinationSchedule(animalDetails.getVaccinationSchedule())
+                .healthIssues(animalDetails.getHealthIssues())
+                .description(animalDetails.getDescription())
                 .photoFilePath(animalDetails.getPhotoFilePath())
                 .build();
     }
