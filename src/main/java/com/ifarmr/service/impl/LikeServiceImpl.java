@@ -74,15 +74,15 @@ public class LikeServiceImpl implements LikeService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
 
         // Check if the user has already liked the post
-        if (post.getLikes().contains(user)) {
+        if (post.getLikedUser().contains(user)) {
             return LikeResponse.builder()
                     .responseCode("409")
                     .responseMessage("User has already liked this post")
                     .build();
         }
 
-        // Add the user to the list of likes
-        post.getLikes().add(user);
+        post.getLikedUser().add(user);
+        post.setLikes(post.getLikes()+1);
 
         // Save the updated post
         postRepository.save(post);
