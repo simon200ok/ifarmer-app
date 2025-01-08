@@ -6,29 +6,29 @@ import com.ifarmr.repository.AnimalDetailsRepository;
 import com.ifarmr.repository.CropDetailsRepository;
 import com.ifarmr.repository.UserRepository;
 import com.ifarmr.service.ResourceService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
+@Service
+@RequiredArgsConstructor
 public class ResourceServiceImpl implements ResourceService {
 
-    @Autowired
-    private CropDetailsRepository cropDetailsRepository;
-
-    @Autowired
-    private AnimalDetailsRepository animalDetailsRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    private final CropDetailsRepository cropDetailsRepository;
+    private final AnimalDetailsRepository animalDetailsRepository;
 
     @Override
     public TotalResourcesDTO getTotalResources(Long userId) {
-        // Fetch the user object to ensure the user exists
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Get total crops and livestock for the user
-        int totalCrops = cropDetailsRepository.countByUserId(userId);
-        int totalLivestock = animalDetailsRepository.countByUserId(userId);
+        long totalCrops = cropDetailsRepository.countByUserId(userId);
+        long totalLivestock = animalDetailsRepository.countByUserId(userId);
 
-        // Return the result in a DTO
-        return new TotalResourcesDTO(totalCrops, totalLivestock);
+        return TotalResourcesDTO.builder()
+                .totalCrops(totalCrops)
+                .totalLivestock(totalLivestock)
+                .build();
     }
 }
