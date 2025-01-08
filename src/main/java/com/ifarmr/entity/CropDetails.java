@@ -1,10 +1,9 @@
 package com.ifarmr.entity;
 
+import com.ifarmr.entity.enums.CropStatus;
 import com.ifarmr.entity.enums.CropType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -14,7 +13,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 @NoArgsConstructor
-
+@Getter
+@Setter
 public class CropDetails extends BaseClass {
 
     @Column(name = "crop_name", nullable = false)
@@ -25,11 +25,13 @@ public class CropDetails extends BaseClass {
     private CropType cropType;
 
     @Column(name = "planting_season", nullable = false)
-    private LocalDate plantingSeason;
+    private String plantingSeason;
 
-    @Column(name = "harvest_time", nullable = false)
-    private LocalDate harvestTime;
+    @Column(name = "harvest_date", nullable = false)
+    private LocalDate harvestDate;
 
+    @Column(name = "sow_date", nullable = false)
+    private LocalDate sowDate;
 
     @Column(name = "number_of_seedlings", nullable = false)
     private Integer numberOfSeedlings;
@@ -38,13 +40,26 @@ public class CropDetails extends BaseClass {
     private BigDecimal costOfSeedlings;
 
     @Column(name = "watering_frequency", nullable = false)
-    private Integer wateringFrequency;
+    private String wateringFrequency;
 
     @Column(name = "fertilizing_frequency", nullable = false)
-    private Integer fertilizingFrequency;
+    private String fertilizingFrequency;
 
     @Column(name = "pests_and_diseases", length = 500)
     private String pestsAndDiseases;
+
+    @Column(name = "quantity", nullable = false)
+    private String quantity;
+
+    @Column(name = "location", nullable = false)
+    private String location;
+
+    @Column(name = "crop_status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private CropStatus cropStatus;
+
+    @Column(name = "description", nullable = false)
+    private String description;
 
     @Column(name = "photo_file_path")
     private String photoFilePath;

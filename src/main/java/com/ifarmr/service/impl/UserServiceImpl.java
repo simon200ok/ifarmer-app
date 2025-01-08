@@ -1,5 +1,6 @@
 package com.ifarmr.service.impl;
 
+import com.ifarmr.entity.Post;
 import com.ifarmr.auth.service.JwtAuthenticationFilter;
 import com.ifarmr.auth.service.JwtService;
 import com.ifarmr.entity.TokenVerification;
@@ -13,7 +14,10 @@ import com.ifarmr.exception.customExceptions.InvalidTokenException;
 import com.ifarmr.payload.request.LoginRequestDto;
 import com.ifarmr.payload.request.RegistrationRequest;
 import com.ifarmr.payload.request.UpdateUserRequestDto;
+import com.ifarmr.exception.customExceptions.ResourceNotFoundException;
+import com.ifarmr.payload.request.*;
 import com.ifarmr.payload.response.*;
+import com.ifarmr.repository.PostRepository;
 import com.ifarmr.repository.UserRepository;
 import com.ifarmr.service.EmailService;
 import com.ifarmr.service.TokenVerificationService;
@@ -22,20 +26,18 @@ import com.ifarmr.utils.AccountUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -50,12 +52,13 @@ public class UserServiceImpl implements UserService {
     private final TokenVerificationService tokenVerificationService;
     private final HttpServletRequest servletRequest;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final PostRepository postRepository;
 
     @Override
     public AuthResponse register(RegistrationRequest request, Gender gender, Roles role) {
 
         //check if Email Already exists
-        if (userRepository.findByEmail(request.getEmail()).isPresent()){
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new EmailAlreadyExistsException("Email already exists, kindly log into your account");
         }
 
@@ -120,7 +123,6 @@ public class UserServiceImpl implements UserService {
         emailService.sendEmailToken(sendTokenForRegistration);
 
 
-
         //Build and return the response
         return AuthResponse.builder()
                 .responseCode(AccountUtils.ACCOUNT_CREATION_SUCCESS_CODE)
@@ -162,7 +164,7 @@ public class UserServiceImpl implements UserService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String jwtToken = jwtService.generateToken(authentication);
+        String jwtToken = jwtService.generateToken(authentication, user.getId());
 
 
         // Return login response
@@ -175,7 +177,7 @@ public class UserServiceImpl implements UserService {
                         .build())
                 .build();
     }
-    // Method to update user details
+
     @Override
     public AuthResponse updateUser(UpdateUserRequestDto request) {
         String token = jwtAuthenticationFilter.getTokenFromRequest(servletRequest);
@@ -187,15 +189,14 @@ public class UserServiceImpl implements UserService {
 
         String email = jwtService.getUserName(token);
 
-        User existingUser = userRepository.findByEmail(email).orElseThrow(()-> new UsernameNotFoundException("Account not found"));
+        User existingUser = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Account not found"));
 
-        if (existingUser != null){
+        if (existingUser != null) {
             Optional.ofNullable(request.getFirstName()).ifPresent(existingUser::setFirstName);
             Optional.ofNullable(request.getLastName()).ifPresent(existingUser::setLastName);
             Optional.ofNullable(request.getUserName()).ifPresent(existingUser::setUserName);
             Optional.ofNullable(request.getBusinessName()).ifPresent(existingUser::setBusinessName);
             Optional.ofNullable(request.getDisplayPhoto()).ifPresent(existingUser::setDisplayPhoto);
-
 
 
             User savedUser = userRepository.save(existingUser);
@@ -214,6 +215,7 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+
     @Override
     public ForgotPasswordResponse generateResetToken(String email) {
         User user = userRepository.findByEmail(email)
@@ -228,7 +230,7 @@ public class UserServiceImpl implements UserService {
                 user.getEmail(), null, List.of(new SimpleGrantedAuthority(user.getRole().name()))
         );
 
-        String resetToken = jwtService.generateToken(authentication);
+        String resetToken = jwtService.generateToken(authentication, user.getId());
 
 
         // Update user with reset token and expiry
@@ -305,14 +307,26 @@ public class UserServiceImpl implements UserService {
         return "Logged Out Successfully";
     }
 
-
-    private void validateEmailUniqueness(Long userId, String email) {
-        userRepository.findByEmail(email).ifPresent(existingUser -> {
-            if (!Objects.equals(existingUser.getId(), userId)) {
-                throw new EmailAlreadyExistsException("Email already exists, please choose another one");
-            }
-        });
+    @Override
+    public List<PostDto> getUserPosts(long id) {
+        return postRepository.findByUserId(id).stream()
+                .map(post -> new PostDto(
+                        post.getId(),
+                        post.getTitle(),
+                        post.getDescription()))
+                .collect(Collectors.toList());
     }
 
-
+    @Override
+    public PostDetailsDto getPostDetails(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post", postId));
+        return new PostDetailsDto(
+                post.getId(),
+                post.getTitle(),
+                post.getDescription(),
+                post.getLikes(),
+                post.getComments()
+        );
+    }
 }

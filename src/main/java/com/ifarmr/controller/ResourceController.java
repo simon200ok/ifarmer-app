@@ -22,7 +22,9 @@ public class ResourceController {
     public ResponseEntity<?> getTotalResources(@AuthenticationPrincipal Long userId) {
         try {
             TotalResourcesDTO totalResources = resourceService.getTotalResources(userId);
-            return ResponseEntity.ok(new ApiResponse(true, totalResources, "Successfully fetched total resources."));
+            return ResponseEntity.ok(new ApiResponse<>());
+
+//                    new ApiResponse(true, totalResources, "Successfully fetched total resources.")
         } catch (Exception e) {
             return ResponseEntity.status(500)
                     .body(new ApiResponse(false, null, "An error occurred while fetching resources."));
