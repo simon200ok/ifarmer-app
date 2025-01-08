@@ -12,6 +12,8 @@ import com.ifarmr.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -65,4 +67,14 @@ public class CropServiceImpl implements CropService {
                 .photoFilePath(cropDetails.getPhotoFilePath())
                 .build();
     }
+
+    @Override
+    public List<CropResponse> getCropsForUser() {
+        User user = securityUtils.getLoggedInUser();
+        List<CropDetails> crops = cropDetailsRepository.findByUser(user);
+        return crops.stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
 }

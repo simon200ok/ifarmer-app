@@ -12,4 +12,5 @@ import java.util.List;
 public interface AnimalService {
     ApiResponse<AnimalResponse>  addLivestock(AnimalRequest animalRequest);
 
+    List<AnimalResponse> getLivestockForUser();
 }

@@ -11,6 +11,8 @@ import com.ifarmr.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -63,4 +65,14 @@ public class AnimalServiceImpl implements AnimalService {
                 .photoFilePath(animalDetails.getPhotoFilePath())
                 .build();
     }
+
+    @Override
+    public List<AnimalResponse> getLivestockForUser() {
+        User user = securityUtils.getLoggedInUser();
+        List<AnimalDetails> livestock = animalDetailsRepository.findByUser(user);
+        return livestock.stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
 }
