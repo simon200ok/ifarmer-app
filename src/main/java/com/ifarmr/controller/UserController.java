@@ -2,8 +2,10 @@ package com.ifarmr.controller;
 
 
 import com.ifarmr.auth.service.JwtService;
+import com.ifarmr.entity.User;
 import com.ifarmr.entity.enums.Gender;
 import com.ifarmr.entity.enums.Roles;
+import com.ifarmr.payload.request.*;
 import com.ifarmr.payload.request.LoginRequestDto;
 import com.ifarmr.payload.request.RegistrationRequest;
 import com.ifarmr.payload.request.UpdateUserRequestDto;
@@ -14,7 +16,10 @@ import com.ifarmr.service.TokenVerificationService;
 import com.ifarmr.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -54,6 +59,14 @@ public class UserController {
         return ResponseEntity.ok(userService.logout(authHeader));
     }
 
+    @GetMapping("/posts")
+    public ResponseEntity<List<PostDto>> getUserPosts(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(userService.getUserPosts(user.getId()));
+    }
 
+    @GetMapping("/{postId}")
+    public ResponseEntity<PostDetailsDto> getPostDetails(@PathVariable Long postId) {
+        return ResponseEntity.ok(userService.getPostDetails(postId));
+    }
 }
 
