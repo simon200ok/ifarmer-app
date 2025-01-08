@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface CropDetailsRepository extends JpaRepository<CropDetails, Integer> {
     List<CropDetails> findByUser(User user);
+
+    int countByUserId(Long userId);
 }
