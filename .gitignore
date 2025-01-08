@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+#to ignore the key details file
+.env
+/src/main/resources/application.properties

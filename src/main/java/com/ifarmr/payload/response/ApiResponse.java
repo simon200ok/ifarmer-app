@@ -1,9 +1,11 @@
 package com.ifarmr.payload.response;
 
+import lombok.Data;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-
+@Data
 public class ApiResponse<T> {
     private String responseMessage;
     private T responseData;

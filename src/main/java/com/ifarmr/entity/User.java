@@ -13,6 +13,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -50,6 +51,12 @@ public class User extends BaseClass implements UserDetails, Serializable {
     )
     private String password;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Post> posts;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
+
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
@@ -60,6 +67,15 @@ public class User extends BaseClass implements UserDetails, Serializable {
 
     @Column(nullable = false)
     private String businessName;
+
+    @Column(nullable = false)
+    private boolean isActive = false;
+
+    @Column
+    private String resetPasswordToken;
+
+    @Column
+    private LocalDateTime resetTokenExpiry;
 
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -73,6 +89,17 @@ public class User extends BaseClass implements UserDetails, Serializable {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Inventory> inventory;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private TokenVerification tokenVerification;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<PushSubscription> pushSubscriptions;
+
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Notifications> notifications;
+
 
 
     @Override
