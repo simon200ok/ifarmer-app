@@ -37,12 +37,12 @@ public class CropServiceImpl implements CropService {
                 .pestsAndDiseases(cropRequest.getPestsAndDiseases())
                 .quantity(cropRequest.getQuantity())
                 .location(cropRequest.getLocation())
-                .status(cropRequest.getStatus())
+                .cropStatus(cropRequest.getCropStatus())
                 .description(cropRequest.getDescription())
                 .photoFilePath(cropRequest.getPhotoFilePath())
                 .user(user)
                 .build();
-        return new ApiResponse<>("Success", mapToResponse(cropDetailsRepository.save(crop)));
+        return new ApiResponse<>("Crop Successfully added", mapToResponse(cropDetailsRepository.save(crop)));
     }
 
     private CropResponse mapToResponse(CropDetails cropDetails) {
@@ -60,7 +60,7 @@ public class CropServiceImpl implements CropService {
                .pestsAndDiseases(cropDetails.getPestsAndDiseases())
                .quantity(cropDetails.getQuantity())
                .location(cropDetails.getLocation())
-               .status(cropDetails.getStatus())
+               .cropStatus(cropDetails.getCropStatus())
                .description(cropDetails.getDescription())
                 .photoFilePath(cropDetails.getPhotoFilePath())
                 .build();

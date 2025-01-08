@@ -1,5 +1,6 @@
 package com.ifarmr.payload.response;
 
+import com.ifarmr.entity.enums.AnimalStatus;
 import com.ifarmr.entity.enums.AnimalType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,13 +19,13 @@ public class AnimalResponse {
     private String animalName;
     private AnimalType animalType;
     private String breed;
-    private Integer quantity;
+    private String quantity;
     private String age;
-    private LocalDate location;
-    private LocalDate status;
+    private String location;
+    private AnimalStatus animalStatus;
     private String feedingSchedule;
     private String wateringFrequency;
-    private Integer vaccinationSchedule;
+    private String vaccinationSchedule;
     private String healthIssues;
     private String description;
     private String photoFilePath;
