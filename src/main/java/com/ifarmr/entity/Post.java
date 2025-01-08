@@ -37,6 +37,9 @@ public class Post extends BaseClass {
     @Column(nullable = false)
     private int likes = 0;
 
+    @OneToMany(mappedBy = "post")
+    private List<Comment> comments;
+
     @ManyToMany
     @JoinTable(
             name = "post_likes",
