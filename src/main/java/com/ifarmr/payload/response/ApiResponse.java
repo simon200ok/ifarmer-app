@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Data
 public class ApiResponse<T> {
@@ -25,7 +26,15 @@ public class ApiResponse<T> {
         this.success = true;
     }
 
-    private String convertDateToFormat() {
+    public ApiResponse(String message, String detail, List<T> emptyList) {
+        this.responseMessage = message;
+        this.responseData = (T) emptyList;  // Casting List<T> to the correct type
+        this.timestamp = convertDateToFormat();
+        this.success = false;
+    }
+
+
+        private String convertDateToFormat() {
         String dateFormat = "yyyy-MM-dd HH:mm:ss";
         LocalDateTime localDateTime = LocalDateTime.now();
         DateTimeFormatter simpleDateFormat = DateTimeFormatter.ofPattern(dateFormat);

@@ -12,6 +12,10 @@ import com.ifarmr.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +48,38 @@ public class CropServiceImpl implements CropService {
                 .build();
         return new ApiResponse<>("Crop Successfully added", mapToResponse(cropDetailsRepository.save(crop)));
     }
+
+    @Override
+    public ApiResponse<List<CropResponse>> getAllCrops() {
+        // Retrieve the logged-in user to check access (if required)
+        securityUtils.getLoggedInUser(); // Ensure the user is authenticated
+
+        List<CropResponse> crops = cropDetailsRepository.findAll()
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+        return new ApiResponse<>("Successfully retrieved all crops", crops);
+    }
+
+
+    @Override
+    public ApiResponse<List<CropResponse>> getCropsByUserId(Long userId) {
+        // Retrieve the logged-in user from SecurityUtils if you want to filter by authenticated user
+        User loggedInUser = securityUtils.getLoggedInUser();
+
+        // Use the logged-in user's ID if you're fetching crops for the currently authenticated user
+        if (userId == null || userId.equals(loggedInUser.getId())) {
+            List<CropResponse> crops = cropDetailsRepository.findByUserId(loggedInUser.getId())
+                    .stream()
+                    .map(this::mapToResponse)
+                    .collect(Collectors.toList());
+            return new ApiResponse<>("Successfully retrieved crops for user", crops);
+        } else {
+            List<List<CropResponse>> emptyList = List.of();
+            return new ApiResponse<List<CropResponse>>("Unauthorized", "You are not allowed to access crops for another user.", emptyList);
+        }
+    }
+
 
     private CropResponse mapToResponse(CropDetails cropDetails) {
        return CropResponse.builder()

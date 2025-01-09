@@ -14,15 +14,15 @@ public interface NotificationService {
 
     String subscribe(PushSubscriptionDTO subscriptionDTO);
 
-    boolean checkSubscriptionStatus(Long userId);
+    boolean checkSubscriptionStatus();
 
     String unsubscribe(PushSubscriptionDTO subscriptionDTO);
 
-    boolean checkSubscriptionStatusWithEndpoint(Long userId, String endpoint);
+    boolean checkSubscriptionStatusWithEndpoint(String endpoint);
 
     List<NotificationDto> getAllNotifications(NotificationStatus status);
 
-    List<NotificationDto> getNotificationsByUserId(Long userId, NotificationStatus status);
+    List<NotificationDto> getNotificationsByUserId(NotificationStatus status);
 
     void markNotificationAsRead(Long notificationId);
 }

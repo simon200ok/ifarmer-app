@@ -9,10 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/crops")
@@ -28,4 +27,15 @@ public class CropController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCrop);
     }
 
+    @GetMapping("/get_all_crops")
+    public ResponseEntity<ApiResponse<List<CropResponse>>> getAllCrops() {
+        ApiResponse<List<CropResponse>> response = cropService.getAllCrops();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/statistics/get_all_crops_by_user")
+    public ResponseEntity<ApiResponse<List<CropResponse>>> getCropsByUserId(@PathVariable Long userId) {
+        ApiResponse<List<CropResponse>> response = cropService.getCropsByUserId(userId);
+        return ResponseEntity.ok(response);
+    }
 }
