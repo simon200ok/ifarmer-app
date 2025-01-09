@@ -1,15 +1,19 @@
 package com.ifarmr.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ifarmr.payload.request.AnimalRequest;
 import com.ifarmr.payload.response.AnimalResponse;
 import com.ifarmr.payload.response.ApiResponse;
 import com.ifarmr.service.AnimalService;
+import jakarta.mail.Multipart;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("api/v1/livestock")
@@ -17,13 +21,13 @@ import java.util.List;
 public class LivestockController {
 
     private final AnimalService animalService;
+    private final ObjectMapper objectMapper;
 
-    @PostMapping("/add")
-    public ResponseEntity<ApiResponse<AnimalResponse>> addLivestock(
-            @RequestBody AnimalRequest animalRequest) {
-        ApiResponse<AnimalResponse> createdLivestock = animalService.addLivestock(animalRequest);
+    @PostMapping(path = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<AnimalResponse>> addLivestock(@RequestPart("data") @Valid String data,
+                                                                    @RequestPart("photo") MultipartFile photo) throws JsonProcessingException {
+        AnimalRequest animalRequest = objectMapper.readValue(data, AnimalRequest.class);
+        ApiResponse<AnimalResponse> createdLivestock = animalService.addLivestock(animalRequest, photo);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdLivestock);
     }
-
-
 }

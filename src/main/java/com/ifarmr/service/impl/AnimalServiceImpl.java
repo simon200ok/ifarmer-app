@@ -8,9 +8,12 @@ import com.ifarmr.payload.response.ApiResponse;
 import com.ifarmr.payload.response.CropResponse;
 import com.ifarmr.repository.AnimalDetailsRepository;
 import com.ifarmr.service.AnimalService;
+import com.ifarmr.service.CloudinaryService;
 import com.ifarmr.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,11 +25,12 @@ public class AnimalServiceImpl implements AnimalService {
 
     private final AnimalDetailsRepository animalDetailsRepository;
     private final SecurityUtils securityUtils;
+    private final CloudinaryService cloudinaryService;
 
 
 
     @Override
-    public ApiResponse<AnimalResponse> addLivestock(AnimalRequest animalRequest) {
+    public ApiResponse<AnimalResponse> addLivestock(AnimalRequest animalRequest, MultipartFile photo) {
 
         User user = securityUtils.getLoggedInUser();
         AnimalDetails livestock = AnimalDetails.builder()
@@ -42,7 +46,7 @@ public class AnimalServiceImpl implements AnimalService {
                 .vaccinationSchedule(animalRequest.getVaccinationSchedule())
                 .healthIssues(animalRequest.getHealthIssues())
                 .description(animalRequest.getDescription())
-                .photoFilePath(animalRequest.getPhotoFilePath())
+                .photoFilePath(cloudinaryService.uploadFile(photo))
                 .user(user)
                 .build();
 

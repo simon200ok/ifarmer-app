@@ -28,5 +28,4 @@ public class AnimalRequest {
     private String vaccinationSchedule;
     private String healthIssues;
     private String description;
-    private String photoFilePath;
 }

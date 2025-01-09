@@ -38,4 +38,8 @@ public class AccountUtils {
     public final static String COMMENT_SUCCESS_CODE = "010";
     public final static String COMMENT_SUCCESS_MESSAGE = "Comment Uploaded Successfully";
 
+    public final static String INVENTORY_SUCCESS_CODE = "011";
+
+    public final static String INVENTORY_SUCCESS_MESSAGE = "Inventory added successfuly";
+
 }
