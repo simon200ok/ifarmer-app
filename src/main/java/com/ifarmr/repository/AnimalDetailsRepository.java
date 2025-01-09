@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AnimalDetailsRepository extends JpaRepository<AnimalDetails, Long> {
+    int countByUserId(Long userId);
 }
