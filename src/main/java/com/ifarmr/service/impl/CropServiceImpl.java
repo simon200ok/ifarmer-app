@@ -69,12 +69,10 @@ public class CropServiceImpl implements CropService {
     }
 
     @Override
-    public List<CropResponse> getCropsForUser() {
-        User user = securityUtils.getLoggedInUser();
-        List<CropDetails> crops = cropDetailsRepository.findByUser(user);
+    public List<CropResponse> getCropsForUser(Long userId) {
+        List<CropDetails> crops = cropDetailsRepository.findByUserId(userId);
         return crops.stream()
                 .map(this::mapToResponse)
                 .toList();
     }
-
 }

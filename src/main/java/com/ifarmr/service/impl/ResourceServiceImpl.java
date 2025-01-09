@@ -1,17 +1,15 @@
 package com.ifarmr.service.impl;
 
-import com.ifarmr.entity.User;
-import com.ifarmr.payload.response.TotalResourcesDTO;
+import com.ifarmr.payload.response.*;
 import com.ifarmr.repository.AnimalDetailsRepository;
 import com.ifarmr.repository.CropDetailsRepository;
-import com.ifarmr.repository.UserRepository;
+import com.ifarmr.service.AnimalService;
+import com.ifarmr.service.CropService;
 import com.ifarmr.service.ResourceService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +17,8 @@ public class ResourceServiceImpl implements ResourceService {
 
     private final CropDetailsRepository cropDetailsRepository;
     private final AnimalDetailsRepository animalDetailsRepository;
+    private final AnimalService animalService;
+    private final CropService cropService;
 
     @Override
     public TotalResourcesDTO getTotalResources(Long userId) {
@@ -29,6 +29,17 @@ public class ResourceServiceImpl implements ResourceService {
         return TotalResourcesDTO.builder()
                 .totalCrops(totalCrops)
                 .totalLivestock(totalLivestock)
+                .build();
+    }
+
+    @Override
+    public DetailedResources getUserDetailedResources(Long userId) {
+        List<AnimalResponse> livestock = animalService.getLivestockForUser(userId);
+        List<CropResponse> crops = cropService.getCropsForUser(userId);
+
+        return DetailedResources.builder()
+                .livestock(livestock)
+                .crops(crops)
                 .build();
     }
 }

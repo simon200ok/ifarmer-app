@@ -67,9 +67,8 @@ public class AnimalServiceImpl implements AnimalService {
     }
 
     @Override
-    public List<AnimalResponse> getLivestockForUser() {
-        User user = securityUtils.getLoggedInUser();
-        List<AnimalDetails> livestock = animalDetailsRepository.findByUser(user);
+    public List<AnimalResponse> getLivestockForUser(Long userId) {
+        List<AnimalDetails> livestock = animalDetailsRepository.findByUserId(userId);
         return livestock.stream()
                 .map(this::mapToResponse)
                 .toList();
