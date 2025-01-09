@@ -13,4 +13,8 @@ import java.util.List;
 public interface AnimalService {
     ApiResponse<AnimalResponse>  addLivestock(AnimalRequest animalRequest, MultipartFile photo);
 
+    ApiResponse<List<AnimalResponse>> getAllAnimals();
+
+    ApiResponse<List<AnimalResponse>> getAnimalsByUserId(Long userId);
+
 }

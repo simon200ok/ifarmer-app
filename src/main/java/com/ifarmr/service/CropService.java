@@ -12,4 +12,7 @@ public interface CropService {
 
     ApiResponse<CropResponse> addCrop(CropRequest cropRequest, MultipartFile photo);
 
+    public ApiResponse<List<CropResponse>> getAllCrops();
+
+    ApiResponse<List<CropResponse>> getCropsByUserId(Long userId);
 }

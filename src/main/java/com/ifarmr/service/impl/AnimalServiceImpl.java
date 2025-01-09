@@ -5,6 +5,7 @@ import com.ifarmr.entity.User;
 import com.ifarmr.payload.request.AnimalRequest;
 import com.ifarmr.payload.response.AnimalResponse;
 import com.ifarmr.payload.response.ApiResponse;
+import com.ifarmr.payload.response.CropResponse;
 import com.ifarmr.repository.AnimalDetailsRepository;
 import com.ifarmr.service.AnimalService;
 import com.ifarmr.service.CloudinaryService;
@@ -13,6 +14,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -47,6 +51,38 @@ public class AnimalServiceImpl implements AnimalService {
                 .build();
 
         return new ApiResponse<>("Livestock Successfully added", mapToResponse(animalDetailsRepository.save(livestock)));
+    }
+
+    @Override
+    public ApiResponse<List<AnimalResponse>> getAllAnimals() {
+
+        User loggedInUser = securityUtils.getLoggedInUser();
+
+
+        List<AnimalResponse> animals = animalDetailsRepository.findByUserId(loggedInUser.getId())
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+
+        return new ApiResponse<>("Successfully retrieved animals for the user", animals);
+    }
+
+
+    @Override
+    public ApiResponse<List<AnimalResponse>> getAnimalsByUserId(Long userId) {
+        User loggedInUser = securityUtils.getLoggedInUser();
+
+
+        if (userId == null || userId.equals(loggedInUser.getId())) {
+            List<AnimalResponse> animals = animalDetailsRepository.findByUserId(loggedInUser.getId())
+                    .stream()
+                    .map(this::mapToResponse)
+                    .collect(Collectors.toList());
+            return new ApiResponse<>("Successfully retrieved animals for user", animals);
+        } else {
+            List<List<AnimalResponse>> emptyList = List.of();
+            return new ApiResponse<List<AnimalResponse>>("Unauthorized", "You are not allowed to access crops for another user.", emptyList);
+        }
     }
 
     private AnimalResponse mapToResponse(AnimalDetails animalDetails) {
