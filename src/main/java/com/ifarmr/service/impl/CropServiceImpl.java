@@ -7,10 +7,17 @@ import com.ifarmr.payload.response.ApiResponse;
 import com.ifarmr.payload.response.CropResponse;
 import com.ifarmr.repository.CropDetailsRepository;
 import com.ifarmr.repository.UserRepository;
+import com.ifarmr.service.CloudinaryService;
 import com.ifarmr.service.CropService;
 import com.ifarmr.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -20,9 +27,11 @@ public class CropServiceImpl implements CropService {
     private final CropDetailsRepository cropDetailsRepository;
     private final UserRepository userRepository;
     private final SecurityUtils securityUtils;
+    private final CloudinaryService cloudinaryService;
 
     @Override
-    public ApiResponse<CropResponse> addCrop(CropRequest cropRequest) {
+    @SneakyThrows
+    public ApiResponse<CropResponse> addCrop(CropRequest cropRequest, MultipartFile photo) {
         User user = securityUtils.getLoggedInUser();
         CropDetails crop = CropDetails.builder()
                 .cropName(cropRequest.getCropName())
@@ -39,11 +48,43 @@ public class CropServiceImpl implements CropService {
                 .location(cropRequest.getLocation())
                 .cropStatus(cropRequest.getCropStatus())
                 .description(cropRequest.getDescription())
-                .photoFilePath(cropRequest.getPhotoFilePath())
+                .photoFilePath(cloudinaryService.uploadFile(photo))
                 .user(user)
                 .build();
         return new ApiResponse<>("Crop Successfully added", mapToResponse(cropDetailsRepository.save(crop)));
     }
+
+    @Override
+    public ApiResponse<List<CropResponse>> getAllCrops() {
+        // Retrieve the logged-in user to check access (if required)
+        securityUtils.getLoggedInUser(); // Ensure the user is authenticated
+
+        List<CropResponse> crops = cropDetailsRepository.findAll()
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+        return new ApiResponse<>("Successfully retrieved all crops", crops);
+    }
+
+
+    @Override
+    public ApiResponse<List<CropResponse>> getCropsByUserId(Long userId) {
+        // Retrieve the logged-in user from SecurityUtils if you want to filter by authenticated user
+        User loggedInUser = securityUtils.getLoggedInUser();
+
+        // Use the logged-in user's ID if you're fetching crops for the currently authenticated user
+        if (userId == null || userId.equals(loggedInUser.getId())) {
+            List<CropResponse> crops = cropDetailsRepository.findByUserId(loggedInUser.getId())
+                    .stream()
+                    .map(this::mapToResponse)
+                    .collect(Collectors.toList());
+            return new ApiResponse<>("Successfully retrieved crops for user", crops);
+        } else {
+            List<List<CropResponse>> emptyList = List.of();
+            return new ApiResponse<List<CropResponse>>("Unauthorized", "You are not allowed to access crops for another user.", emptyList);
+        }
+    }
+
 
     private CropResponse mapToResponse(CropDetails cropDetails) {
        return CropResponse.builder()

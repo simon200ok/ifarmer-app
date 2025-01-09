@@ -11,7 +11,8 @@ import com.ifarmr.repository.NotificationRepository;
 import com.ifarmr.repository.SubscriptionRepository;
 import com.ifarmr.repository.UserRepository;
 import com.ifarmr.service.NotificationService;
-import jakarta.persistence.EntityNotFoundException;
+import com.ifarmr.utils.ExtractUserID;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import nl.martijndwars.webpush.Notification;
 import nl.martijndwars.webpush.PushService;
@@ -33,6 +34,8 @@ public class NotificationServiceImpl implements NotificationService {
     private final SubscriptionRepository subscriptionRepository;
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
+    private final ExtractUserID extractUserID;
+    private final HttpServletRequest httpServletRequest;
 
     @Override
     public void sendNotification(NotificationRequest notificationRequest) {
@@ -85,11 +88,9 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public String subscribe(PushSubscriptionDTO subscriptionDTO) {
-        if (subscriptionDTO.getUserId() == null) {
-            return "User ID is missing in the subscription request.";
-        }
+        Long userId = extractUserID.getUserIdFromToken(httpServletRequest);
 
-        Optional<User> userOptional = userRepository.findById(subscriptionDTO.getUserId());
+        Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             Optional<PushSubscription> existingSubscription = subscriptionRepository.findByUserAndEndpoint(user, subscriptionDTO.getEndpoint());
@@ -110,7 +111,9 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    public boolean checkSubscriptionStatus(Long userId) {
+    public boolean checkSubscriptionStatus() {
+        Long userId = extractUserID.getUserIdFromToken(httpServletRequest);
+
         if (userId == null) {
             return false;
         }
@@ -123,7 +126,9 @@ public class NotificationServiceImpl implements NotificationService {
         return false;
     }
 
-    public boolean checkSubscriptionStatusWithEndpoint(Long userId, String endpoint) {
+    public boolean checkSubscriptionStatusWithEndpoint(String endpoint) {
+        Long userId = extractUserID.getUserIdFromToken(httpServletRequest);
+
         if (userId == null || endpoint == null) {
             return false;
         }
@@ -147,12 +152,15 @@ public class NotificationServiceImpl implements NotificationService {
                         .title(notification.getTitle())
                         .message(notification.getMessage())
                         .status(notification.getStatus())
+                        .notificationId(notification.getId())
+                        .timestamp(notification.getTimestamp().toLocalDateTime())
                         .build())
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<NotificationDto> getNotificationsByUserId(Long userId, NotificationStatus status) {
+    public List<NotificationDto> getNotificationsByUserId(NotificationStatus status) {
+        Long userId = extractUserID.getUserIdFromToken(httpServletRequest);
         List<Notifications> notifications;
         if (status != null) {
             notifications = notificationRepository.findByUserIdAndStatus(userId, status);
@@ -166,6 +174,8 @@ public class NotificationServiceImpl implements NotificationService {
                         .title(notification.getTitle())
                         .message(notification.getMessage())
                         .status(notification.getStatus())
+                        .notificationId(notification.getId())
+                        .timestamp(notification.getTimestamp().toLocalDateTime())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -186,11 +196,9 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public String unsubscribe(PushSubscriptionDTO subscriptionDTO) {
-        if (subscriptionDTO.getUserId() == null) {
-            return "User ID is missing in the unsubscribe request.";
-        }
+        Long userId = extractUserID.getUserIdFromToken(httpServletRequest);
 
-        Optional<User> userOptional = userRepository.findById(subscriptionDTO.getUserId());
+        Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             Optional<PushSubscription> subscription = subscriptionRepository.findByUserAndEndpoint(user, subscriptionDTO.getEndpoint());

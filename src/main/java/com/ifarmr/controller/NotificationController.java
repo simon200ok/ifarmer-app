@@ -6,7 +6,6 @@ import com.ifarmr.payload.request.NotificationRequest;
 import com.ifarmr.payload.request.PushSubscriptionDTO;
 import com.ifarmr.service.NotificationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +26,6 @@ public class NotificationController {
         return ResponseEntity.ok(response);
     }
 
-
     @CrossOrigin(origins = "http://localhost:5173")
     @DeleteMapping("/unsubscribe")
     public ResponseEntity<String> unsubscribe(@RequestBody PushSubscriptionDTO subscriptionDTO) {
@@ -43,20 +41,18 @@ public class NotificationController {
     }
 
     @GetMapping("/subscription-status")
-    public ResponseEntity<Map<String, Boolean>> checkSubscriptionStatus(@RequestParam Long userId) {
-        boolean status = notificationService.checkSubscriptionStatus(userId);
+    public ResponseEntity<Map<String, Boolean>> checkSubscriptionStatus() {
+        boolean status = notificationService.checkSubscriptionStatus();
         return ResponseEntity.ok(Map.of("isSubscribed", status));
     }
 
     @GetMapping("/check-subscription")
     public ResponseEntity<Map<String, Boolean>> checkSubscriptionStatusWithEndpoint(
-            @RequestParam("userId") Long userId,
             @RequestParam("endpoint") String endpoint) {
-        boolean isSubscribed = notificationService.checkSubscriptionStatusWithEndpoint(userId, endpoint);
+        boolean isSubscribed = notificationService.checkSubscriptionStatusWithEndpoint(endpoint);
         return ResponseEntity.ok(Map.of("exists", isSubscribed));
     }
 
-    // Endpoint to get all notifications (without any specific user filtering)
     @GetMapping("/get-all-notifications")
     public ResponseEntity<List<NotificationDto>> getAllNotifications(
             @RequestParam(value = "status", required = false) NotificationStatus status) {
@@ -64,22 +60,17 @@ public class NotificationController {
         return ResponseEntity.ok(notifications);
     }
 
-    // Endpoint to get notifications by userId (userId is passed as a query parameter)
     @GetMapping("/get-notifications-by-user")
     public ResponseEntity<List<NotificationDto>> getNotificationsByUserId(
-            @RequestParam Long userId,
             @RequestParam(value = "status", required = false) NotificationStatus status) {
-        List<NotificationDto> notifications = notificationService.getNotificationsByUserId(userId, status);
+        List<NotificationDto> notifications = notificationService.getNotificationsByUserId(status);
         return ResponseEntity.ok(notifications);
     }
 
-    // Endpoint to mark a notification as read (notificationId passed as query parameter)
     @CrossOrigin(origins = "http://localhost:5173")
     @PatchMapping("/read")
     public ResponseEntity<Void> markNotificationAsRead(@RequestParam Long notificationId) {
         notificationService.markNotificationAsRead(notificationId);
         return ResponseEntity.ok().build();
     }
-
-
 }
