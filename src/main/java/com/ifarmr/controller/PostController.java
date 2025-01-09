@@ -1,5 +1,6 @@
 package com.ifarmr.controller;
 
+import com.ifarmr.entity.Post;
 import com.ifarmr.payload.request.CommentRequest;
 import com.ifarmr.payload.request.PostRequest;
 import com.ifarmr.payload.response.CommentResponse;
@@ -10,14 +11,19 @@ import com.ifarmr.service.LikeService;
 import com.ifarmr.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/posts")
 @RequiredArgsConstructor
 public class PostController {
+
+    @Autowired
     private final PostService postService;
     private final CommentService commentService;
     private final LikeService likeService;
@@ -40,5 +46,8 @@ public class PostController {
         return ResponseEntity.ok(updatedLikeCount);
     }
 
-
+    @GetMapping("/popular")
+    public List<Post> getPopularPosts() {
+        return postService.getPopularPosts();
+    }
 }
