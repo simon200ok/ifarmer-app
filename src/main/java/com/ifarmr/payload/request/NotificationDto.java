@@ -19,5 +19,7 @@ public class NotificationDto {
 
     private String message;
 
+    private Long notificationId;
+
     private NotificationStatus status;
 }

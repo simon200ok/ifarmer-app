@@ -172,6 +172,7 @@ public class NotificationServiceImpl implements NotificationService {
                         .title(notification.getTitle())
                         .message(notification.getMessage())
                         .status(notification.getStatus())
+                        .notificationId(notification.getId())
                         .build())
                 .collect(Collectors.toList());
     }
