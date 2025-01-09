@@ -152,6 +152,8 @@ public class NotificationServiceImpl implements NotificationService {
                         .title(notification.getTitle())
                         .message(notification.getMessage())
                         .status(notification.getStatus())
+                        .notificationId(notification.getId())
+                        .timestamp(notification.getTimestamp().toLocalDateTime())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -173,6 +175,7 @@ public class NotificationServiceImpl implements NotificationService {
                         .message(notification.getMessage())
                         .status(notification.getStatus())
                         .notificationId(notification.getId())
+                        .timestamp(notification.getTimestamp().toLocalDateTime())
                         .build())
                 .collect(Collectors.toList());
     }
