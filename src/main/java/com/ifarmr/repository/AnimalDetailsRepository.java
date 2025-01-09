@@ -10,5 +10,4 @@ import java.util.List;
 public interface AnimalDetailsRepository extends JpaRepository<AnimalDetails, Long> {
     int countByUserId(Long userId);
 
-    List<AnimalDetails> findByUserId(long id);
 }
