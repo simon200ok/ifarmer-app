@@ -7,10 +7,13 @@ import com.ifarmr.payload.response.ApiResponse;
 import com.ifarmr.payload.response.CropResponse;
 import com.ifarmr.repository.CropDetailsRepository;
 import com.ifarmr.repository.UserRepository;
+import com.ifarmr.service.CloudinaryService;
 import com.ifarmr.service.CropService;
 import com.ifarmr.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @Service
@@ -20,9 +23,11 @@ public class CropServiceImpl implements CropService {
     private final CropDetailsRepository cropDetailsRepository;
     private final UserRepository userRepository;
     private final SecurityUtils securityUtils;
+    private final CloudinaryService cloudinaryService;
 
     @Override
-    public ApiResponse<CropResponse> addCrop(CropRequest cropRequest) {
+    @SneakyThrows
+    public ApiResponse<CropResponse> addCrop(CropRequest cropRequest, MultipartFile photo) {
         User user = securityUtils.getLoggedInUser();
         CropDetails crop = CropDetails.builder()
                 .cropName(cropRequest.getCropName())
@@ -39,7 +44,7 @@ public class CropServiceImpl implements CropService {
                 .location(cropRequest.getLocation())
                 .cropStatus(cropRequest.getCropStatus())
                 .description(cropRequest.getDescription())
-                .photoFilePath(cropRequest.getPhotoFilePath())
+                .photoFilePath(cloudinaryService.uploadFile(photo))
                 .user(user)
                 .build();
         return new ApiResponse<>("Crop Successfully added", mapToResponse(cropDetailsRepository.save(crop)));
