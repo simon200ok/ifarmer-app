@@ -12,6 +12,7 @@ import com.ifarmr.repository.UserRepository;
 import com.ifarmr.service.CloudinaryService;
 import com.ifarmr.service.PostService;
 import com.ifarmr.utils.AccountUtils;
+import com.ifarmr.utils.ExtractUserID;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,53 +28,17 @@ public class PostServiceImpl implements PostService {
     private final CloudinaryService cloudinaryService;
     private final JwtService jwtService;
     private final HttpServletRequest servletRequest;
+    private final ExtractUserID extractUserID;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Override
     public PostResponse createPost(PostRequest request, MultipartFile file) {
 
-
-        String token = jwtAuthenticationFilter.getTokenFromRequest(servletRequest);
-
-        // Check if the token is null or empty
-        if (token == null || token.isEmpty()) {
-            return PostResponse.builder()
-                    .responseCode(AccountUtils.EMPTY_TOKEN_CODE)
-                    .responseMessage(AccountUtils.EMPTY_TOKEN_MESSAGE)
-                    .build();
-        }
-
-        // Validate the token
-        if (!jwtService.validateToken(token)) {
-            return PostResponse.builder()
-                    .responseCode(AccountUtils.INVALID_TOKEN_CODE)
-                    .responseMessage(AccountUtils.INVALID_TOKEN_MESSAGE)
-                    .build();
-        }
-
-        if (jwtService.isBlacklisted(token)) {
-            return PostResponse.builder()
-                    .responseCode(AccountUtils.BLACKLISTED_TOKEN_CODE)
-                    .responseMessage(AccountUtils.BLACKLISTED_TOKEN_MESSAGE)
-                    .build();
-        }
-
-
-        Long userId = jwtService.extractUserIdFromToken(token);
-        if (userId == null) {
-            return PostResponse.builder()
-                    .responseCode("401")
-                    .responseMessage("Unauthorized: Unable to extract userId from token")
-                    .build();
-        }
-
+        long userId = extractUserID.getUserIdFromToken(servletRequest);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
-
-
         String uploadedImageUrl = null;
-
         if (file != null && !file.isEmpty()) {
             uploadedImageUrl = cloudinaryService.uploadFile(file);
         }
@@ -98,4 +63,5 @@ public class PostServiceImpl implements PostService {
                 .build();
 
     }
+
 }

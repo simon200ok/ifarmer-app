@@ -2,13 +2,11 @@ package com.ifarmr.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ifarmr.entity.CropDetails;
 import com.ifarmr.payload.request.CropRequest;
 import com.ifarmr.payload.response.ApiResponse;
 import com.ifarmr.payload.response.CropResponse;
 import com.ifarmr.service.CropService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +38,7 @@ public class CropController {
     }
 
     @GetMapping("/statistics/get_all_crops_by_user")
-    public ResponseEntity<ApiResponse<List<CropResponse>>> getCropsByUserId(@PathVariable Long userId) {
+    public ResponseEntity<ApiResponse<List<CropResponse>>> getCropsByUserId(@RequestParam Long userId) {
         ApiResponse<List<CropResponse>> response = cropService.getCropsByUserId(userId);
         return ResponseEntity.ok(response);
     }

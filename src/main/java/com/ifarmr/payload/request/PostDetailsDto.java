@@ -2,6 +2,7 @@ package com.ifarmr.payload.request;
 
 
 import com.ifarmr.entity.Comment;
+import com.ifarmr.payload.response.CommentDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +20,6 @@ public class PostDetailsDto {
     private String title;
     private String content;
     private int likes;
-    private List<Comment> comments;
+    private List<CommentDto> comments;
 
 }

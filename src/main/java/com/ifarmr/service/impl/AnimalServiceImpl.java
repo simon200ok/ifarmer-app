@@ -2,6 +2,7 @@ package com.ifarmr.service.impl;
 
 import com.ifarmr.entity.AnimalDetails;
 import com.ifarmr.entity.User;
+import com.ifarmr.exception.customExceptions.DuplicateMerchandiseException;
 import com.ifarmr.payload.request.AnimalRequest;
 import com.ifarmr.payload.response.AnimalResponse;
 import com.ifarmr.payload.response.ApiResponse;
@@ -33,6 +34,12 @@ public class AnimalServiceImpl implements AnimalService {
     public ApiResponse<AnimalResponse> addLivestock(AnimalRequest animalRequest, MultipartFile photo) {
 
         User user = securityUtils.getLoggedInUser();
+
+        boolean animalExists = animalDetailsRepository.existsByAnimalNameAndUser(animalRequest.getAnimalName(), user);
+        if (animalExists) {
+            throw new DuplicateMerchandiseException("Animal with the name '"+ animalRequest.getAnimalName() +"' already exists for this user");
+        }
+
         AnimalDetails livestock = AnimalDetails.builder()
                 .animalName(animalRequest.getAnimalName())
                 .animalType(animalRequest.getAnimalType())

@@ -42,4 +42,10 @@ public class AccountUtils {
 
     public final static String INVENTORY_SUCCESS_MESSAGE = "Inventory added successfuly";
 
+    public final static String CROP_SUCCESS_CODE = "012";
+    public final static String CROP_SUCCESS_MESSAGE = "Crop Created Successfully";
+
+    public final static String LIVESTOCK_SUCCESS_CODE = "013";
+    public final static String LIVESTOCK_SUCCESS_MESSAGE = "Livestock Created Successfully";
+
 }

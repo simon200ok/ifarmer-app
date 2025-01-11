@@ -321,12 +321,21 @@ public class UserServiceImpl implements UserService {
     public PostDetailsDto getPostDetails(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post", postId));
+
+        List<CommentDto> commentDtos = post.getComments().stream()
+                .map(comment -> new CommentDto(
+                        comment.getId(),
+                        comment.getContent(),
+                        comment.getCreatedAt().toString()
+                ))
+                .collect(Collectors.toList());
+
         return new PostDetailsDto(
                 post.getId(),
                 post.getTitle(),
                 post.getDescription(),
                 post.getLikes(),
-                post.getComments()
+                commentDtos
         );
     }
 }

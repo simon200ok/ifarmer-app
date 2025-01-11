@@ -40,7 +40,7 @@ public class LivestockController {
     }
 
     @GetMapping("/statistic/get_animal_by_id")
-    public ResponseEntity<ApiResponse<List<AnimalResponse>>> getAnimalsByUserId(@RequestParam Long userId) {
+    public ResponseEntity<ApiResponse<List<AnimalResponse>>> getAnimalsByUserId(Long userId) {
         ApiResponse<List<AnimalResponse>> response = animalService.getAnimalsByUserId(userId);
         return ResponseEntity.ok(response);
     }

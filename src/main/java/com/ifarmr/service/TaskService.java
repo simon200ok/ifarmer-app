@@ -12,21 +12,9 @@ public interface TaskService {
 
 
     TaskResponseDto createTask(CreateTaskRequest request, Long userId);
-
-
     TaskResponseDto updateTask(Long taskId, UpdateTaskRequest request);
-
-
-
-
     List<TaskDto> getUserTasks(Long userId);
-
-
     List<TaskDto> getAllTasks();
-
-
     TaskDto getTaskById(Long taskId);
-
-
     String deleteTask(Long taskId);
 }
