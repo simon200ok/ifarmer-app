@@ -94,7 +94,7 @@ public class CropServiceImpl implements CropService {
 
     private CropResponse mapToResponse(CropDetails cropDetails) {
        return CropResponse.builder()
-               .id(cropDetails.getId())
+               .cropId(cropDetails.getId())
                .cropName(cropDetails.getCropName())
                .cropType(cropDetails.getCropType())
                .plantingSeason(cropDetails.getPlantingSeason())
@@ -110,6 +110,7 @@ public class CropServiceImpl implements CropService {
                .cropStatus(cropDetails.getCropStatus())
                .description(cropDetails.getDescription())
                 .photoFilePath(cropDetails.getPhotoFilePath())
+               .userId(cropDetails.getUser().getId())
                 .build();
     }
 }

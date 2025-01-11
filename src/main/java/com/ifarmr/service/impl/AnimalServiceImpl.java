@@ -94,7 +94,7 @@ public class AnimalServiceImpl implements AnimalService {
 
     private AnimalResponse mapToResponse(AnimalDetails animalDetails) {
         return AnimalResponse.builder()
-                .id(animalDetails.getId())
+                .animalId(animalDetails.getId())
                 .animalName(animalDetails.getAnimalName())
                 .animalType(animalDetails.getAnimalType())
                 .breed(animalDetails.getBreed())
@@ -108,6 +108,7 @@ public class AnimalServiceImpl implements AnimalService {
                 .healthIssues(animalDetails.getHealthIssues())
                 .description(animalDetails.getDescription())
                 .photoFilePath(animalDetails.getPhotoFilePath())
+                .userId(animalDetails.getUser().getId())
                 .build();
     }
 }

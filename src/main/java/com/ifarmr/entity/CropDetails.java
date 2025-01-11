@@ -1,5 +1,6 @@
 package com.ifarmr.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ifarmr.entity.enums.CropStatus;
 import com.ifarmr.entity.enums.CropType;
 import jakarta.persistence.*;

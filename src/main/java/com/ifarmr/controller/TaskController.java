@@ -44,8 +44,8 @@ public class TaskController {
 
 
     @GetMapping("/userTasks")
-    public ResponseEntity<List<TaskDto>> getUserTasks(@RequestParam Long userId) {
-        List<TaskDto> userTasks = taskService.getUserTasks(userId);
+    public ResponseEntity<List<TaskDto>> getUserTasks(@AuthenticationPrincipal User user) {
+        List<TaskDto> userTasks = taskService.getUserTasks(user.getId());
         return ResponseEntity.ok(userTasks);
     }
 

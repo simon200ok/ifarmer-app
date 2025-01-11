@@ -1,4 +1,4 @@
-package com.ifarmr.service.Impl;
+package com.ifarmr.service.impl;
 
 import com.ifarmr.entity.Task;
 import com.ifarmr.entity.User;
@@ -57,6 +57,10 @@ public class TaskServiceImpl implements TaskService {
 
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new ResourceNotFoundException("Task", taskId));
+
+        if (taskRepository.existsByTitle(request.getTitle())) {
+            throw new IllegalArgumentException("Task with the title '" + request.getTitle() + "' already exists.");
+        }
 
         // Update task fields
         if (request.getTitle() != null) task.setTitle(request.getTitle());
@@ -127,6 +131,6 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new ResourceNotFoundException("Task", taskId));
 
         taskRepository.delete(task);
-        return "Task deleted successfully.";
+        return "Task with ID "+ task.getId() +" has been deleted successfully.";
     }
 }
