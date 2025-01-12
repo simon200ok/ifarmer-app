@@ -1,10 +1,7 @@
 package com.ifarmr.controller;
 
 import com.ifarmr.entity.User;
-import com.ifarmr.payload.request.CommentRequest;
-import com.ifarmr.payload.request.PostDetailsDto;
-import com.ifarmr.payload.request.PostDto;
-import com.ifarmr.payload.request.PostRequest;
+import com.ifarmr.payload.request.*;
 import com.ifarmr.payload.response.CommentResponse;
 import com.ifarmr.payload.response.LikeResponse;
 import com.ifarmr.payload.response.PostResponse;
@@ -49,6 +46,11 @@ public class PostController {
     @GetMapping("/posts")
     public ResponseEntity<List<PostDto>> getUserPosts(@AuthenticationPrincipal User user) {
         return ResponseEntity.ok(postService.getUserPosts(user.getId()));
+    }
+
+    @GetMapping("/allPosts")
+    public ResponseEntity<List<AllPosts>> getAllPosts() {
+        return ResponseEntity.ok(postService.getAllPosts());
     }
 
     @GetMapping("/{postId}")

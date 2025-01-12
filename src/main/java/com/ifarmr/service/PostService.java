@@ -1,5 +1,6 @@
 package com.ifarmr.service;
 
+import com.ifarmr.payload.request.AllPosts;
 import com.ifarmr.payload.request.PostDetailsDto;
 import com.ifarmr.payload.request.PostDto;
 import com.ifarmr.payload.request.PostRequest;
@@ -14,4 +15,6 @@ public interface PostService {
     List<PostDto> getUserPosts(long id);
 
     PostDetailsDto getPostDetails(Long postId);
+
+    List<AllPosts> getAllPosts();
 }

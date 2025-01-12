@@ -7,6 +7,7 @@ import com.ifarmr.payload.response.TaskDto;
 import com.ifarmr.payload.response.TaskResponseDto;
 
 import java.util.List;
+import java.util.Map;
 
 public interface TaskService {
 
@@ -17,4 +18,6 @@ public interface TaskService {
     List<TaskDto> getAllTasks();
     TaskDto getTaskById(Long taskId);
     String deleteTask(Long taskId);
+    List<TaskResponseDto> getUpcomingTasks(long userId);
+//    Map<String, Object> getUserAnalytics();
 }

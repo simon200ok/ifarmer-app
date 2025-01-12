@@ -1,4 +1,4 @@
-package com.ifarmr.payload.response;
+package com.ifarmr.payload.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class TaskResponseDto {
-    private Long id;
+public class AllPosts {
+
     private String title;
-    private String description;
 }

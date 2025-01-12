@@ -5,6 +5,7 @@ import com.ifarmr.auth.service.JwtService;
 import com.ifarmr.entity.Post;
 import com.ifarmr.entity.User;
 import com.ifarmr.exception.customExceptions.ResourceNotFoundException;
+import com.ifarmr.payload.request.AllPosts;
 import com.ifarmr.payload.request.PostDetailsDto;
 import com.ifarmr.payload.request.PostDto;
 import com.ifarmr.payload.request.PostRequest;
@@ -101,6 +102,15 @@ public class PostServiceImpl implements PostService {
                 post.getLikes(),
                 commentDtos
         );
+    }
+
+    @Override
+    public List<AllPosts> getAllPosts() {
+        return postRepository.findAll().
+                stream()
+                .map(post -> new AllPosts(
+                        post.getTitle())
+                ).collect(Collectors.toList());
     }
 
 }

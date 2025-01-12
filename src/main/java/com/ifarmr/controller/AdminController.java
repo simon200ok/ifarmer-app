@@ -1,6 +1,7 @@
 package com.ifarmr.controller;
 
 
+import com.ifarmr.entity.User;
 import com.ifarmr.payload.request.ForgotPasswordRequest;
 import com.ifarmr.payload.response.*;
 import com.ifarmr.service.*;
@@ -46,11 +47,18 @@ public class AdminController {
 
     @GetMapping("/tasks")
     public ResponseEntity<List<TaskDto>> getAllTasks() {
-        List<TaskDto> tasks = taskService.getAllTasks();
-        return ResponseEntity.ok(tasks);
+        return ResponseEntity.ok(taskService.getAllTasks());
     }
 
+    @GetMapping("/users")
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
+    }
 
+    @DeleteMapping()
+    public ResponseEntity<String> deleteUser(Long userId) {
+        return ResponseEntity.ok(userService.deleteUser(userId));
+    }
 
 
 }

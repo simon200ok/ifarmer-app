@@ -2,6 +2,7 @@ package com.ifarmr.service.impl;
 
 import com.ifarmr.entity.Task;
 import com.ifarmr.entity.User;
+import com.ifarmr.entity.enums.Gender;
 import com.ifarmr.exception.customExceptions.ResourceNotFoundException;
 import com.ifarmr.payload.request.CreateTaskRequest;
 import com.ifarmr.payload.request.UpdateTaskRequest;
@@ -10,12 +11,16 @@ import com.ifarmr.payload.response.TaskDto;
 import com.ifarmr.payload.response.TaskResponseDto;
 import com.ifarmr.repository.TaskRepository;
 import com.ifarmr.repository.UserRepository;
+import com.ifarmr.repository.UserSessionRepository;
 import com.ifarmr.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,6 +29,7 @@ public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final UserSessionRepository userSessionRepository;
 
     @Override
     public TaskResponseDto createTask(CreateTaskRequest request, Long userId) {
@@ -78,7 +84,6 @@ public class TaskServiceImpl implements TaskService {
     }
 
 
-
     @Override
     public List<TaskDto> getUserTasks(Long userId) {
         userRepository.findById(userId)
@@ -111,7 +116,6 @@ public class TaskServiceImpl implements TaskService {
     }
 
 
-
     @Override
     public TaskDto getTaskById(Long taskId) {
         Task task = taskRepository.findById(taskId)
@@ -133,4 +137,32 @@ public class TaskServiceImpl implements TaskService {
         taskRepository.delete(task);
         return "Task with ID "+ task.getId() +" has been deleted successfully.";
     }
+
+    @Override
+    public List<TaskResponseDto> getUpcomingTasks(long userId) {
+        return taskRepository.findByUserIdAndDueDateAfter(userId, LocalDateTime.now()).stream()
+                .map(task -> new TaskResponseDto(
+                        task.getId(),
+                        task.getTitle(),
+                        task.getDescription()))
+                .collect(Collectors.toList());
+    }
+
+//    @Override
+//    public Map<String, Object> getUserAnalytics() {
+//        long male = userRepository.countByGender(Gender.MALE);
+//        long female = userRepository.countByGender(Gender.FEMALE);
+//        Double averageTimeSpent = userSessionRepository.findAverageSessionDuration();
+//
+//        if (averageTimeSpent == null) {
+//            averageTimeSpent = 0.0;
+//        }
+//
+//        Map<String, Object> analytics = new HashMap<>();
+//        analytics.put("maleUsers", male);
+//        analytics.put("femaleUsers", female);
+//        analytics.put("averageTimeSpent", averageTimeSpent);
+//
+//        return analytics;
+//    }
 }
