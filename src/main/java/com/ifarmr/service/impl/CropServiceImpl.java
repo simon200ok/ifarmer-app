@@ -2,6 +2,7 @@ package com.ifarmr.service.impl;
 
 import com.ifarmr.entity.CropDetails;
 import com.ifarmr.entity.User;
+import com.ifarmr.exception.customExceptions.DuplicateMerchandiseException;
 import com.ifarmr.payload.request.CropRequest;
 import com.ifarmr.payload.response.ApiResponse;
 import com.ifarmr.payload.response.CropResponse;
@@ -15,7 +16,6 @@ import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +33,12 @@ public class CropServiceImpl implements CropService {
     @SneakyThrows
     public ApiResponse<CropResponse> addCrop(CropRequest cropRequest, MultipartFile photo) {
         User user = securityUtils.getLoggedInUser();
+
+        boolean cropExists = cropDetailsRepository.existsByCropNameAndUser(cropRequest.getCropName(), user);
+        if (cropExists) {
+            throw new DuplicateMerchandiseException("Crop with the name '"+ cropRequest.getCropName() +"' already exists for this user.");
+        }
+
         CropDetails crop = CropDetails.builder()
                 .cropName(cropRequest.getCropName())
                 .cropType(cropRequest.getCropType())
@@ -85,10 +91,18 @@ public class CropServiceImpl implements CropService {
         }
     }
 
+    @Override
+    public List<CropResponse> getCropsForUser(long userId) {
+        List<CropDetails> crops = cropDetailsRepository.findByUserId(userId);
+        return crops.stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
 
     private CropResponse mapToResponse(CropDetails cropDetails) {
        return CropResponse.builder()
-               .id(cropDetails.getId())
+               .cropId(cropDetails.getId())
                .cropName(cropDetails.getCropName())
                .cropType(cropDetails.getCropType())
                .plantingSeason(cropDetails.getPlantingSeason())
@@ -104,6 +118,7 @@ public class CropServiceImpl implements CropService {
                .cropStatus(cropDetails.getCropStatus())
                .description(cropDetails.getDescription())
                 .photoFilePath(cropDetails.getPhotoFilePath())
+               .userId(cropDetails.getUser().getId())
                 .build();
     }
 }

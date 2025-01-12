@@ -33,6 +33,4 @@ public class CropRequest {
     private String location;
     private CropStatus cropStatus;
     private String description;
-//    private String photoFilePath;
-
 }

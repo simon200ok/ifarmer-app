@@ -20,8 +20,8 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@SQLDelete(sql = "UPDATE post_tbl SET deleted_at = NOW() WHERE id = ?")
-@Where(clause = "deleted_at IS NULL")
+//@SQLDelete(sql = "UPDATE post_tbl SET deleted_at = NOW() WHERE id = ?")
+//@Where(clause = "deleted_at IS NULL")
 
 public class Post extends BaseClass {
 

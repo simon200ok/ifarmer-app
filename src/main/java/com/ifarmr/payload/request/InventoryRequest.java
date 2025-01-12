@@ -18,6 +18,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class InventoryRequest {
+
     @NotNull
     private ItemType item;
 

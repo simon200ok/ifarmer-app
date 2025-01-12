@@ -5,12 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class TaskResponseDto {
-    private Long id;
-    private String title;
-    private String description;
+public class DetailedResources {
+    private List<AnimalResponse> livestock;
+    private List<CropResponse> crops;
 }

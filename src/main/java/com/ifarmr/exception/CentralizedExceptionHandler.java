@@ -1,10 +1,8 @@
 package com.ifarmr.exception;
 
 
-import com.ifarmr.exception.customExceptions.AccountNotVerifiedException;
-import com.ifarmr.exception.customExceptions.EmailAlreadyExistsException;
-import com.ifarmr.exception.customExceptions.InvalidPasswordException;
-import com.ifarmr.exception.customExceptions.InvalidTokenException;
+import com.ifarmr.exception.customExceptions.*;
+import com.ifarmr.payload.response.ApiResponse;
 import com.ifarmr.payload.response.AuthResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,16 +49,17 @@ public class CentralizedExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<AuthResponse> handleGenericException(Exception ex) {
-//        AuthResponse response = AuthResponse.builder()
-//                .responseCode("500")
-//                .responseMessage("An unexpected error occurred: " + ex.getMessage())
-//                .build();
-//        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-//    }
+    @ExceptionHandler(DuplicateMerchandiseException.class)
+    public ResponseEntity<ApiResponse<String>> handleDuplicateCropException(DuplicateMerchandiseException ex) {
+        ApiResponse<String> response = new ApiResponse<>(ex.getMessage(), null);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
 
-
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse<String>> handleGeneralException(Exception ex) {
+        ApiResponse<String> response = new ApiResponse<>("Error🚨🚨: " + ex.getMessage(), null);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
 
 
 }

@@ -36,5 +36,6 @@ public class TokenVerificationServiceImpl implements TokenVerificationService {
     public void deleteToken(TokenVerification token) {
         tokenVerificationRepository.delete(token);
     }
+
 }
 
