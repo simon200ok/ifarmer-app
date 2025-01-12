@@ -27,4 +27,6 @@ public class InventoryController {
         InventoryResponse response = inventoryService.addItemToInventory(request, file);
         return ResponseEntity.ok(response);
     }
+
+
 }
