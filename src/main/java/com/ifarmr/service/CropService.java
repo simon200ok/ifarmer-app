@@ -15,4 +15,6 @@ public interface CropService {
     public ApiResponse<List<CropResponse>> getAllCrops();
 
     ApiResponse<List<CropResponse>> getCropsByUserId(Long userId);
+
+    List<CropResponse> getCropsForUser(long userId);
 }

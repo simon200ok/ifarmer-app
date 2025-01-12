@@ -19,10 +19,6 @@ public interface UserService {
 
     ForgotPasswordResponse generateResetToken(String email);
 
-    List<PostDto> getUserPosts(long id);
-
-    PostDetailsDto getPostDetails(Long postId);
-
     String verifyUser(String token);
 
     String logout(String authHeader);

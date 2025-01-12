@@ -306,36 +306,4 @@ public class UserServiceImpl implements UserService {
 
         return "Logged Out Successfully";
     }
-
-    @Override
-    public List<PostDto> getUserPosts(long id) {
-        return postRepository.findByUserId(id).stream()
-                .map(post -> new PostDto(
-                        post.getId(),
-                        post.getTitle(),
-                        post.getDescription()))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public PostDetailsDto getPostDetails(Long postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Post", postId));
-
-        List<CommentDto> commentDtos = post.getComments().stream()
-                .map(comment -> new CommentDto(
-                        comment.getId(),
-                        comment.getContent(),
-                        comment.getCreatedAt().toString()
-                ))
-                .collect(Collectors.toList());
-
-        return new PostDetailsDto(
-                post.getId(),
-                post.getTitle(),
-                post.getDescription(),
-                post.getLikes(),
-                commentDtos
-        );
-    }
 }

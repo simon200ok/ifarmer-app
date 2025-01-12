@@ -91,6 +91,14 @@ public class CropServiceImpl implements CropService {
         }
     }
 
+    @Override
+    public List<CropResponse> getCropsForUser(long userId) {
+        List<CropDetails> crops = cropDetailsRepository.findByUserId(userId);
+        return crops.stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
 
     private CropResponse mapToResponse(CropDetails cropDetails) {
        return CropResponse.builder()

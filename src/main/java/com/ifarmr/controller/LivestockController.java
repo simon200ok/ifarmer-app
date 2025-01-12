@@ -33,12 +33,6 @@ public class LivestockController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdLivestock);
     }
 
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<AnimalResponse>>> getAllAnimals() {
-        ApiResponse<List<AnimalResponse>> response = animalService.getAllAnimals();
-        return ResponseEntity.ok(response);
-    }
-
     @GetMapping("/statistic/get_animal_by_id")
     public ResponseEntity<ApiResponse<List<AnimalResponse>>> getAnimalsByUserId(Long userId) {
         ApiResponse<List<AnimalResponse>> response = animalService.getAnimalsByUserId(userId);

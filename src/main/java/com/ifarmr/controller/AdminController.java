@@ -2,14 +2,13 @@ package com.ifarmr.controller;
 
 
 import com.ifarmr.payload.request.ForgotPasswordRequest;
-import com.ifarmr.payload.response.ForgotPasswordResponse;
-import com.ifarmr.service.UserService;
+import com.ifarmr.payload.response.*;
+import com.ifarmr.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/admin")
@@ -17,12 +16,38 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminController {
 
     private final UserService userService;
-
+    private final CropService cropService;
+    private final InventoryService inventoryService;
+    private final AnimalService animalService;
+    private final TaskService taskService;
 
     @PostMapping("/forgot-password")
     public ResponseEntity<ForgotPasswordResponse> forgotPassword(@RequestBody ForgotPasswordRequest request) {
         ForgotPasswordResponse response = userService.generateResetToken(request.getEmail());
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/crops")
+    public ResponseEntity<ApiResponse<List<CropResponse>>> getAllCrops() {
+        ApiResponse<List<CropResponse>> response = cropService.getAllCrops();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping(value = "/inventory")
+    public ResponseEntity<List<InventoryResponse>> getAllInventory() {
+        return ResponseEntity.ok(inventoryService.getAllInventory());
+    }
+
+    @GetMapping("/livestock")
+    public ResponseEntity<ApiResponse<List<AnimalResponse>>> getAllAnimals() {
+        ApiResponse<List<AnimalResponse>> response = animalService.getAllAnimals();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/tasks")
+    public ResponseEntity<List<TaskDto>> getAllTasks() {
+        List<TaskDto> tasks = taskService.getAllTasks();
+        return ResponseEntity.ok(tasks);
     }
 
 

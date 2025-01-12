@@ -4,7 +4,11 @@ import com.ifarmr.auth.service.JwtAuthenticationFilter;
 import com.ifarmr.auth.service.JwtService;
 import com.ifarmr.entity.Post;
 import com.ifarmr.entity.User;
+import com.ifarmr.exception.customExceptions.ResourceNotFoundException;
+import com.ifarmr.payload.request.PostDetailsDto;
+import com.ifarmr.payload.request.PostDto;
 import com.ifarmr.payload.request.PostRequest;
+import com.ifarmr.payload.response.CommentDto;
 import com.ifarmr.payload.response.PostInfo;
 import com.ifarmr.payload.response.PostResponse;
 import com.ifarmr.repository.PostRepository;
@@ -17,6 +21,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -62,6 +69,38 @@ public class PostServiceImpl implements PostService {
                         .build())
                 .build();
 
+    }
+
+    @Override
+    public List<PostDto> getUserPosts(long id) {
+        return postRepository.findByUserId(id).stream()
+                .map(post -> new PostDto(
+                        post.getId(),
+                        post.getTitle(),
+                        post.getDescription()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public PostDetailsDto getPostDetails(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post", postId));
+
+        List<CommentDto> commentDtos = post.getComments().stream()
+                .map(comment -> new CommentDto(
+                        comment.getId(),
+                        comment.getContent(),
+                        comment.getCreatedAt().toString()
+                ))
+                .collect(Collectors.toList());
+
+        return new PostDetailsDto(
+                post.getId(),
+                post.getTitle(),
+                post.getDescription(),
+                post.getLikes(),
+                commentDtos
+        );
     }
 
 }

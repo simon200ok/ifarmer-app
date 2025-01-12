@@ -21,20 +21,11 @@ public class TaskController {
 
     private final TaskService taskService;
 
-
     @PostMapping("/create")
     public ResponseEntity<TaskResponseDto> createTask(@AuthenticationPrincipal User user, @RequestBody CreateTaskRequest taskRequest) {
         TaskResponseDto createdTask = taskService.createTask(taskRequest, user.getId());
         return ResponseEntity.ok(createdTask);
     }
-
-
-    @GetMapping("/allTasks")
-    public ResponseEntity<List<TaskDto>> getAllTasks() {
-        List<TaskDto> tasks = taskService.getAllTasks();
-        return ResponseEntity.ok(tasks);
-    }
-
 
     @GetMapping("/taskId")
     public ResponseEntity<TaskDto> getTaskById(@RequestParam Long taskId) {

@@ -21,4 +21,5 @@ public class InventoryInfo {
     private String description;
     private Category category;
     private String photoUpload;
+    private String location;
 }

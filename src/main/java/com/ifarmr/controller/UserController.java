@@ -58,15 +58,5 @@ public class UserController {
     public ResponseEntity<String> logout(@RequestHeader("Authorization") String authHeader) {
         return ResponseEntity.ok(userService.logout(authHeader));
     }
-
-    @GetMapping("/posts")
-    public ResponseEntity<List<PostDto>> getUserPosts(@AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(userService.getUserPosts(user.getId()));
-    }
-
-    @GetMapping("/{postId}")
-    public ResponseEntity<PostDetailsDto> getPostDetails(@PathVariable Long postId) {
-        return ResponseEntity.ok(userService.getPostDetails(postId));
-    }
 }
 
