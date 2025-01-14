@@ -3,6 +3,7 @@ package com.ifarmr.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ifarmr.entity.User;
+import com.ifarmr.entity.enums.CropStatus;
 import com.ifarmr.payload.request.CropRequest;
 import com.ifarmr.payload.response.ApiResponse;
 import com.ifarmr.payload.response.CropResponse;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/v1/crops")
@@ -38,5 +40,11 @@ public class CropController {
         ApiResponse<List<CropResponse>> response = cropService.getCropsByUserId(user.getId());
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/status-count")
+    public ResponseEntity<Map<CropStatus, Long>> getCropsCountByStatus() {
+        return ResponseEntity.ok(cropService.getCropsCountByStatus());
+    }
+
 
 }
