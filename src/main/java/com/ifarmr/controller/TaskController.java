@@ -59,15 +59,9 @@ public class TaskController {
     }
 
     @GetMapping("/upcoming")
-    public ResponseEntity<List<TaskResponseDto>> getUpcomingTasks(@AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(taskService.getUpcomingTasks(user.getId()));
+    public ResponseEntity<List<TaskResponseDto>> getUpcomingTasks(@AuthenticationPrincipal User user,
+                                                                  @RequestParam(value = "category", required = false) Category category) {
+        return ResponseEntity.ok(taskService.getUpcomingTasks(user.getId(), category));
     }
-
-//    @GetMapping("/analytics")
-//    public ResponseEntity<Map<String, Object>> getUserAnalytics() {
-//        return ResponseEntity.ok(taskService.getUserAnalytics());
-//    }
-
-
 
 }

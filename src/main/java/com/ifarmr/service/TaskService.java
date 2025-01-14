@@ -18,6 +18,5 @@ public interface TaskService {
     List<TaskDto> getAllTasks();
     TaskDto getTaskById(Long taskId);
     String deleteTask(Long taskId);
-    List<TaskResponseDto> getUpcomingTasks(long userId);
-//    Map<String, Object> getUserAnalytics();
+    List<TaskResponseDto> getUpcomingTasks(long userId, Category category);
 }

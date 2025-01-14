@@ -140,33 +140,31 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskResponseDto> getUpcomingTasks(long userId) {
-        return taskRepository.findByUserIdAndDueDateAfter(userId, LocalDateTime.now()).stream()
-                .map(task -> new TaskResponseDto(
-                        task.getId(),
-                        task.getTitle(),
-                        task.getDescription(),
-                        task.getCategory(),
-                        task.getType(),
-                        task.getLocation()))
-                .collect(Collectors.toList());
+    public List<TaskResponseDto> getUpcomingTasks(long userId, Category category) {
+        if (category != null) {
+            return taskRepository.findByUserIdAndDueDateAfterAndCategory(userId, LocalDateTime.now(), category)
+                    .stream()
+                    .map(task -> new TaskResponseDto(
+                            task.getId(),
+                            task.getTitle(),
+                            task.getDescription(),
+                            task.getCategory(),
+                            task.getType(),
+                            task.getLocation()
+                    ))
+                    .collect(Collectors.toList());
+        } else {
+            return taskRepository.findByUserIdAndDueDateAfter(userId, LocalDateTime.now())
+                    .stream()
+                    .map(task -> new TaskResponseDto(
+                            task.getId(),
+                            task.getTitle(),
+                            task.getDescription(),
+                            task.getCategory(),
+                            task.getType(),
+                            task.getLocation()
+                    ))
+                    .collect(Collectors.toList());
+        }
     }
-
-//    @Override
-//    public Map<String, Object> getUserAnalytics() {
-//        long male = userRepository.countByGender(Gender.MALE);
-//        long female = userRepository.countByGender(Gender.FEMALE);
-//        Double averageTimeSpent = userSessionRepository.findAverageSessionDuration();
-//
-//        if (averageTimeSpent == null) {
-//            averageTimeSpent = 0.0;
-//        }
-//
-//        Map<String, Object> analytics = new HashMap<>();
-//        analytics.put("maleUsers", male);
-//        analytics.put("femaleUsers", female);
-//        analytics.put("averageTimeSpent", averageTimeSpent);
-//
-//        return analytics;
-//    }
 }
