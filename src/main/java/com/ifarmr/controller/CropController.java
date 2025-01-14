@@ -46,5 +46,10 @@ public class CropController {
         return ResponseEntity.ok(cropService.getCropsCountByStatus());
     }
 
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteCrop(@RequestParam Long cropId) {
+        return ResponseEntity.ok(cropService.deleteCrop(cropId));
+    }
+
 
 }

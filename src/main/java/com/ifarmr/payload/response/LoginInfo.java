@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class LoginInfo {
 
+    private String firstName;
+
     private String email;
 
     private String token;

@@ -21,4 +21,6 @@ public interface CropService {
     List<CropResponse> getCropsForUser(long userId);
 
     Map<CropStatus, Long> getCropsCountByStatus();
+
+    String deleteCrop(Long cropId);
 }

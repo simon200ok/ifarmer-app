@@ -69,21 +69,18 @@ public class TaskServiceImpl implements TaskService {
             throw new IllegalArgumentException("Task with the title '" + request.getTitle() + "' already exists.");
         }
 
-        // Update task fields
         if (request.getTitle() != null) task.setTitle(request.getTitle());
         if (request.getDescription() != null) task.setDescription(request.getDescription());
         if (request.getDueDate() != null) task.setDueDate(request.getDueDate());
 
         Task updatedTask = taskRepository.save(task);
 
-        // Convert to TaskResponseDto
         return TaskResponseDto.builder()
                 .id(updatedTask.getId())
                 .title(updatedTask.getTitle())
                 .description(updatedTask.getDescription())
                 .build();
     }
-
 
     @Override
     public List<TaskDto> getUserTasks(Long userId) {
@@ -150,7 +147,8 @@ public class TaskServiceImpl implements TaskService {
                             task.getDescription(),
                             task.getCategory(),
                             task.getType(),
-                            task.getLocation()
+                            task.getLocation(),
+                            task.getDueDate()
                     ))
                     .collect(Collectors.toList());
         } else {
@@ -162,7 +160,8 @@ public class TaskServiceImpl implements TaskService {
                             task.getDescription(),
                             task.getCategory(),
                             task.getType(),
-                            task.getLocation()
+                            task.getLocation(),
+                            task.getDueDate()
                     ))
                     .collect(Collectors.toList());
         }

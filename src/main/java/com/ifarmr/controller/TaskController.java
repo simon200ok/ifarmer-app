@@ -54,8 +54,7 @@ public class TaskController {
 
     @DeleteMapping("/deleteTask")
     public ResponseEntity<String> deleteTask(@RequestParam Long taskId) {
-        String response = taskService.deleteTask(taskId);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(taskService.deleteTask(taskId));
     }
 
     @GetMapping("/upcoming")
