@@ -1,10 +1,12 @@
 package com.ifarmr.service.impl;
 
 import com.ifarmr.entity.CropDetails;
+import com.ifarmr.entity.Task;
 import com.ifarmr.entity.User;
 import com.ifarmr.entity.enums.CropStatus;
 import com.ifarmr.entity.enums.CropType;
 import com.ifarmr.exception.customExceptions.DuplicateMerchandiseException;
+import com.ifarmr.exception.customExceptions.ResourceNotFoundException;
 import com.ifarmr.payload.request.CropRequest;
 import com.ifarmr.payload.response.ApiResponse;
 import com.ifarmr.payload.response.CropResponse;
@@ -115,6 +117,15 @@ public class CropServiceImpl implements CropService {
             cropsCount.put(status,count);
         }
         return cropsCount;
+    }
+
+    @Override
+    public String deleteCrop(Long cropId) {
+        CropDetails crop = cropDetailsRepository.findById(cropId)
+                .orElseThrow(() -> new ResourceNotFoundException("Crop", cropId));
+
+        cropDetailsRepository.delete(crop);
+        return "Task with ID "+ crop.getId() +" has been deleted successfully.";
     }
 
 

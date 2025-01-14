@@ -84,7 +84,6 @@ public class User extends BaseClass implements UserDetails, Serializable {
     @Column
     private LocalDateTime resetTokenExpiry;
 
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<SupportTicket> supportTickets;
 

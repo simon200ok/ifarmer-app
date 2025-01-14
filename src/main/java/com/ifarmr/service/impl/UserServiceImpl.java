@@ -36,6 +36,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -183,6 +184,7 @@ public class UserServiceImpl implements UserService {
                 .responseCode(AccountUtils.LOGIN_SUCCESS_CODE)
                 .responseMessage(AccountUtils.LOGIN_SUCCESS_MESSAGE)
                 .loginInfo(LoginInfo.builder()
+                        .firstName((user.getFirstName()))
                         .email(user.getEmail())
                         .token(jwtToken)
                         .build())
@@ -242,16 +244,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public String deleteUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", userId));
+
+        userSessionRepository.deleteByUserId(userId);
         userRepository.deleteById(userId);
-        return "User with ID "+ userId +" has been deleted successfully.";
+        return "User with ID " + userId + " has been deleted successfully.";
     }
 
     @Override
     public ForgotPasswordResponse generateResetToken(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
 
         if (!Roles.ADMIN.equals(user.getRole())) {
             throw new IllegalArgumentException("User is not an admin");
@@ -260,11 +266,9 @@ public class UserServiceImpl implements UserService {
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 user.getEmail(), null, List.of(new SimpleGrantedAuthority(user.getRole().name()))
         );
-
         String resetToken = jwtService.generateToken(authentication, user.getId());
 
 
-        // Update user with reset token and expiry
         user.setResetPasswordToken(resetToken);
         user.setResetTokenExpiry(LocalDateTime.now().plusHours(1));
         userRepository.save(user);
@@ -353,6 +357,5 @@ public class UserServiceImpl implements UserService {
 
         return "Logged Out Successfully";
     }
-
 
 }
