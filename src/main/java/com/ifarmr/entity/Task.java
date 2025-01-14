@@ -1,5 +1,7 @@
 package com.ifarmr.entity;
 
+import com.ifarmr.entity.enums.Category;
+import com.sun.jdi.PrimitiveValue;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
@@ -29,6 +31,15 @@ public class Task {
 
     @Size(max = 500, message = "Task description cannot exceed 500 characters")
     private String description;
+
+
+    @Column(name = "category", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Category category;
+
+    private String type;
+
+    private String location;
 
     @NotNull(message = "Due date is required")
     @FutureOrPresent(message = "Due date must be in the present or future")

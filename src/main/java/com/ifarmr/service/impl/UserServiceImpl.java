@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
                 .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(role)
+                .role(Roles.FARMER)
                 .businessName(request.getBusinessName())
                 .gender(gender)
                 .userName(request.getUserName())
@@ -230,7 +230,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll().stream()
                 .map(user -> new UserResponse(
                         user.getId(),
-                        user.getUsername(),
+                        user.getFirstName() +" "+ user.getLastName(),
                         user.getBusinessName(),
                         user.getEmail(),
                         user.getGender(),
@@ -337,14 +337,17 @@ public class UserServiceImpl implements UserService {
         if (userId == null) {
             throw new InvalidTokenException("Invalid token: User ID not found");
         }
-
-        jwtService.blacklistToken(token);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", userId));
+        user.setLastLogoutTime(LocalDateTime.now());
 
         UserSession session = userSessionRepository.findFirstByUserIdOrderByLoginTimeDesc(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Session", userId));
         session.setLogoutTime(LocalDateTime.now());
         session.setDuration(Duration.between(session.getLoginTime(), session.getLogoutTime()).getSeconds());
         userSessionRepository.save(session);
+
+        jwtService.blacklistToken(token);
 
         return "Logged Out Successfully";
     }
