@@ -18,7 +18,7 @@ public class UserResponse {
 
         private Long userId;
 
-        private String userName;
+        private String fullName;
 
         private String businessName;
 

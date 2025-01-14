@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/admin")
@@ -21,6 +22,7 @@ public class AdminController {
     private final InventoryService inventoryService;
     private final AnimalService animalService;
     private final TaskService taskService;
+    private final AdminService adminService;
 
     @PostMapping("/forgot-password")
     public ResponseEntity<ForgotPasswordResponse> forgotPassword(@RequestBody ForgotPasswordRequest request) {
@@ -55,9 +57,34 @@ public class AdminController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @DeleteMapping()
+    @DeleteMapping("/user")
     public ResponseEntity<String> deleteUser(Long userId) {
         return ResponseEntity.ok(userService.deleteUser(userId));
+    }
+
+    @GetMapping("/glance")
+    public ResponseEntity<Map<String, Long>> getFarmAtAGlance() {
+        return ResponseEntity.ok(adminService.getFarmAtAGlance());
+    }
+
+    @GetMapping("/user-growth")
+    public ResponseEntity<List<Long>> getWeeklyNewUsers() {
+        return ResponseEntity.ok(adminService.getWeeklyNewUsers());
+    }
+
+    @GetMapping("/weekly-active")
+    public ResponseEntity<List<Long>> getWeeklyActiveUsers() {
+        return ResponseEntity.ok(adminService.getWeeklyActiveUsers());
+    }
+
+    @GetMapping("/average-usage-time")
+    public ResponseEntity<Map<String, Double>> getMonthlyAverageUsageTime() {
+        return ResponseEntity.ok(adminService.getMonthlyAverageUsageTime());
+    }
+
+    @GetMapping("/user-demographics")
+    public ResponseEntity<Map<String, Long>> getUserDemographics() {
+        return ResponseEntity.ok(adminService.getUserDemographics());
     }
 
 

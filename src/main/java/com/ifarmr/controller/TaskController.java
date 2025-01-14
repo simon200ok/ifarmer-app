@@ -1,6 +1,7 @@
 package com.ifarmr.controller;
 
 import com.ifarmr.entity.User;
+import com.ifarmr.entity.enums.Category;
 import com.ifarmr.payload.request.CreateTaskRequest;
 import com.ifarmr.payload.request.UpdateTaskRequest;
 import com.ifarmr.payload.response.TaskDetailsDto;
@@ -23,8 +24,10 @@ public class TaskController {
     private final TaskService taskService;
 
     @PostMapping("/create")
-    public ResponseEntity<TaskResponseDto> createTask(@AuthenticationPrincipal User user, @RequestBody CreateTaskRequest taskRequest) {
-        TaskResponseDto createdTask = taskService.createTask(taskRequest, user.getId());
+    public ResponseEntity<TaskResponseDto> createTask(@AuthenticationPrincipal User user,
+                                                      @RequestBody CreateTaskRequest taskRequest,
+                                                      @RequestParam Category category) {
+        TaskResponseDto createdTask = taskService.createTask(taskRequest, user.getId(), category);
         return ResponseEntity.ok(createdTask);
     }
 

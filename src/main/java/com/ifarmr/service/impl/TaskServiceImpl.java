@@ -2,11 +2,10 @@ package com.ifarmr.service.impl;
 
 import com.ifarmr.entity.Task;
 import com.ifarmr.entity.User;
-import com.ifarmr.entity.enums.Gender;
+import com.ifarmr.entity.enums.Category;
 import com.ifarmr.exception.customExceptions.ResourceNotFoundException;
 import com.ifarmr.payload.request.CreateTaskRequest;
 import com.ifarmr.payload.request.UpdateTaskRequest;
-import com.ifarmr.payload.response.TaskDetailsDto;
 import com.ifarmr.payload.response.TaskDto;
 import com.ifarmr.payload.response.TaskResponseDto;
 import com.ifarmr.repository.TaskRepository;
@@ -16,11 +15,8 @@ import com.ifarmr.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,7 +28,7 @@ public class TaskServiceImpl implements TaskService {
     private final UserSessionRepository userSessionRepository;
 
     @Override
-    public TaskResponseDto createTask(CreateTaskRequest request, Long userId) {
+    public TaskResponseDto createTask(CreateTaskRequest request, Long userId, Category category) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", userId));
@@ -45,16 +41,21 @@ public class TaskServiceImpl implements TaskService {
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .dueDate(request.getDueDate())
+                .location(request.getLocation())
+                .category(category)
+                .type(request.getType())
                 .user(user)
                 .build();
 
         Task savedTask = taskRepository.save(task);
 
-        // Convert to TaskResponseDto
         return TaskResponseDto.builder()
                 .id(savedTask.getId())
                 .title(savedTask.getTitle())
                 .description(savedTask.getDescription())
+                .category(savedTask.getCategory())
+                .type(savedTask.getType())
+                .location(savedTask.getLocation())
                 .build();
     }
 
@@ -144,7 +145,10 @@ public class TaskServiceImpl implements TaskService {
                 .map(task -> new TaskResponseDto(
                         task.getId(),
                         task.getTitle(),
-                        task.getDescription()))
+                        task.getDescription(),
+                        task.getCategory(),
+                        task.getType(),
+                        task.getLocation()))
                 .collect(Collectors.toList());
     }
 

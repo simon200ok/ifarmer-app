@@ -1,5 +1,6 @@
 package com.ifarmr.service;
 
+import com.ifarmr.entity.enums.Category;
 import com.ifarmr.payload.request.CreateTaskRequest;
 import com.ifarmr.payload.request.UpdateTaskRequest;
 import com.ifarmr.payload.response.TaskDetailsDto;
@@ -11,8 +12,7 @@ import java.util.Map;
 
 public interface TaskService {
 
-
-    TaskResponseDto createTask(CreateTaskRequest request, Long userId);
+    TaskResponseDto createTask(CreateTaskRequest request, Long userId, Category category);
     TaskResponseDto updateTask(Long taskId, UpdateTaskRequest request);
     List<TaskDto> getUserTasks(Long userId);
     List<TaskDto> getAllTasks();

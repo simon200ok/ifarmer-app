@@ -2,6 +2,8 @@ package com.ifarmr.service.impl;
 
 import com.ifarmr.entity.CropDetails;
 import com.ifarmr.entity.User;
+import com.ifarmr.entity.enums.CropStatus;
+import com.ifarmr.entity.enums.CropType;
 import com.ifarmr.exception.customExceptions.DuplicateMerchandiseException;
 import com.ifarmr.payload.request.CropRequest;
 import com.ifarmr.payload.response.ApiResponse;
@@ -16,7 +18,10 @@ import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -99,6 +104,19 @@ public class CropServiceImpl implements CropService {
                 .toList();
     }
 
+    @Override
+    public Map<CropStatus, Long> getCropsCountByStatus() {
+        List<Object[]> results = cropDetailsRepository.countCropsByStatus();
+
+        Map<CropStatus, Long> cropsCount = new HashMap<>();
+        for (Object[] result : results) {
+            CropStatus status = (CropStatus) result[0];
+            Long count = (Long) result[1];
+            cropsCount.put(status,count);
+        }
+        return cropsCount;
+    }
+
 
     private CropResponse mapToResponse(CropDetails cropDetails) {
        return CropResponse.builder()
@@ -108,17 +126,17 @@ public class CropServiceImpl implements CropService {
                .plantingSeason(cropDetails.getPlantingSeason())
                .harvestDate(cropDetails.getHarvestDate())
                .sowDate(cropDetails.getSowDate())
-                .numberOfSeedlings(cropDetails.getNumberOfSeedlings())
-                .costOfSeedlings(cropDetails.getCostOfSeedlings())
-                .wateringFrequency(cropDetails.getWateringFrequency())
-                .fertilizingFrequency(cropDetails.getFertilizingFrequency())
+               .numberOfSeedlings(cropDetails.getNumberOfSeedlings())
+               .costOfSeedlings(cropDetails.getCostOfSeedlings())
+               .wateringFrequency(cropDetails.getWateringFrequency())
+               .fertilizingFrequency(cropDetails.getFertilizingFrequency())
                .pestsAndDiseases(cropDetails.getPestsAndDiseases())
                .quantity(cropDetails.getQuantity())
                .location(cropDetails.getLocation())
                .cropStatus(cropDetails.getCropStatus())
                .description(cropDetails.getDescription())
-                .photoFilePath(cropDetails.getPhotoFilePath())
+               .photoFilePath(cropDetails.getPhotoFilePath())
                .userId(cropDetails.getUser().getId())
-                .build();
+               .build();
     }
 }
