@@ -118,7 +118,6 @@ public class CropServiceImpl implements CropService {
     }
 
 
-
     private CropResponse mapToResponse(CropDetails cropDetails) {
        return CropResponse.builder()
                .cropId(cropDetails.getId())
