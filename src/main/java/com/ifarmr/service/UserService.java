@@ -27,5 +27,6 @@ public interface UserService {
 
     String logout(String authHeader);
 
+    ForgotPasswordResponse resetPassword (String token, String newPassword, String confirmPassword);
 }
 

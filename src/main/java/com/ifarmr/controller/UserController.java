@@ -10,6 +10,7 @@ import com.ifarmr.payload.request.LoginRequestDto;
 import com.ifarmr.payload.request.RegistrationRequest;
 import com.ifarmr.payload.request.UpdateUserRequestDto;
 import com.ifarmr.payload.response.AuthResponse;
+import com.ifarmr.payload.response.ForgotPasswordResponse;
 import com.ifarmr.payload.response.LoginResponse;
 import com.ifarmr.repository.UserRepository;
 import com.ifarmr.service.TokenVerificationService;
@@ -67,6 +68,16 @@ public class UserController {
     @GetMapping("/{postId}")
     public ResponseEntity<PostDetailsDto> getPostDetails(@PathVariable Long postId) {
         return ResponseEntity.ok(userService.getPostDetails(postId));
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ForgotPasswordResponse> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        return ResponseEntity.ok(userService.generateResetToken(request.getEmail()));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<ForgotPasswordResponse> resetPassword(@RequestBody ResetPasswordRequest request) {
+        return ResponseEntity.ok(userService.resetPassword(request.getToken(), request.getNewPassword(), request.getConfirmPassword()));
     }
 }
 

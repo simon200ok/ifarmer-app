@@ -25,6 +25,7 @@ import com.ifarmr.service.UserService;
 import com.ifarmr.utils.AccountUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -78,6 +79,8 @@ public class UserServiceImpl implements UserService {
                 .gender(gender)
                 .userName(request.getUserName())
                 .displayPhoto(request.getDisplayPhoto())
+                .resetToken(null)
+                .resetTokenExpiry(null)
                 .isActive(false)
 
                 .build();
@@ -222,9 +225,9 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
 
-        if (!Roles.ADMIN.equals(user.getRole())) {
-            throw new IllegalArgumentException("User is not an admin");
-        }
+//        if (!Roles.ADMIN.equals(user.getRole())) {
+//            throw new IllegalArgumentException("User is not an admin");
+//        }
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 user.getEmail(), null, List.of(new SimpleGrantedAuthority(user.getRole().name()))
@@ -234,12 +237,12 @@ public class UserServiceImpl implements UserService {
 
 
         // Update user with reset token and expiry
-        user.setResetPasswordToken(resetToken);
+        user.setResetToken(resetToken);
         user.setResetTokenExpiry(LocalDateTime.now().plusHours(1));
         userRepository.save(user);
 
-        String forgetPasswordToken = resetToken;
-        String forgetPasswordUrl = "http://localhost:8080/api/v1/admin/forgot-password" + resetToken;
+
+        String forgetPasswordUrl = "http://localhost:8080/api/v1/auth/reset-password?token=" + resetToken;
         String emailForgetPassword = String.format(
                 "Dear %s,\n" +
                         "\n" +
@@ -275,7 +278,6 @@ public class UserServiceImpl implements UserService {
                 .build();
 
     }
-
 
     @Override
     public String verifyUser(String token) {
@@ -328,5 +330,44 @@ public class UserServiceImpl implements UserService {
                 post.getLikes(),
                 post.getComments()
         );
+    }
+
+    public ForgotPasswordResponse resetPassword(String token, String newPassword, String confirmPassword) {
+        if (!newPassword.equals(confirmPassword)) {
+            throw new IllegalArgumentException("Passwords do not match");
+        }
+        Optional<User> user = userRepository.findByResetToken(token);
+        if (user.isPresent()) {
+            user.get().setPassword(passwordEncoder.encode(newPassword));
+            user.get().setResetToken(null);
+            user.get().setResetTokenExpiry(null);
+            userRepository.save(user.get());
+            String emailForgetPasswordUpdate = String.format(
+                    "Dear %s,\n" +
+                            "\n" +
+                            "Your password change was successful\n" +
+                            "\n" +
+                            "For further support, feel free to reach us at support@ifarmr.com.\n" +
+                            "\n" +
+                            "Best regards,\n" +
+                            "iFarmr Team\n",
+                    user.get().getFirstName()
+            );
+
+            EmailDetails forgetPasswordUpdateAlert = EmailDetails.builder()
+                    .recipient(user.get().getEmail())
+                    .subject("Password Change Update")
+                    .messageBody(emailForgetPasswordUpdate)
+                    .build();
+            emailService.forgetPasswordUpdateAlert(forgetPasswordUpdateAlert);
+
+        } else {
+            throw new IllegalArgumentException("Invalid token.");
+        }
+
+        return ForgotPasswordResponse.builder()
+                .responseCode(AccountUtils.FORGOT_PASSWORD_SUCCESS_CODE)
+                .responseMessage(AccountUtils.RESET_PASSWORD_SUCCESS_MESSAGE)
+                .build();
     }
 }

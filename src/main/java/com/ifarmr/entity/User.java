@@ -72,7 +72,7 @@ public class User extends BaseClass implements UserDetails, Serializable {
     private boolean isActive = false;
 
     @Column
-    private String resetPasswordToken;
+    private String resetToken;
 
     @Column
     private LocalDateTime resetTokenExpiry;
