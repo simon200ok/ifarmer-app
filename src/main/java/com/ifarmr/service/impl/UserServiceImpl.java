@@ -156,11 +156,9 @@ public class UserServiceImpl implements UserService {
                 )
         );
 
-        // Fetch the user from the database
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + request.getEmail()));
 
-        // Check if the user is active (verified)
         if (!user.isActive()) {
             throw new AccountNotVerifiedException("Account not verified. Please check your email.");
         }
@@ -346,6 +344,7 @@ public class UserServiceImpl implements UserService {
 
         UserSession session = userSessionRepository.findFirstByUserIdOrderByLoginTimeDesc(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Session", userId));
+
         session.setLogoutTime(LocalDateTime.now());
         session.setDuration(Duration.between(session.getLoginTime(), session.getLogoutTime()).getSeconds());
         userSessionRepository.save(session);
