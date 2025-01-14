@@ -18,15 +18,17 @@ public interface UserRepository extends JpaRepository<User,Long > {
     @Query(value = "SELECT EXTRACT(MONTH FROM last_login_time) AS month, " +
             "AVG(EXTRACT(EPOCH FROM (last_logout_time - last_login_time)) / 60) AS average_time " +
             "FROM user_tbl " +
-            "WHERE last_logout_time IS NOT NULL AND last_login_time IS NOT NULL " +
+            "WHERE last_logout_time IS NOT NULL " +
+            "  AND last_login_time IS NOT NULL " +
+            "  AND last_logout_time >= last_login_time " +
             "GROUP BY EXTRACT(MONTH FROM last_login_time) " +
             "ORDER BY month", nativeQuery = true)
-    List<Double[]> getMonthlyAverageUserTime();
+    List<Double[]> getMonthlyAverageUsageTime();
 
-    @Query(value = "SELECT COUNT(*) FROM user_tbl WHERE gender = 'Male'", nativeQuery = true)
+    @Query("SELECT COUNT(u) FROM User u WHERE u.gender = 'MALE'")
     long getMaleUserCount();
 
-    @Query(value = "SELECT COUNT(*) FROM user_tbl WHERE gender = 'Female'", nativeQuery = true)
+    @Query("SELECT COUNT(u) FROM User u WHERE u.gender = 'FEMALE'")
     long getFemaleUserCount();
 
     @Query(value = "SELECT COUNT(*) FROM user_tbl", nativeQuery = true)
@@ -35,10 +37,10 @@ public interface UserRepository extends JpaRepository<User,Long > {
     @Query(value = "SELECT COUNT(*) FROM user_tbl WHERE is_active = true", nativeQuery = true)
     long getActiveUsers();
 
-    @Query(value = "SELECT COUNT(*) FROM user_tbl WHERE last_login_time >= :startTime", nativeQuery = true)
+    @Query(value = "SELECT COUNT(*) FROM user_tbl WHERE created_at >= :startTime", nativeQuery = true)
     long getNewUsersInLast24Hours(@Param("startTime") LocalDateTime startTime);
 
-    @Query(value = "SELECT COUNT(*) FROM user_tbl WHERE last_login_time BETWEEN :startOfWeek AND :endOfWeek", nativeQuery = true)
+    @Query(value = "SELECT COUNT(*) FROM user_tbl WHERE created_at BETWEEN :startOfWeek AND :endOfWeek", nativeQuery = true)
     long getWeeklyNewUsers(@Param("startOfWeek") LocalDateTime startOfWeek, @Param("endOfWeek") LocalDateTime endOfWeek);
 
     @Query(value = "SELECT COUNT(*) FROM user_tbl WHERE last_logout_time BETWEEN :startOfWeek AND :endOfWeek", nativeQuery = true)

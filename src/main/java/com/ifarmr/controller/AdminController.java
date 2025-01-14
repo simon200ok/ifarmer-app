@@ -57,7 +57,7 @@ public class AdminController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @DeleteMapping()
+    @DeleteMapping("/user")
     public ResponseEntity<String> deleteUser(Long userId) {
         return ResponseEntity.ok(userService.deleteUser(userId));
     }
@@ -78,7 +78,7 @@ public class AdminController {
     }
 
     @GetMapping("/average-usage-time")
-    public ResponseEntity<Map<String, Double>> getAverageUserTime() {
+    public ResponseEntity<Map<String, Double>> getMonthlyAverageUsageTime() {
         return ResponseEntity.ok(adminService.getMonthlyAverageUsageTime());
     }
 

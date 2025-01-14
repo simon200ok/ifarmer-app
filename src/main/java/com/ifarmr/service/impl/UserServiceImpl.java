@@ -164,6 +164,7 @@ public class UserServiceImpl implements UserService {
         if (!user.isActive()) {
             throw new AccountNotVerifiedException("Account not verified. Please check your email.");
         }
+        user.setLastLoginTime(LocalDateTime.now());
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -175,6 +176,8 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         userSessionRepository.save(session);
+
+
 
 
         // Return login response

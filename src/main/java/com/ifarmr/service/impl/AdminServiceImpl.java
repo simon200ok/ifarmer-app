@@ -9,10 +9,7 @@ import java.text.DateFormatSymbols;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -64,8 +61,8 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public Map<String, Double> getMonthlyAverageUsageTime() {
-        List<Double[]> results = userRepository.getMonthlyAverageUserTime();
-        Map<String, Double> monthlyUsage = new HashMap<>();
+        List<Double[]> results = userRepository.getMonthlyAverageUsageTime();
+        Map<String, Double> monthlyUsage = new LinkedHashMap<>();
 
         for (int i = 1; i <= 12; i++) {
             monthlyUsage.put(getMonthName(i), 0.0);
@@ -73,7 +70,7 @@ public class AdminServiceImpl implements AdminService {
 
         for (Double[] result : results) {
             int month = result[0].intValue();
-            double averageTime = result[1] != null ? result[1] : 0.0;
+            double averageTime = result[1] != null ? Math.max(result[1], 0.0) : 0.0;
             monthlyUsage.put(getMonthName(month), averageTime);
         }
 
