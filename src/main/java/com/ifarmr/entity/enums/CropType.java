@@ -2,7 +2,7 @@ package com.ifarmr.entity.enums;
 
 public enum CropType {
 
-    Cereal,
+    CEREAL,
 
     LEGUME,
 

@@ -4,5 +4,7 @@ public enum Category {
 
     ANIMAL,
 
-    CROP
+    CROP,
+
+    INVENTORY
 }

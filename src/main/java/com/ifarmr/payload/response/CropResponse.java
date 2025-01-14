@@ -1,5 +1,6 @@
 package com.ifarmr.payload.response;
 
+import com.ifarmr.entity.User;
 import com.ifarmr.entity.enums.CropStatus;
 import com.ifarmr.entity.enums.CropType;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,7 @@ import java.time.LocalDate;
 @Builder
 public class CropResponse {
 
-    private Long id;
+    private Long cropId;
     private String cropName;
     private CropType cropType;
     private String plantingSeason;
@@ -32,5 +33,6 @@ public class CropResponse {
     private CropStatus cropStatus;
     private String description;
     private String photoFilePath;
+    private Long userId;
 
 }

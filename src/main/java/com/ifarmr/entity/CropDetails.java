@@ -1,5 +1,6 @@
 package com.ifarmr.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ifarmr.entity.enums.CropStatus;
 import com.ifarmr.entity.enums.CropType;
 import jakarta.persistence.*;
@@ -23,6 +24,10 @@ public class CropDetails extends BaseClass {
     @Column(name = "crop_type", nullable = false)
     @Enumerated(EnumType.STRING)
     private CropType cropType;
+
+    @Column(name = "crop_status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private CropStatus cropStatus;
 
     @Column(name = "planting_season", nullable = false)
     private String plantingSeason;
@@ -53,10 +58,6 @@ public class CropDetails extends BaseClass {
 
     @Column(name = "location", nullable = false)
     private String location;
-
-    @Column(name = "crop_status", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private CropStatus cropStatus;
 
     @Column(name = "description", nullable = false)
     private String description;

@@ -6,6 +6,7 @@ import com.ifarmr.payload.request.*;
 import com.ifarmr.payload.response.AuthResponse;
 import com.ifarmr.payload.response.ForgotPasswordResponse;
 import com.ifarmr.payload.response.LoginResponse;
+import com.ifarmr.payload.response.UserResponse;
 
 import java.util.List;
 
@@ -19,13 +20,12 @@ public interface UserService {
 
     ForgotPasswordResponse generateResetToken(String email);
 
-    List<PostDto> getUserPosts(long id);
-
-    PostDetailsDto getPostDetails(Long postId);
-
     String verifyUser(String token);
 
     String logout(String authHeader);
 
+    List<UserResponse> getAllUsers();
+
+    String deleteUser(Long userId);
 }
 

@@ -1,6 +1,7 @@
 package com.ifarmr.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
@@ -13,14 +14,15 @@ import org.hibernate.annotations.Where;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@SQLDelete(sql = "UPDATE comment_tbl SET deleted_at = NOW() WHERE id = ?")
-@Where(clause = "deleted_at IS NULL")
+//@SQLDelete(sql = "UPDATE comment_tbl SET deleted_at = NOW() WHERE id = ?")
+//@Where(clause = "deleted_at IS NULL")
 public class Comment extends BaseClass {
 
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
+    @JsonIgnore
     private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)

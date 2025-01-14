@@ -1,5 +1,6 @@
 package com.ifarmr.payload.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ifarmr.entity.enums.CropStatus;
 import com.ifarmr.entity.enums.CropType;
 import lombok.AllArgsConstructor;
@@ -19,7 +20,9 @@ public class CropRequest {
     private String cropName;
     private CropType cropType;
     private String plantingSeason;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate harvestDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate sowDate;
     private Integer numberOfSeedlings;
     private BigDecimal costOfSeedlings;
@@ -30,6 +33,4 @@ public class CropRequest {
     private String location;
     private CropStatus cropStatus;
     private String description;
-    private String photoFilePath;
-
 }

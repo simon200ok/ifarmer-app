@@ -1,7 +1,7 @@
 package com.ifarmr.controller;
 
-import com.ifarmr.payload.request.CommentRequest;
-import com.ifarmr.payload.request.PostRequest;
+import com.ifarmr.entity.User;
+import com.ifarmr.payload.request.*;
 import com.ifarmr.payload.response.CommentResponse;
 import com.ifarmr.payload.response.LikeResponse;
 import com.ifarmr.payload.response.PostResponse;
@@ -11,8 +11,11 @@ import com.ifarmr.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/posts")
@@ -38,6 +41,21 @@ public class PostController {
     public ResponseEntity<LikeResponse> likePost(@PathVariable Long postId) {
         LikeResponse updatedLikeCount = likeService.likePost(postId);
         return ResponseEntity.ok(updatedLikeCount);
+    }
+
+    @GetMapping("/posts")
+    public ResponseEntity<List<PostDto>> getUserPosts(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(postService.getUserPosts(user.getId()));
+    }
+
+    @GetMapping("/allPosts")
+    public ResponseEntity<List<AllPosts>> getAllPosts() {
+        return ResponseEntity.ok(postService.getAllPosts());
+    }
+
+    @GetMapping("/{postId}")
+    public ResponseEntity<PostDetailsDto> getPostDetails(@PathVariable Long postId) {
+        return ResponseEntity.ok(postService.getPostDetails(postId));
     }
 
 
