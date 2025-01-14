@@ -22,8 +22,6 @@ public class JwtService {
     private final  Long jwtExpirationDate = 86400000L;
     private final Set<String> blacklistedTokens = ConcurrentHashMap.newKeySet();
 
-
-    // this key help us encrypt the token generated
     private Key key(){
         byte[] bytes = Decoders.BASE64.decode(SECRET_KEY);
 
@@ -43,12 +41,8 @@ public class JwtService {
                 .setExpiration(expirationDate)
                 .signWith(key())
                 .compact();
-
     }
 
-
-
-    //this method help us get the name associated with the token
     public String getUserName(String token){
         Claims claims = Jwts.parser()
                 .setSigningKey(key())
@@ -66,25 +60,23 @@ public class JwtService {
                 .parseClaimsJws(token)
                 .getBody();
 
-        return claims.get("userId", Long.class); // Extract the userId from claims
+        return claims.get("userId", Long.class);
     }
 
-
-    // this method help us validate that the token belongs to the right person
     public boolean validateToken(String token){
         try{
+            if (isBlacklisted(token)) {
+                return false;
+            }
             Jwts.parser()
                     .setSigningKey(key())
                     .build()
                     .parse(token);
-
             return true;
         } catch (ExpiredJwtException | IllegalArgumentException | SecurityException | MalformedJwtException e) {
             throw new RuntimeException(e);
         }
     }
-
-
 
     public void blacklistToken(String token) {
         blacklistedTokens.add(token);

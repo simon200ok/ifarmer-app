@@ -5,16 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class LoginInfo {
-
-    private String firstName;
-
-    private String email;
-
-    private String token;
+public class DetailedResources {
+    private List<AnimalResponse> livestock;
+    private List<CropResponse> crops;
 }
-

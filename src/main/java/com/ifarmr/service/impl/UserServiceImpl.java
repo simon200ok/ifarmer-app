@@ -5,6 +5,7 @@ import com.ifarmr.auth.service.JwtAuthenticationFilter;
 import com.ifarmr.auth.service.JwtService;
 import com.ifarmr.entity.TokenVerification;
 import com.ifarmr.entity.User;
+import com.ifarmr.entity.UserSession;
 import com.ifarmr.entity.enums.Gender;
 import com.ifarmr.entity.enums.Roles;
 import com.ifarmr.exception.customExceptions.AccountNotVerifiedException;
@@ -19,13 +20,14 @@ import com.ifarmr.payload.request.*;
 import com.ifarmr.payload.response.*;
 import com.ifarmr.repository.PostRepository;
 import com.ifarmr.repository.UserRepository;
+import com.ifarmr.repository.UserSessionRepository;
 import com.ifarmr.service.EmailService;
 import com.ifarmr.service.TokenVerificationService;
 import com.ifarmr.service.UserService;
 import com.ifarmr.utils.AccountUtils;
+import com.ifarmr.utils.ExtractUserID;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,7 +36,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -53,6 +57,7 @@ public class UserServiceImpl implements UserService {
     private final TokenVerificationService tokenVerificationService;
     private final HttpServletRequest servletRequest;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final UserSessionRepository userSessionRepository;
     private final PostRepository postRepository;
 
     @Override
@@ -74,7 +79,7 @@ public class UserServiceImpl implements UserService {
                 .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(role)
+                .role(Roles.FARMER)
                 .businessName(request.getBusinessName())
                 .gender(gender)
                 .userName(request.getUserName())
@@ -139,9 +144,7 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
-    // Helper method to validate the password
     private boolean isValidPassword(String password) {
-        // Example validation: Minimum 8 characters, at least one special character
         return password != null && password.length() >= 8 && password.matches(".*[!@#$%^&*()].*");
     }
 
@@ -156,18 +159,26 @@ public class UserServiceImpl implements UserService {
                 )
         );
 
-        // Fetch the user from the database
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + request.getEmail()));
 
-        // Check if the user is active (verified)
         if (!user.isActive()) {
             throw new AccountNotVerifiedException("Account not verified. Please check your email.");
         }
+        user.setLastLoginTime(LocalDateTime.now());
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String jwtToken = jwtService.generateToken(authentication, user.getId());
+
+        UserSession session = UserSession.builder()
+                .user(user)
+                .loginTime(LocalDateTime.now())
+                .build();
+
+        userSessionRepository.save(session);
+
+
 
 
         // Return login response
@@ -175,6 +186,7 @@ public class UserServiceImpl implements UserService {
                 .responseCode(AccountUtils.LOGIN_SUCCESS_CODE)
                 .responseMessage(AccountUtils.LOGIN_SUCCESS_MESSAGE)
                 .loginInfo(LoginInfo.builder()
+                        .firstName((user.getFirstName()))
                         .email(user.getEmail())
                         .token(jwtToken)
                         .build())
@@ -218,6 +230,31 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+    @Override
+    public List<UserResponse> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(user -> new UserResponse(
+                        user.getId(),
+                        user.getFirstName() +" "+ user.getLastName(),
+                        user.getBusinessName(),
+                        user.getEmail(),
+                        user.getGender(),
+                        user.getCreatedAt(),
+                        user.getLastLogoutTime()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public String deleteUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", userId));
+
+        userSessionRepository.deleteByUserId(userId);
+        userRepository.deleteById(userId);
+        return "User with ID " + userId + " has been deleted successfully.";
+    }
 
     @Override
     public ForgotPasswordResponse generateResetToken(String email) {
@@ -232,7 +269,6 @@ public class UserServiceImpl implements UserService {
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 user.getEmail(), null, List.of(new SimpleGrantedAuthority(user.getRole().name()))
         );
-
         String resetToken = jwtService.generateToken(authentication, user.getId());
 
 
@@ -304,6 +340,22 @@ public class UserServiceImpl implements UserService {
         }
 
         String token = authHeader.substring(7);
+
+        Long userId = jwtService.extractUserIdFromToken(token);
+        if (userId == null) {
+            throw new InvalidTokenException("Invalid token: User ID not found");
+        }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", userId));
+        user.setLastLogoutTime(LocalDateTime.now());
+
+        UserSession session = userSessionRepository.findFirstByUserIdOrderByLoginTimeDesc(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Session", userId));
+
+        session.setLogoutTime(LocalDateTime.now());
+        session.setDuration(Duration.between(session.getLoginTime(), session.getLogoutTime()).getSeconds());
+        userSessionRepository.save(session);
+
         jwtService.blacklistToken(token);
 
         return "Logged Out Successfully";

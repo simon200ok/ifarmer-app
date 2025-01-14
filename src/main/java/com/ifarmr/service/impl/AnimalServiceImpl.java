@@ -2,6 +2,7 @@ package com.ifarmr.service.impl;
 
 import com.ifarmr.entity.AnimalDetails;
 import com.ifarmr.entity.User;
+import com.ifarmr.exception.customExceptions.DuplicateMerchandiseException;
 import com.ifarmr.payload.request.AnimalRequest;
 import com.ifarmr.payload.response.AnimalResponse;
 import com.ifarmr.payload.response.ApiResponse;
@@ -33,6 +34,12 @@ public class AnimalServiceImpl implements AnimalService {
     public ApiResponse<AnimalResponse> addLivestock(AnimalRequest animalRequest, MultipartFile photo) {
 
         User user = securityUtils.getLoggedInUser();
+
+        boolean animalExists = animalDetailsRepository.existsByAnimalNameAndUser(animalRequest.getAnimalName(), user);
+        if (animalExists) {
+            throw new DuplicateMerchandiseException("Animal with the name '"+ animalRequest.getAnimalName() +"' already exists for this user");
+        }
+
         AnimalDetails livestock = AnimalDetails.builder()
                 .animalName(animalRequest.getAnimalName())
                 .animalType(animalRequest.getAnimalType())
@@ -85,9 +92,17 @@ public class AnimalServiceImpl implements AnimalService {
         }
     }
 
+    @Override
+    public List<AnimalResponse> getLivestockForUser(long userId) {
+        List<AnimalDetails> livestock = animalDetailsRepository.findByUserId(userId);
+        return livestock.stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
     private AnimalResponse mapToResponse(AnimalDetails animalDetails) {
         return AnimalResponse.builder()
-                .id(animalDetails.getId())
+                .animalId(animalDetails.getId())
                 .animalName(animalDetails.getAnimalName())
                 .animalType(animalDetails.getAnimalType())
                 .breed(animalDetails.getBreed())
@@ -101,6 +116,7 @@ public class AnimalServiceImpl implements AnimalService {
                 .healthIssues(animalDetails.getHealthIssues())
                 .description(animalDetails.getDescription())
                 .photoFilePath(animalDetails.getPhotoFilePath())
+                .userId(animalDetails.getUser().getId())
                 .build();
     }
 }

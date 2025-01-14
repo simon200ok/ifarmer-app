@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Builder
 public class AnimalResponse {
 
-    private Long id;
+    private Long animalId;
     private String animalName;
     private AnimalType animalType;
     private String breed;
@@ -29,4 +29,5 @@ public class AnimalResponse {
     private String healthIssues;
     private String description;
     private String photoFilePath;
+    private Long userId;
 }

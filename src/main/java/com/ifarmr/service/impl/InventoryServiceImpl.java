@@ -4,6 +4,7 @@ import com.ifarmr.auth.service.JwtAuthenticationFilter;
 import com.ifarmr.auth.service.JwtService;
 import com.ifarmr.entity.Inventory;
 import com.ifarmr.entity.User;
+import com.ifarmr.exception.customExceptions.DuplicateMerchandiseException;
 import com.ifarmr.payload.request.InventoryRequest;
 import com.ifarmr.payload.response.InventoryInfo;
 import com.ifarmr.payload.response.InventoryResponse;
@@ -12,16 +13,13 @@ import com.ifarmr.repository.UserRepository;
 import com.ifarmr.service.CloudinaryService;
 import com.ifarmr.service.InventoryService;
 import com.ifarmr.utils.AccountUtils;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,18 +40,8 @@ public class InventoryServiceImpl implements InventoryService {
 
 
     @Override
-    public InventoryResponse addItemToInventory(InventoryRequest request, MultipartFile file) {
-        String token = jwtAuthenticationFilter.getTokenFromRequest(servletRequest);
+    public InventoryResponse addItemToInventory(InventoryRequest request, MultipartFile file, Long userId) {
 
-        // Token validation
-        if (token == null || token.isEmpty() || !jwtService.validateToken(token)) {
-            return InventoryResponse.builder()
-                    .responseCode(AccountUtils.INVALID_TOKEN_CODE)
-                    .responseMessage(AccountUtils.INVALID_TOKEN_MESSAGE)
-                    .build();
-        }
-
-        Long userId = jwtService.extractUserIdFromToken(token);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
@@ -63,7 +51,11 @@ public class InventoryServiceImpl implements InventoryService {
             uploadedImageUrl = cloudinaryService.uploadFile(file);
         }
 
-        // Create inventory
+        boolean inventoryExists = inventoryRepository.existsByNameAndUser(request.getName(), user);
+        if (inventoryExists) {
+            throw new DuplicateMerchandiseException("Inventory with the name '"+ request.getName() +"' already exists for this user");
+        }
+
         Inventory inventory = Inventory.builder()
                 .item(request.getItem())
                 .name(request.getName())
@@ -74,23 +66,56 @@ public class InventoryServiceImpl implements InventoryService {
                 .condition(request.getCondition())
                 .cost(request.getCost())
                 .photoUpload(uploadedImageUrl)
+                .location(request.getLocation())
                 .user(user)
                 .build();
 
         Inventory savedInventory = inventoryRepository.save(inventory);
 
-        // Construct response
         return InventoryResponse.builder()
                 .responseCode(AccountUtils.INVENTORY_SUCCESS_CODE)
                 .responseMessage(AccountUtils.INVENTORY_SUCCESS_MESSAGE)
                 .inventoryInfo(InventoryInfo.builder()
+                        .id(savedInventory.getId())
                         .name(savedInventory.getName())
                         .quantity(savedInventory.getQuantity())
                         .description(savedInventory.getDescription())
                         .category(savedInventory.getCategory())
                         .photoUpload(savedInventory.getPhotoUpload())
+                        .location(savedInventory.getLocation())
                         .build())
                 .build();
+    }
+
+    @Override
+    public List<InventoryResponse> getAllInventory() {
+        return inventoryRepository.findAll().stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<InventoryResponse> getUserInventory(Long userId) {
+        return inventoryRepository.findAllByUserId(userId).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    private InventoryResponse mapToResponse(Inventory inventory) {
+        return InventoryResponse.builder()
+                .responseCode(AccountUtils.INVENTORY_SUCCESS_CODE)
+                .responseMessage(AccountUtils.INVENTORY_RETRIEVED_SUCCESS_MESSAGE)
+                .inventoryInfo(InventoryInfo.builder()
+                        .id(inventory.getId())
+                        .name(inventory.getName())
+                        .quantity(inventory.getQuantity())
+                        .description(inventory.getDescription())
+                        .category(inventory.getCategory())
+                        .photoUpload(inventory.getPhotoUpload())
+                        .location(inventory.getLocation())
+                        .build())
+                .build();
+
     }
 
 

@@ -4,7 +4,12 @@ import com.ifarmr.auth.service.JwtAuthenticationFilter;
 import com.ifarmr.auth.service.JwtService;
 import com.ifarmr.entity.Post;
 import com.ifarmr.entity.User;
+import com.ifarmr.exception.customExceptions.ResourceNotFoundException;
+import com.ifarmr.payload.request.AllPosts;
+import com.ifarmr.payload.request.PostDetailsDto;
+import com.ifarmr.payload.request.PostDto;
 import com.ifarmr.payload.request.PostRequest;
+import com.ifarmr.payload.response.CommentDto;
 import com.ifarmr.payload.response.PostInfo;
 import com.ifarmr.payload.response.PostResponse;
 import com.ifarmr.repository.PostRepository;
@@ -12,13 +17,14 @@ import com.ifarmr.repository.UserRepository;
 import com.ifarmr.service.CloudinaryService;
 import com.ifarmr.service.PostService;
 import com.ifarmr.utils.AccountUtils;
+import com.ifarmr.utils.ExtractUserID;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -30,53 +36,17 @@ public class PostServiceImpl implements PostService {
     private final CloudinaryService cloudinaryService;
     private final JwtService jwtService;
     private final HttpServletRequest servletRequest;
+    private final ExtractUserID extractUserID;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Override
     public PostResponse createPost(PostRequest request, MultipartFile file) {
 
-
-        String token = jwtAuthenticationFilter.getTokenFromRequest(servletRequest);
-
-        // Check if the token is null or empty
-        if (token == null || token.isEmpty()) {
-            return PostResponse.builder()
-                    .responseCode(AccountUtils.EMPTY_TOKEN_CODE)
-                    .responseMessage(AccountUtils.EMPTY_TOKEN_MESSAGE)
-                    .build();
-        }
-
-        // Validate the token
-        if (!jwtService.validateToken(token)) {
-            return PostResponse.builder()
-                    .responseCode(AccountUtils.INVALID_TOKEN_CODE)
-                    .responseMessage(AccountUtils.INVALID_TOKEN_MESSAGE)
-                    .build();
-        }
-
-        if (jwtService.isBlacklisted(token)) {
-            return PostResponse.builder()
-                    .responseCode(AccountUtils.BLACKLISTED_TOKEN_CODE)
-                    .responseMessage(AccountUtils.BLACKLISTED_TOKEN_MESSAGE)
-                    .build();
-        }
-
-
-        Long userId = jwtService.extractUserIdFromToken(token);
-        if (userId == null) {
-            return PostResponse.builder()
-                    .responseCode("401")
-                    .responseMessage("Unauthorized: Unable to extract userId from token")
-                    .build();
-        }
-
+        long userId = extractUserID.getUserIdFromToken(servletRequest);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
-
-
         String uploadedImageUrl = null;
-
         if (file != null && !file.isEmpty()) {
             uploadedImageUrl = cloudinaryService.uploadFile(file);
         }
@@ -106,4 +76,46 @@ public class PostServiceImpl implements PostService {
     public List<Post> getPopularPosts() {
         return postRepository.findPopularPosts();
     }
+
+    @Override
+    public List<PostDto> getUserPosts(long id) {
+        return postRepository.findByUserId(id).stream()
+                .map(post -> new PostDto(
+                        post.getId(),
+                        post.getTitle(),
+                        post.getDescription()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public PostDetailsDto getPostDetails(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post", postId));
+
+        List<CommentDto> commentDtos = post.getComments().stream()
+                .map(comment -> new CommentDto(
+                        comment.getId(),
+                        comment.getContent(),
+                        comment.getCreatedAt().toString()
+                ))
+                .collect(Collectors.toList());
+
+        return new PostDetailsDto(
+                post.getId(),
+                post.getTitle(),
+                post.getDescription(),
+                post.getLikes(),
+                commentDtos
+        );
+    }
+
+    @Override
+    public List<AllPosts> getAllPosts() {
+        return postRepository.findAll().
+                stream()
+                .map(post -> new AllPosts(
+                        post.getTitle())
+                ).collect(Collectors.toList());
+    }
+
 }

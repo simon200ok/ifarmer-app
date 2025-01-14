@@ -51,6 +51,12 @@ public class User extends BaseClass implements UserDetails, Serializable {
     )
     private String password;
 
+    @Column(name = "last_login_time")
+    private LocalDateTime lastLoginTime;
+
+    @Column(name = "last_logout_time")
+    private LocalDateTime lastLogoutTime;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Post> posts;
 
@@ -65,6 +71,7 @@ public class User extends BaseClass implements UserDetails, Serializable {
 
     private String displayPhoto;
 
+
     @Column(nullable = false)
     private String businessName;
 
@@ -76,7 +83,6 @@ public class User extends BaseClass implements UserDetails, Serializable {
 
     @Column
     private LocalDateTime resetTokenExpiry;
-
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<SupportTicket> supportTickets;

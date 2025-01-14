@@ -13,25 +13,24 @@ import java.time.LocalDateTime;  // Import LocalDateTime
 @AllArgsConstructor
 public class TaskDetailsDto {
 
-    private Long id; // Unique identifier for the task
+    private Long id;
 
-    private String title; // Title of the task
+    private String title;
 
-    private String description; // Description of the task
+    private String description;
 
-    private LocalDateTime dueDate; // Due date for the task, now using LocalDateTime
+    private LocalDateTime dueDate;
 
-    private LocalDateTime createdAt; // Date and time when the task was created
+    private LocalDateTime createdAt;
 
-    private LocalDateTime updatedAt; // Date and time when the task was last updated
+    private LocalDateTime updatedAt;
 
-    // Constructor with the new signature (long, string, string, LocalDateTime, long)
     public TaskDetailsDto(Long id, String title, String description, LocalDateTime dueDate, Long userId) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.dueDate = dueDate;
-        this.createdAt = LocalDateTime.now();  // or use actual data for createdAt
-        this.updatedAt = LocalDateTime.now();  // or use actual data for updatedAt
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 }

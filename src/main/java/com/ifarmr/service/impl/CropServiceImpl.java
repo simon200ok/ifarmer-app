@@ -1,7 +1,12 @@
 package com.ifarmr.service.impl;
 
 import com.ifarmr.entity.CropDetails;
+import com.ifarmr.entity.Task;
 import com.ifarmr.entity.User;
+import com.ifarmr.entity.enums.CropStatus;
+import com.ifarmr.entity.enums.CropType;
+import com.ifarmr.exception.customExceptions.DuplicateMerchandiseException;
+import com.ifarmr.exception.customExceptions.ResourceNotFoundException;
 import com.ifarmr.payload.request.CropRequest;
 import com.ifarmr.payload.response.ApiResponse;
 import com.ifarmr.payload.response.CropResponse;
@@ -15,8 +20,10 @@ import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -33,6 +40,12 @@ public class CropServiceImpl implements CropService {
     @SneakyThrows
     public ApiResponse<CropResponse> addCrop(CropRequest cropRequest, MultipartFile photo) {
         User user = securityUtils.getLoggedInUser();
+
+        boolean cropExists = cropDetailsRepository.existsByCropNameAndUser(cropRequest.getCropName(), user);
+        if (cropExists) {
+            throw new DuplicateMerchandiseException("Crop with the name '"+ cropRequest.getCropName() +"' already exists for this user.");
+        }
+
         CropDetails crop = CropDetails.builder()
                 .cropName(cropRequest.getCropName())
                 .cropType(cropRequest.getCropType())
@@ -85,25 +98,56 @@ public class CropServiceImpl implements CropService {
         }
     }
 
+    @Override
+    public List<CropResponse> getCropsForUser(long userId) {
+        List<CropDetails> crops = cropDetailsRepository.findByUserId(userId);
+        return crops.stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    @Override
+    public Map<CropStatus, Long> getCropsCountByStatus() {
+        List<Object[]> results = cropDetailsRepository.countCropsByStatus();
+
+        Map<CropStatus, Long> cropsCount = new HashMap<>();
+        for (Object[] result : results) {
+            CropStatus status = (CropStatus) result[0];
+            Long count = (Long) result[1];
+            cropsCount.put(status,count);
+        }
+        return cropsCount;
+    }
+
+    @Override
+    public String deleteCrop(Long cropId) {
+        CropDetails crop = cropDetailsRepository.findById(cropId)
+                .orElseThrow(() -> new ResourceNotFoundException("Crop", cropId));
+
+        cropDetailsRepository.delete(crop);
+        return "Task with ID "+ crop.getId() +" has been deleted successfully.";
+    }
+
 
     private CropResponse mapToResponse(CropDetails cropDetails) {
        return CropResponse.builder()
-               .id(cropDetails.getId())
+               .cropId(cropDetails.getId())
                .cropName(cropDetails.getCropName())
                .cropType(cropDetails.getCropType())
                .plantingSeason(cropDetails.getPlantingSeason())
                .harvestDate(cropDetails.getHarvestDate())
                .sowDate(cropDetails.getSowDate())
-                .numberOfSeedlings(cropDetails.getNumberOfSeedlings())
-                .costOfSeedlings(cropDetails.getCostOfSeedlings())
-                .wateringFrequency(cropDetails.getWateringFrequency())
-                .fertilizingFrequency(cropDetails.getFertilizingFrequency())
+               .numberOfSeedlings(cropDetails.getNumberOfSeedlings())
+               .costOfSeedlings(cropDetails.getCostOfSeedlings())
+               .wateringFrequency(cropDetails.getWateringFrequency())
+               .fertilizingFrequency(cropDetails.getFertilizingFrequency())
                .pestsAndDiseases(cropDetails.getPestsAndDiseases())
                .quantity(cropDetails.getQuantity())
                .location(cropDetails.getLocation())
                .cropStatus(cropDetails.getCropStatus())
                .description(cropDetails.getDescription())
-                .photoFilePath(cropDetails.getPhotoFilePath())
-                .build();
+               .photoFilePath(cropDetails.getPhotoFilePath())
+               .userId(cropDetails.getUser().getId())
+               .build();
     }
 }
