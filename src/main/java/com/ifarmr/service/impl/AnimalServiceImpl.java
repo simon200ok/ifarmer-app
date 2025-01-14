@@ -3,6 +3,7 @@ package com.ifarmr.service.impl;
 import com.ifarmr.entity.AnimalDetails;
 import com.ifarmr.entity.User;
 import com.ifarmr.exception.customExceptions.DuplicateMerchandiseException;
+import com.ifarmr.exception.customExceptions.ResourceNotFoundException;
 import com.ifarmr.payload.request.AnimalRequest;
 import com.ifarmr.payload.response.AnimalResponse;
 import com.ifarmr.payload.response.ApiResponse;
@@ -123,11 +124,35 @@ public class AnimalServiceImpl implements AnimalService {
     }
 
     @Override
-    public List<AnimalResponse> getLivestockForUser(Long userId) {
-        List<AnimalDetails> livestock = animalDetailsRepository.findByUserId(userId);
-        return livestock.stream()
-                .map(this::mapToResponse)
-                .toList();
+    public ApiResponse<AnimalResponse> updateLivestock(Long animalId, AnimalRequest animalRequest) {
+        User loggedInUser = securityUtils.getLoggedInUser();
+
+        AnimalDetails livestock = animalDetailsRepository.findById(animalId)
+                .orElseThrow(() -> new ResourceNotFoundException("Livestock", animalId));
+        boolean animalExists = animalDetailsRepository.existsByAnimalNameAndUser(animalRequest.getAnimalName(), loggedInUser);
+        if (animalExists && !livestock.getAnimalName().equals(animalRequest.getAnimalName())) {
+            throw new IllegalArgumentException("Animal with the name '" + animalRequest.getAnimalName() + "' already exists.");
+        }
+
+        livestock.setAnimalName(animalRequest.getAnimalName());
+        livestock.setAnimalType(animalRequest.getAnimalType());
+        livestock.setBreed(animalRequest.getBreed());
+        livestock.setQuantity(animalRequest.getQuantity());
+        livestock.setAge(animalRequest.getAge());
+        livestock.setLocation(animalRequest.getLocation());
+        livestock.setAnimalStatus(animalRequest.getAnimalStatus());
+        livestock.setFeedingSchedule(animalRequest.getFeedingSchedule());
+        livestock.setWateringFrequency(animalRequest.getWateringFrequency());
+        livestock.setVaccinationSchedule(animalRequest.getVaccinationSchedule());
+        livestock.setHealthIssues(animalRequest.getHealthIssues());
+        livestock.setDescription(animalRequest.getDescription());
+
+        AnimalDetails updatedLivestock = animalDetailsRepository.save(livestock);
+
+        return new ApiResponse<>("Livestock successfully updated", mapToResponse(updatedLivestock));
+
     }
+
+
 
 }

@@ -18,4 +18,7 @@ public interface AnimalService {
     ApiResponse<List<AnimalResponse>> getAnimalsByUserId(Long userId);
 
     List<AnimalResponse> getLivestockForUser(long userId);
+
+    ApiResponse<AnimalResponse> updateLivestock(Long animalId, AnimalRequest animalRequest);
+
 }

@@ -38,4 +38,11 @@ public class LivestockController {
         ApiResponse<List<AnimalResponse>> response = animalService.getAnimalsByUserId(userId);
         return ResponseEntity.ok(response);
     }
+
+    @PatchMapping("/updateLivestock")
+    public ResponseEntity<ApiResponse<AnimalResponse>> updateLivestock(@RequestParam Long animalId, @RequestPart("data") @Valid String data) throws JsonProcessingException {
+        AnimalRequest animalRequest = objectMapper.readValue(data, AnimalRequest.class);
+        ApiResponse<AnimalResponse> updatedLivestock = animalService.updateLivestock(animalId, animalRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedLivestock);
+    }
 }
