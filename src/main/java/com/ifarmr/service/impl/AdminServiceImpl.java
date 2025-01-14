@@ -71,6 +71,7 @@ public class AdminServiceImpl implements AdminService {
         for (Double[] result : results) {
             int month = result[0].intValue();
             double averageTime = result[1] != null ? Math.max(result[1], 0.0) : 0.0;
+            averageTime = Math.round(averageTime * 100.0) / 100.0;
             monthlyUsage.put(getMonthName(month), averageTime);
         }
 
