@@ -21,9 +21,10 @@ public interface UserRepository extends JpaRepository<User,Long > {
             "WHERE last_logout_time IS NOT NULL " +
             "  AND last_login_time IS NOT NULL " +
             "  AND last_logout_time >= last_login_time " +
+            "  AND EXTRACT(YEAR FROM last_login_time) = :year " +
             "GROUP BY EXTRACT(MONTH FROM last_login_time) " +
             "ORDER BY month", nativeQuery = true)
-    List<Double[]> getMonthlyAverageUsageTime();
+    List<Double[]> getMonthlyAverageUsageTime(@Param("year") int year);
 
     @Query("SELECT COUNT(u) FROM User u WHERE u.gender = 'MALE'")
     long getMaleUserCount();
