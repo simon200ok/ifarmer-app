@@ -20,4 +20,6 @@ public interface PostService {
     PostDetailsDto getPostDetails(Long postId);
 
     List<AllPosts> getAllPosts();
+
+    List<PostDto> getPopularPosts();
 }

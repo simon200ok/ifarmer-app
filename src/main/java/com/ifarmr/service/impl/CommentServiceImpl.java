@@ -8,6 +8,7 @@ import com.ifarmr.entity.User;
 import com.ifarmr.payload.request.CommentRequest;
 import com.ifarmr.payload.response.CommentInfo;
 import com.ifarmr.payload.response.CommentResponse;
+import com.ifarmr.payload.response.LikeResponse;
 import com.ifarmr.payload.response.PostResponse;
 import com.ifarmr.repository.CommentRepository;
 import com.ifarmr.repository.PostRepository;
@@ -37,7 +38,6 @@ public class CommentServiceImpl implements CommentService {
     public CommentResponse addComment(Long postId, CommentRequest request) {
         String token = jwtAuthenticationFilter.getTokenFromRequest(servletRequest);
 
-        // Check if the token is null or empty
         if (token == null || token.isEmpty()) {
             return CommentResponse.builder()
                     .responseCode(AccountUtils.EMPTY_TOKEN_CODE)
@@ -45,7 +45,6 @@ public class CommentServiceImpl implements CommentService {
                     .build();
         }
 
-        // Validate the token
         if (!jwtService.validateToken(token)) {
             return CommentResponse.builder()
                     .responseCode(AccountUtils.INVALID_TOKEN_CODE)
@@ -81,6 +80,9 @@ public class CommentServiceImpl implements CommentService {
                 .post(post)
                 .build();
 
+        post.setCommentCount(post.getCommentCount()+1);
+
+        postRepository.save(post);
         Comment savedComment = commentRepository.save(comment);
 
         return CommentResponse.builder()

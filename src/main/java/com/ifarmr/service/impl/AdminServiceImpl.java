@@ -60,8 +60,10 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public Map<String, Double> getMonthlyAverageUsageTime() {
-        List<Double[]> results = userRepository.getMonthlyAverageUsageTime();
+    public Map<String, Double> getMonthlyAverageUsageTime(Integer year) {
+        int selectedYear = (year != null) ? year : LocalDateTime.now().getYear();
+
+        List<Double[]> results = userRepository.getMonthlyAverageUsageTime(selectedYear);
         Map<String, Double> monthlyUsage = new LinkedHashMap<>();
 
         for (int i = 1; i <= 12; i++) {
@@ -77,6 +79,12 @@ public class AdminServiceImpl implements AdminService {
 
         return monthlyUsage;
     }
+
+    @Override
+    public Long getCurrentActiveUsers() {
+        return userRepository.countCurrentActiveUsers();
+    }
+
 
     @Override
     public Map<String, Long> getUserDemographics() {

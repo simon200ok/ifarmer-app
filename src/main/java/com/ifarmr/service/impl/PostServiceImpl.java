@@ -55,6 +55,8 @@ public class PostServiceImpl implements PostService {
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .image(uploadedImageUrl)
+                .likes(0L)
+                .commentCount(0L)
                 .user(user)
                 .build();
 
@@ -83,7 +85,10 @@ public class PostServiceImpl implements PostService {
                 .map(post -> new PostDto(
                         post.getId(),
                         post.getTitle(),
-                        post.getDescription()))
+                        post.getDescription(),
+                        post.getImage(),
+                        post.getLikes(),
+                        post.getCommentCount()))
                 .collect(Collectors.toList());
     }
 
@@ -105,6 +110,7 @@ public class PostServiceImpl implements PostService {
                 post.getTitle(),
                 post.getDescription(),
                 post.getLikes(),
+                post.getCommentCount(),
                 commentDtos
         );
     }
@@ -116,6 +122,19 @@ public class PostServiceImpl implements PostService {
                 .map(post -> new AllPosts(
                         post.getTitle())
                 ).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PostDto> getPopularPosts() {
+        return postRepository.findAllPostsOrderedByLikes().stream()
+                .map(post -> new PostDto(
+                        post.getId(),
+                        post.getTitle(),
+                        post.getDescription(),
+                        post.getImage(),
+                        post.getLikes(),
+                        post.getCommentCount()))
+                .collect(Collectors.toList());
     }
 
 }

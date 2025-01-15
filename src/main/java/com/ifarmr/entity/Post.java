@@ -35,7 +35,10 @@ public class Post extends BaseClass {
     private String image;
 
     @Column(nullable = false)
-    private int likes = 0;
+    private Long likes = 0L;
+
+    @Column(nullable = false)
+    private Long commentCount = 0L;
 
     @OneToMany(mappedBy = "post")
     private List<Comment> comments;
