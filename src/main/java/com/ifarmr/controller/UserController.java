@@ -2,6 +2,7 @@ package com.ifarmr.controller;
 
 
 import com.ifarmr.auth.service.JwtService;
+import com.ifarmr.entity.TokenVerification;
 import com.ifarmr.entity.User;
 import com.ifarmr.entity.enums.Gender;
 import com.ifarmr.entity.enums.Roles;
@@ -15,7 +16,9 @@ import com.ifarmr.payload.response.LoginResponse;
 import com.ifarmr.repository.UserRepository;
 import com.ifarmr.service.TokenVerificationService;
 import com.ifarmr.service.UserService;
+import com.ifarmr.utils.AccountUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -77,7 +80,21 @@ public class UserController {
 
     @PostMapping("/reset-password")
     public ResponseEntity<ForgotPasswordResponse> resetPassword(@RequestBody ResetPasswordRequest request) {
-        return ResponseEntity.ok(userService.resetPassword(request.getToken(), request.getNewPassword(), request.getConfirmPassword()));
+        userService.resetPassword(request.getToken(), request.getNewPassword());
+        return ResponseEntity.ok(ForgotPasswordResponse.builder()
+                .responseCode(AccountUtils.FORGOT_PASSWORD_SUCCESS_CODE)
+                .responseMessage(AccountUtils.RESET_PASSWORD_SUCCESS_MESSAGE)
+                .build());
+    }
+
+    @PostMapping("/verify-reset-token")
+    public ResponseEntity<String> verifyResetToken(@RequestBody TokenVerification token) {
+        boolean isValid = userService.verifyResetToken(token.getToken());
+        if (isValid) {
+            return ResponseEntity.ok("Token is valid");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid or expired token.");
+        }
     }
 }
 

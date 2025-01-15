@@ -13,7 +13,7 @@ import java.util.List;
 public interface PostService {
     PostResponse createPost(PostRequest request, MultipartFile file);
 
-    List<Post> getPopularPosts();
+    //List<Post> getPopularPosts();
 
     List<PostDto> getUserPosts(long id);
 

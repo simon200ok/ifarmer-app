@@ -60,8 +60,8 @@ public class PostController {
     }
 
 
-    @GetMapping("/popular")
-    public List<Post> getPopularPosts() {
-        return postService.getPopularPosts();
-    }
+//    @GetMapping("/popular")
+//    public List<Post> getPopularPosts() {
+//        return postService.getPopularPosts();
+//    }
 }

@@ -11,7 +11,7 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByUserId(Long userId);
 
-    @Query("SELECT p FROM Post p ORDER BY (p.likes + p.comments) DESC")
-    List<Post> findPopularPosts();
+//    @Query("SELECT p FROM Post p ORDER BY (p.likes + p.comments) DESC")
+//    List<Post> findPopularPosts();
 }
 
