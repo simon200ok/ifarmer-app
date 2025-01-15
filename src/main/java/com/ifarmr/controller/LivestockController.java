@@ -20,6 +20,8 @@ import java.util.List;
 @RestController
 @RequestMapping("api/v1/livestock")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173")
+
 public class LivestockController {
 
     private final AnimalService animalService;
