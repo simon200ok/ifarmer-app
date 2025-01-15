@@ -47,6 +47,9 @@ public interface UserRepository extends JpaRepository<User,Long > {
     @Query(value = "SELECT COUNT(*) FROM user_tbl WHERE last_logout_time BETWEEN :startOfWeek AND :endOfWeek", nativeQuery = true)
     long getWeeklyActiveUsers(@Param("startOfWeek") LocalDateTime startOfWeek, @Param("endOfWeek") LocalDateTime endOfWeek);
 
+    @Query(value = "SELECT COUNT(*) FROM user_tbl WHERE last_login_time IS NOT NULL " +
+            "  AND (last_logout_time IS NULL OR last_login_time > last_logout_time)", nativeQuery = true)
+    long countCurrentActiveUsers();
 
 }
 
