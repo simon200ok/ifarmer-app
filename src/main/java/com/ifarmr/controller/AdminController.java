@@ -77,9 +77,15 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getWeeklyActiveUsers());
     }
 
+    @GetMapping("/current-active-users")
+    public ResponseEntity<Long> getCurrentActiveUsers() {
+        return ResponseEntity.ok(adminService.getCurrentActiveUsers());
+    }
+
     @GetMapping("/average-usage-time")
-    public ResponseEntity<Map<String, Double>> getMonthlyAverageUsageTime() {
-        return ResponseEntity.ok(adminService.getMonthlyAverageUsageTime());
+    public ResponseEntity<Map<String, Double>> getMonthlyAverageUsageTime(
+            @RequestParam(value = "year", required = false) Integer year) {
+        return ResponseEntity.ok(adminService.getMonthlyAverageUsageTime(year));
     }
 
     @GetMapping("/user-demographics")

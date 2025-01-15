@@ -32,7 +32,6 @@ public class LikeServiceImpl implements LikeService {
     public LikeResponse likePost(Long postId) {
         String token = jwtAuthenticationFilter.getTokenFromRequest(servletRequest);
 
-        // Check if the token is null or empty
         if (token == null || token.isEmpty()) {
             return LikeResponse.builder()
                     .responseCode(AccountUtils.EMPTY_TOKEN_CODE)
@@ -40,7 +39,6 @@ public class LikeServiceImpl implements LikeService {
                     .build();
         }
 
-        // Validate the token
         if (!jwtService.validateToken(token)) {
             return LikeResponse.builder()
                     .responseCode(AccountUtils.INVALID_TOKEN_CODE)
@@ -48,7 +46,6 @@ public class LikeServiceImpl implements LikeService {
                     .build();
         }
 
-        // Check if the token is blacklisted
         if (jwtService.isBlacklisted(token)) {
             return LikeResponse.builder()
                     .responseCode(AccountUtils.BLACKLISTED_TOKEN_CODE)
@@ -56,7 +53,6 @@ public class LikeServiceImpl implements LikeService {
                     .build();
         }
 
-        // Extract the userId from the token
         Long userId = jwtService.extractUserIdFromToken(token);
         if (userId == null) {
             return LikeResponse.builder()
@@ -65,15 +61,12 @@ public class LikeServiceImpl implements LikeService {
                     .build();
         }
 
-        // Find the user by ID
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
-//      Find the post by ID
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
 
-        // Check if the user has already liked the post
         if (post.getLikedUser().contains(user)) {
             return LikeResponse.builder()
                     .responseCode("409")
@@ -84,7 +77,6 @@ public class LikeServiceImpl implements LikeService {
         post.getLikedUser().add(user);
         post.setLikes(post.getLikes()+1);
 
-        // Save the updated post
         postRepository.save(post);
 
         return LikeResponse.builder()

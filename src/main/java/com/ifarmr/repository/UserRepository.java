@@ -21,9 +21,10 @@ public interface UserRepository extends JpaRepository<User,Long > {
             "WHERE last_logout_time IS NOT NULL " +
             "  AND last_login_time IS NOT NULL " +
             "  AND last_logout_time >= last_login_time " +
+            "  AND EXTRACT(YEAR FROM last_login_time) = :year " +
             "GROUP BY EXTRACT(MONTH FROM last_login_time) " +
             "ORDER BY month", nativeQuery = true)
-    List<Double[]> getMonthlyAverageUsageTime();
+    List<Double[]> getMonthlyAverageUsageTime(@Param("year") int year);
 
     @Query("SELECT COUNT(u) FROM User u WHERE u.gender = 'MALE'")
     long getMaleUserCount();
@@ -46,6 +47,9 @@ public interface UserRepository extends JpaRepository<User,Long > {
     @Query(value = "SELECT COUNT(*) FROM user_tbl WHERE last_logout_time BETWEEN :startOfWeek AND :endOfWeek", nativeQuery = true)
     long getWeeklyActiveUsers(@Param("startOfWeek") LocalDateTime startOfWeek, @Param("endOfWeek") LocalDateTime endOfWeek);
 
+    @Query(value = "SELECT COUNT(*) FROM user_tbl WHERE last_login_time IS NOT NULL " +
+            "  AND (last_logout_time IS NULL OR last_login_time > last_logout_time)", nativeQuery = true)
+    long countCurrentActiveUsers();
 
 }
 
