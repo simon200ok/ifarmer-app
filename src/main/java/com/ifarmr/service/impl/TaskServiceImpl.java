@@ -56,6 +56,7 @@ public class TaskServiceImpl implements TaskService {
                 .category(savedTask.getCategory())
                 .type(savedTask.getType())
                 .location(savedTask.getLocation())
+                .dueDate(savedTask.getDueDate())
                 .build();
     }
 
