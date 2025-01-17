@@ -25,15 +25,13 @@ public class UserSessionServiceImpl implements UserSessionService {
 
         List<Object[]> results = userSessionRepository.findUniqueLoginsPerDayOfWeek(startOfWeek, endOfWeek);
 
-        // Create a map to store day names with login counts
         Map<String, Long> loginCounts = new HashMap<>();
         for (Object[] result : results) {
-            String dayName = ((String) result[0]).toUpperCase().trim(); // Normalize to uppercase
+            String dayName = ((String) result[0]).toUpperCase().trim();
             Long count = (Long) result[1];
             loginCounts.put(dayName, count);
         }
 
-        // Ensure all days of the week are present in the map, defaulting to 0
         Map<String, Long> weeklyLogins = new LinkedHashMap<>();
         for (DayOfWeek day : DayOfWeek.values()) {
             weeklyLogins.put(day.name(), loginCounts.getOrDefault(day.name(), 0L));

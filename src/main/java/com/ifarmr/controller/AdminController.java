@@ -99,8 +99,7 @@ public class AdminController {
     @GetMapping("/weekly-logins")
     public ResponseEntity<Map<String, Long>> getWeeklyLogins(@RequestParam("startOfWeek") String startOfWeekStr) {
         LocalDateTime startOfWeek = LocalDateTime.parse(startOfWeekStr);
-        Map<String, Long> logins = userSessionService.getWeeklyUserLogins(startOfWeek);
-        return ResponseEntity.ok(logins);
+        return ResponseEntity.ok(userSessionService.getWeeklyUserLogins(startOfWeek));
     }
 
 

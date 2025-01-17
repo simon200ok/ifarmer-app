@@ -4,6 +4,8 @@ import com.ifarmr.auth.service.JwtAuthenticationFilter;
 import com.ifarmr.auth.service.JwtService;
 import com.ifarmr.entity.Inventory;
 import com.ifarmr.entity.User;
+import com.ifarmr.entity.enums.Category;
+import com.ifarmr.entity.enums.ItemType;
 import com.ifarmr.exception.customExceptions.DuplicateMerchandiseException;
 import com.ifarmr.payload.request.InventoryRequest;
 import com.ifarmr.payload.response.InventoryInfo;
@@ -95,9 +97,45 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public List<InventoryResponse> getUserInventory(Long userId) {
-        return inventoryRepository.findAllByUserId(userId).stream()
+    public List<InventoryResponse> getUserInventory(Long userId, Category category, ItemType itemType) {
+        List<Inventory> inventories;
+
+        if (category != null && itemType != null) {
+            inventories = inventoryRepository.findByUserIdAndCategoryAndItem(userId, category, itemType);
+        } else if (category != null) {
+            inventories = inventoryRepository.findByUserIdAndCategory(userId, category);
+        } else if (itemType != null) {
+            inventories = inventoryRepository.findByUserIdAndItem(userId, itemType);
+        } else {
+            inventories = inventoryRepository.findByUserId(userId);
+        }
+
+        return inventories.stream()
                 .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Long getInventoryCountByCategory(long userId, Category category) {
+        return inventoryRepository.countByUserIdAndCategory(userId, category);
+    }
+
+    @Override
+    public Long getInventoryCountByItemType(long userId, ItemType itemType) {
+        return inventoryRepository.countByUserIdAndItem(userId, itemType);
+    }
+
+    @Override
+    public List<InventoryResponse> getAllInventoryByCategory(long userId, Category category) {
+        return inventoryRepository.findByUserIdAndCategory(userId, category).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<InventoryResponse> getAllInventoryByItemType(long userId, ItemType itemType) {
+        return inventoryRepository.findByUserIdAndItem(userId, itemType).stream().
+                map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
