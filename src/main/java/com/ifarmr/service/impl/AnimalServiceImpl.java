@@ -119,6 +119,7 @@ public class AnimalServiceImpl implements AnimalService {
                 .healthIssues(animalDetails.getHealthIssues())
                 .description(animalDetails.getDescription())
                 .photoFilePath(animalDetails.getPhotoFilePath())
+                .createdAt(animalDetails.getCreatedAt())
                 .userId(animalDetails.getUser().getId())
                 .build();
     }
