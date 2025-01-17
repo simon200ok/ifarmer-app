@@ -19,7 +19,8 @@ public class PostDetailsDto {
     private Long id;
     private String title;
     private String content;
-    private int likes;
+    private Long likes;
+    private Long commentCount;
     private List<CommentDto> comments;
 
 }

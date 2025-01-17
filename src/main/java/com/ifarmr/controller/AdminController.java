@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +24,7 @@ public class AdminController {
     private final AnimalService animalService;
     private final TaskService taskService;
     private final AdminService adminService;
+    private final UserSessionService userSessionService;
 
     @PostMapping("/forgot-password")
     public ResponseEntity<ForgotPasswordResponse> forgotPassword(@RequestBody ForgotPasswordRequest request) {
@@ -77,14 +79,27 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getWeeklyActiveUsers());
     }
 
+    @GetMapping("/current-active-users")
+    public ResponseEntity<Long> getCurrentActiveUsers() {
+        return ResponseEntity.ok(adminService.getCurrentActiveUsers());
+    }
+
     @GetMapping("/average-usage-time")
-    public ResponseEntity<Map<String, Double>> getMonthlyAverageUsageTime() {
-        return ResponseEntity.ok(adminService.getMonthlyAverageUsageTime());
+    public ResponseEntity<Map<String, Double>> getMonthlyAverageUsageTime(
+            @RequestParam(value = "year", required = false) Integer year) {
+        return ResponseEntity.ok(adminService.getMonthlyAverageUsageTime(year));
     }
 
     @GetMapping("/user-demographics")
     public ResponseEntity<Map<String, Long>> getUserDemographics() {
         return ResponseEntity.ok(adminService.getUserDemographics());
+    }
+
+
+    @GetMapping("/weekly-logins")
+    public ResponseEntity<Map<String, Long>> getWeeklyLogins(@RequestParam("startOfWeek") String startOfWeekStr) {
+        LocalDateTime startOfWeek = LocalDateTime.parse(startOfWeekStr);
+        return ResponseEntity.ok(userSessionService.getWeeklyUserLogins(startOfWeek));
     }
 
 

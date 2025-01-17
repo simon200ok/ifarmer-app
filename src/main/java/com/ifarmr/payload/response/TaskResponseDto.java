@@ -1,5 +1,6 @@
 package com.ifarmr.payload.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ifarmr.entity.enums.Category;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,5 +20,7 @@ public class TaskResponseDto {
     private Category category;
     private String type;
     private String location;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private LocalDateTime dueDate;
 }
