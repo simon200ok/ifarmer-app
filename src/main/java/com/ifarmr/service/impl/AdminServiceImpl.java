@@ -76,7 +76,7 @@ public class AdminServiceImpl implements AdminService {
         User savedAdmin = userRepository.save(admin);
         String token = tokenVerificationService.generateVerificationToken(savedAdmin);
 
-        String verificationUrl = "http://localhost:8080/api/v1/auth/verify?token=" + token;
+        String verificationUrl = "http://localhost:8080/api/v2/admin/verify?token=" + token;
         String emailMessageBody = String.format(
                 "Dear %s,\n" +
                         "\n" +
@@ -212,9 +212,9 @@ public class AdminServiceImpl implements AdminService {
             throw new InvalidTokenException("Token expired. Please register again.");
         }
 
-        User user = verifyToken.getUser();
-        user.setActive(true);
-        userRepository.save(user);
+        User admin = verifyToken.getUser();
+        admin.setActive(true);
+        userRepository.save(admin);
 
         tokenVerificationService.deleteToken(verifyToken);
 
