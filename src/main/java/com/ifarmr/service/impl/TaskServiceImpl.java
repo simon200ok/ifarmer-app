@@ -66,7 +66,8 @@ public class TaskServiceImpl implements TaskService {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new ResourceNotFoundException("Task", taskId));
 
-        if (taskRepository.existsByTitle(request.getTitle())) {
+        if (request.getTitle() != null &&
+                taskRepository.existsByTitleAndIdNot(request.getTitle(), taskId)) {
             throw new IllegalArgumentException("Task with the title '" + request.getTitle() + "' already exists.");
         }
 
@@ -80,6 +81,10 @@ public class TaskServiceImpl implements TaskService {
                 .id(updatedTask.getId())
                 .title(updatedTask.getTitle())
                 .description(updatedTask.getDescription())
+                .category(task.getCategory())
+                .type(task.getType())
+                .location(task.getLocation())
+                .dueDate(task.getDueDate())
                 .build();
     }
 

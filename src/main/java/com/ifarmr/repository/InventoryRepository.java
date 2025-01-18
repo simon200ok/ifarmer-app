@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface InventoryRepository extends JpaRepository<Inventory, Long> {
@@ -30,5 +31,11 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
     List<Inventory> findByUserId(Long userId);
 
     List<Inventory> findByUserIdAndCategoryAndItem(Long userId, Category category, ItemType item);
+
+    boolean existsByNameAndUserIdNotAndIdNot(String name, Long userId, Long inventoryId);
+
+    Long countByUserId(long userId);
+
+    Optional<Inventory> findByUserIdAndId(Long userId, Long inventoryId);
 }
 
