@@ -25,6 +25,9 @@ public class PostDetailsDto {
     private Long commentCount;
     private List<CommentDto> comments;
 
-    public PostDetailsDto(long id, @NotBlank(message = "Title is required") @Size(min = 3, max = 100, message = "Title must be between 3 and 100 characters") String title, @NotBlank(message = "Description is required") String description, int likes, List<Comment> comments) {
+    public PostDetailsDto(long id, @NotBlank(message = "Title is required") @Size(min = 3, max = 100, message = "Title must be between 3 and 100 characters") String title, @NotBlank(message = "Description is required") String description, Long likes, List<Comment> comments) {
     }
+
+//    public PostDetailsDto(long id, @NotBlank(message = "Title is required") @Size(min = 3, max = 100, message = "Title must be between 3 and 100 characters") String title, @NotBlank(message = "Description is required") String description, int likes, List<Comment> comments) {
+//    }
 }

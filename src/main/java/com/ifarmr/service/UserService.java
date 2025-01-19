@@ -38,5 +38,7 @@ public interface UserService {
     boolean verifyResetToken(String token);
 
     void resetPassword(String token, String newPassword);
+
+    UserResponse getUserProfile(String jwt) throws Exception;
 }
 

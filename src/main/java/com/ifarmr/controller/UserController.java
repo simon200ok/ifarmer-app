@@ -13,6 +13,7 @@ import com.ifarmr.payload.request.UpdateUserRequestDto;
 import com.ifarmr.payload.response.AuthResponse;
 import com.ifarmr.payload.response.ForgotPasswordResponse;
 import com.ifarmr.payload.response.LoginResponse;
+import com.ifarmr.payload.response.UserResponse;
 import com.ifarmr.repository.UserRepository;
 import com.ifarmr.service.TokenVerificationService;
 import com.ifarmr.service.UserService;
@@ -56,6 +57,24 @@ public class UserController {
     @PutMapping("/profile")
     public ResponseEntity<AuthResponse> updateUser(@RequestBody UpdateUserRequestDto updateUserRequest) {
         return ResponseEntity.ok(userService.updateUser(updateUserRequest));
+    }
+
+    @GetMapping("/getuserprofile")
+    public ResponseEntity<?> getUserProfile(@RequestHeader("Authorization") String token) {
+        try {
+            String jwt = token.replace("Bearer ", "").trim();
+            System.out.println("Extracted JWT: " + jwt);
+            UserResponse userProfile = userService.getUserProfile(jwt);
+            if (userProfile == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("User profile not found.");
+            }
+            System.out.println(userProfile);
+            return ResponseEntity.ok(userProfile);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occured: " + e.getMessage());
+        }
     }
 
     @PostMapping("/logout")

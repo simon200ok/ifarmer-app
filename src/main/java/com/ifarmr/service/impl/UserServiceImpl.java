@@ -278,7 +278,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         //?token=" + resetToken;
-        String forgetPasswordUrl = "http://localhost:8080/api/v1/auth/reset-password?token=" + resetToken;
+        String forgetPasswordUrl = "http://localhost:5173/reset-password?token=" + resetToken;
         String emailForgetPassword = String.format(
                 "Dear %s,\n" +
                         "\n" +
@@ -456,5 +456,28 @@ public class UserServiceImpl implements UserService {
 //                .responseCode(AccountUtils.FORGOT_PASSWORD_SUCCESS_CODE)
 //                .responseMessage(AccountUtils.RESET_PASSWORD_SUCCESS_MESSAGE)
 //                .build();
+    }
+
+    @Override
+    public UserResponse getUserProfile(String token) throws Exception {
+        try{
+            String userName = jwtService.extractUsername(token);
+            Optional<User> user = userRepository.findByEmail(userName);
+
+            if (user.isEmpty()) {
+                throw new RuntimeException("User not found for username: " + userName);
+            }
+
+            return UserResponse.builder()
+                .fullName(user.get().getFirstName() + " " + user.get().getLastName())
+                .username(user.get().getUserName())
+                .email(user.get().getEmail())
+                .businessName(user.get().getBusinessName())
+                .displayPhoto(user.get().getDisplayPhoto())
+                .build();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error while fetching user profile: " + e.getMessage(), e);
+        }
     }
 }
