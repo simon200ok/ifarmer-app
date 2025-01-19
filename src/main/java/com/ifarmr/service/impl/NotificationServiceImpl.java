@@ -263,9 +263,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     private String escapeJsonString(String input) {
         if (input == null) return "";
-        return input.replace("\"", "\\\"")
-                .replace("\\", "\\\\")
-                .replace("\n", "\\n")
-                .replace("\r", "\\r");
+        return input.replaceAll("\\s+", " ") // Replace all whitespace with a single space
+                .replace("\"", "\\\"") // Escape double quotes
+                .replace("\\", "\\\\"); // Escape backslashes
     }
 }

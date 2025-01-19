@@ -2,18 +2,24 @@ package com.ifarmr.controller;
 
 
 import com.ifarmr.entity.User;
+import com.ifarmr.entity.enums.Gender;
+import com.ifarmr.entity.enums.Roles;
 import com.ifarmr.payload.request.ForgotPasswordRequest;
+import com.ifarmr.payload.request.LoginRequestDto;
+import com.ifarmr.payload.request.RegistrationRequest;
+import com.ifarmr.payload.request.UpdateUserRequestDto;
 import com.ifarmr.payload.response.*;
 import com.ifarmr.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/admin")
+@RequestMapping("/api/v2/admin")
 @RequiredArgsConstructor
 public class AdminController {
 
@@ -23,12 +29,43 @@ public class AdminController {
     private final AnimalService animalService;
     private final TaskService taskService;
     private final AdminService adminService;
+    private final UserSessionService userSessionService;
+
+
+    @PostMapping("/register")
+    public ResponseEntity<AuthResponse> register
+            (@RequestBody RegistrationRequest request,
+             @RequestParam Gender gender){
+        return ResponseEntity.ok(adminService.register(request, gender));
+    }
+
+    @GetMapping("/verify")
+    public ResponseEntity<String> verifyAdmin(@RequestParam String token) {
+        return ResponseEntity.ok(adminService.verifyAdmin(token));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequestDto request) {
+        return ResponseEntity.ok(adminService.login(request));
+    }
+
+    @PutMapping("/profile")
+    public ResponseEntity<AuthResponse> updateAdmin(@RequestBody UpdateUserRequestDto updateUserRequest) {
+        return ResponseEntity.ok(adminService.updateAdmin(updateUserRequest));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestHeader("Authorization") String authHeader) {
+        return ResponseEntity.ok(adminService.logout(authHeader));
+    }
 
     @PostMapping("/forgot-password")
     public ResponseEntity<ForgotPasswordResponse> forgotPassword(@RequestBody ForgotPasswordRequest request) {
-        ForgotPasswordResponse response = userService.generateResetToken(request.getEmail());
+        ForgotPasswordResponse response = adminService.generateResetToken(request.getEmail());
         return ResponseEntity.ok(response);
     }
+
+
 
     @GetMapping("/crops")
     public ResponseEntity<ApiResponse<List<CropResponse>>> getAllCrops() {
@@ -91,6 +128,13 @@ public class AdminController {
     @GetMapping("/user-demographics")
     public ResponseEntity<Map<String, Long>> getUserDemographics() {
         return ResponseEntity.ok(adminService.getUserDemographics());
+    }
+
+
+    @GetMapping("/weekly-logins")
+    public ResponseEntity<Map<String, Long>> getWeeklyLogins(@RequestParam("startOfWeek") String startOfWeekStr) {
+        LocalDateTime startOfWeek = LocalDateTime.parse(startOfWeekStr);
+        return ResponseEntity.ok(userSessionService.getWeeklyUserLogins(startOfWeek));
     }
 
 

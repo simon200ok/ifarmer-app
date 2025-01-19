@@ -64,6 +64,11 @@ public class PostController {
         return ResponseEntity.ok(postService.getPostDetails(postId));
     }
 
+//    @DeleteMapping
+//    public ResponseEntity<String> deletePost(Long postId) {
+//
+//    }
+
 
 //    @GetMapping("/popular")
 //    public List<Post> getPopularPosts() {

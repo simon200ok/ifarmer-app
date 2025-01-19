@@ -101,7 +101,10 @@ public class PostServiceImpl implements PostService {
                 .map(comment -> new CommentDto(
                         comment.getId(),
                         comment.getContent(),
-                        comment.getCreatedAt().toString()
+                        comment.getCreatedAt().toString(),
+                        comment.getUser().getUsername(),
+                        comment.getUser().getDisplayPhoto()
+
                 ))
                 .collect(Collectors.toList());
 
@@ -109,6 +112,9 @@ public class PostServiceImpl implements PostService {
                 post.getId(),
                 post.getTitle(),
                 post.getDescription(),
+                post.getImage(),
+                post.getUser().getUsername(),
+                post.getUser().getDisplayPhoto(),
                 post.getLikes(),
                 post.getCommentCount(),
                 commentDtos
