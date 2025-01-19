@@ -21,6 +21,8 @@ public class TokenVerification {
     @Column(nullable = false, unique = true)
     private String token;
 
+    private boolean revoked;
+
     private LocalDateTime expirationTime;
 
     @OneToOne

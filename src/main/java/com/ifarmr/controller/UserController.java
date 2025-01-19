@@ -5,7 +5,6 @@ import com.ifarmr.auth.service.JwtService;
 import com.ifarmr.entity.TokenVerification;
 import com.ifarmr.entity.User;
 import com.ifarmr.entity.enums.Gender;
-import com.ifarmr.entity.enums.Roles;
 import com.ifarmr.payload.request.*;
 import com.ifarmr.payload.request.LoginRequestDto;
 import com.ifarmr.payload.request.RegistrationRequest;
@@ -76,16 +75,6 @@ public class UserController {
     @PostMapping("/logout")
     public ResponseEntity<String> logout(@RequestHeader("Authorization") String authHeader) {
         return ResponseEntity.ok(userService.logout(authHeader));
-    }
-
-    @GetMapping("/posts")
-    public ResponseEntity<List<PostDto>> getUserPosts(@AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(userService.getUserPosts(user.getId()));
-    }
-
-    @GetMapping("/{postId}")
-    public ResponseEntity<PostDetailsDto> getPostDetails(@PathVariable Long postId) {
-        return ResponseEntity.ok(userService.getPostDetails(postId));
     }
 
     @PostMapping("/forgot-password")

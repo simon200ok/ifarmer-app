@@ -348,29 +348,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<PostDto> getUserPosts(long id) {
-        return postRepository.findByUserId(id).stream()
-                .map(post -> new PostDto(
-                        post.getId(),
-                        post.getTitle(),
-                        post.getDescription()))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public PostDetailsDto getPostDetails(Long postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Post", postId));
-        return new PostDetailsDto(
-                post.getId(),
-                post.getTitle(),
-                post.getDescription(),
-                post.getLikes(),
-                post.getComments()
-        );
-    }
-
-    @Override
     public boolean verifyResetToken(String token) {
         Optional<User> user = userRepository.findByResetToken(token);
         if (user.isPresent() && user.get().getResetTokenExpiry().isAfter(LocalDateTime.now())) {

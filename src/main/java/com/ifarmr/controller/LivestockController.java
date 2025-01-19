@@ -35,8 +35,7 @@ public class LivestockController {
     public ResponseEntity<ApiResponse<AnimalResponse>> addLivestock(@RequestPart("data") @Valid String data,
                                                                     @RequestPart("photo") MultipartFile photo) throws JsonProcessingException {
         AnimalRequest animalRequest = objectMapper.readValue(data, AnimalRequest.class);
-        ApiResponse<AnimalResponse> createdLivestock = animalService.addLivestock(animalRequest, photo);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdLivestock);
+        return ResponseEntity.status(HttpStatus.CREATED).body(animalService.addLivestock(animalRequest, photo));
     }
 
     @GetMapping("/statistic/get_animal_by_id")

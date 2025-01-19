@@ -5,9 +5,8 @@ import com.ifarmr.payload.request.LoginRequestDto;
 import com.ifarmr.payload.request.RegistrationRequest;
 import com.ifarmr.payload.request.UpdateUserRequestDto;
 import com.ifarmr.payload.response.AuthResponse;
-import com.ifarmr.payload.response.ForgotPasswordResponse;
 import com.ifarmr.payload.response.LoginResponse;
-import com.ifarmr.payload.response.UserResponse;
+
 
 import java.util.List;
 import java.util.Map;
@@ -19,8 +18,6 @@ public interface AdminService {
     LoginResponse login(LoginRequestDto request);
 
     AuthResponse updateAdmin(UpdateUserRequestDto request);
-
-    ForgotPasswordResponse generateResetToken(String email);
 
     String verifyAdmin(String token);
 
@@ -37,4 +34,5 @@ public interface AdminService {
     Map<String, Double> getMonthlyAverageUsageTime(Integer year);
 
     Long getCurrentActiveUsers();
+
 }

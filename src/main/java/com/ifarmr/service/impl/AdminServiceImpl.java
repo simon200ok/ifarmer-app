@@ -198,11 +198,6 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public ForgotPasswordResponse generateResetToken(String email) {
-        return null;
-    }
-
-    @Override
     public String verifyAdmin(String token) {
         TokenVerification verifyToken =
                 tokenVerificationService.validateToken(token);
@@ -316,7 +311,6 @@ public class AdminServiceImpl implements AdminService {
     public Long getCurrentActiveUsers() {
         return userRepository.countCurrentActiveUsers();
     }
-
 
     @Override
     public Map<String, Long> getUserDemographics() {
