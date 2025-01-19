@@ -27,8 +27,7 @@ public class Post extends BaseClass {
     private String title;
 
     @NotBlank(message = "Description is required")
-    @Size(max = 500, message = "Description must not exceed 255 characters")
-    @Column(length = 500)
+    @Column(length = 1000)
     private String description;
 
     private String image;
