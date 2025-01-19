@@ -71,7 +71,6 @@ public class UserServiceImpl implements UserService {
             throw new InvalidPasswordException("Password must be at least 8 characters long and contain at least one special character.");
         }
 
-        // Create and save the user
         User newUser = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
@@ -247,23 +246,15 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-
-//        if (!Roles.ADMIN.equals(user.getRole())) {
-//            throw new IllegalArgumentException("User is not an admin");
-//        }
-
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 user.getEmail(), null, List.of(new SimpleGrantedAuthority(user.getRole().name()))
         );
         String resetToken = jwtService.generateToken(authentication, user.getId());
 
-
-        // Update user with reset token and expiry
         user.setResetToken(resetToken);
         user.setResetTokenExpiry(LocalDateTime.now().plusHours(1));
         userRepository.save(user);
 
-        //?token=" + resetToken;
         String forgetPasswordUrl = "http://localhost:5173/reset-password?token=" + resetToken;
         String emailForgetPassword = String.format(
                 "Dear %s,\n" +
@@ -354,35 +345,8 @@ public class UserServiceImpl implements UserService {
             return true;
         }
         return false;
-
-        //Unused
-        //TokenVerification verificationToken = tokenVerificationService.validateToken(token);
-
-
-//        if (verificationToken.getExpirationTime().isBefore(LocalDateTime.now())) {
-//            throw new InvalidTokenException(String.format(
-//                    "<html>" +
-//                            "<body>" +
-//                            "Token expired. Please <span><a href=http://localhost:8080/api/v1/auth/forgot-password>click here</a></span> to enter your email again for verification" +
-//                            "</body>" +
-//                            "</html>"
-//                    )
-        //    );
         }
 
-//        User user = verificationToken.getUser();
-//        userRepository.save(user);
-//
-//        tokenVerificationService.deleteToken(verificationToken);
-//
-//        return String.format(
-//                "<html>" +
-//                        "<body>" +
-//                        "Email verified successfully, Please <span><a href=http://localhost:8080/api/v1/auth/reset-password>click here</a></span> to be change password" +
-//                        "</body>" +
-//                        "</html>"
-//        );
-//      }
 
     @Override
     public void resetPassword(String token, String newPassword) {
@@ -414,11 +378,6 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new IllegalArgumentException("Invalid or expired token.");
         }
-
-//        return ForgotPasswordResponse.builder()
-//                .responseCode(AccountUtils.FORGOT_PASSWORD_SUCCESS_CODE)
-//                .responseMessage(AccountUtils.RESET_PASSWORD_SUCCESS_MESSAGE)
-//                .build();
     }
 
     @Override
