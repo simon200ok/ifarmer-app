@@ -22,6 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -193,7 +195,41 @@ public class AnimalServiceImpl implements AnimalService {
                 .healthIssues(animalDetails.getHealthIssues())
                 .description(animalDetails.getDescription())
                 .photoFilePath(animalDetails.getPhotoFilePath())
+                .createdAt(animalDetails.getCreatedAt())
                 .userId(animalDetails.getUser().getId())
                 .build();
     }
+
+    @Override
+    public ApiResponse<AnimalResponse> updateLivestock(Long animalId, AnimalRequest animalRequest) {
+        User loggedInUser = securityUtils.getLoggedInUser();
+
+        AnimalDetails livestock = animalDetailsRepository.findById(animalId)
+                .orElseThrow(() -> new ResourceNotFoundException("Livestock", animalId));
+        boolean animalExists = animalDetailsRepository.existsByAnimalNameAndUser(animalRequest.getAnimalName(), loggedInUser);
+        if (animalExists && !livestock.getAnimalName().equals(animalRequest.getAnimalName())) {
+            throw new IllegalArgumentException("Animal with the name '" + animalRequest.getAnimalName() + "' already exists.");
+        }
+
+        livestock.setAnimalName(animalRequest.getAnimalName());
+        livestock.setAnimalType(animalRequest.getAnimalType());
+        livestock.setBreed(animalRequest.getBreed());
+        livestock.setQuantity(animalRequest.getQuantity());
+        livestock.setAge(animalRequest.getAge());
+        livestock.setLocation(animalRequest.getLocation());
+        livestock.setAnimalStatus(animalRequest.getAnimalStatus());
+        livestock.setFeedingSchedule(animalRequest.getFeedingSchedule());
+        livestock.setWateringFrequency(animalRequest.getWateringFrequency());
+        livestock.setVaccinationSchedule(animalRequest.getVaccinationSchedule());
+        livestock.setHealthIssues(animalRequest.getHealthIssues());
+        livestock.setDescription(animalRequest.getDescription());
+
+        AnimalDetails updatedLivestock = animalDetailsRepository.save(livestock);
+
+        return new ApiResponse<>("Livestock successfully updated", mapToResponse(updatedLivestock));
+
+    }
+
+
+
 }

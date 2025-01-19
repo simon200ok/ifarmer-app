@@ -36,4 +36,7 @@ public interface AnimalService {
     String deleteAnimal(Long userId, Long id);
 
 
+
+    ApiResponse<AnimalResponse> updateLivestock(Long animalId, AnimalRequest animalRequest);
+
 }
