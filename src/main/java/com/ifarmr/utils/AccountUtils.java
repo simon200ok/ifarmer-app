@@ -49,6 +49,9 @@ public class AccountUtils {
     public final static String LIVESTOCK_SUCCESS_CODE = "013";
     public final static String LIVESTOCK_SUCCESS_MESSAGE = "Livestock Created Successfully";
 
+    public final static String SUCCESS_CODE = "200";
+    public final static String SUCCESS_MESSAGE = "Success✅";
+
 
 
 

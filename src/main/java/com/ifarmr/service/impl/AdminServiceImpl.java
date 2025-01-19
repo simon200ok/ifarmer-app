@@ -10,6 +10,7 @@ import com.ifarmr.entity.enums.Roles;
 import com.ifarmr.exception.customExceptions.*;
 import com.ifarmr.payload.request.LoginRequestDto;
 import com.ifarmr.payload.request.RegistrationRequest;
+import com.ifarmr.payload.request.ResetPasswordRequest;
 import com.ifarmr.payload.request.UpdateUserRequestDto;
 import com.ifarmr.payload.response.*;
 import com.ifarmr.repository.UserRepository;
@@ -198,11 +199,6 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public ForgotPasswordResponse generateResetToken(String email) {
-        return null;
-    }
-
-    @Override
     public String verifyAdmin(String token) {
         TokenVerification verifyToken =
                 tokenVerificationService.validateToken(token);
@@ -316,7 +312,6 @@ public class AdminServiceImpl implements AdminService {
     public Long getCurrentActiveUsers() {
         return userRepository.countCurrentActiveUsers();
     }
-
 
     @Override
     public Map<String, Long> getUserDemographics() {

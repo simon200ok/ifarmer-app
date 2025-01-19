@@ -4,10 +4,7 @@ package com.ifarmr.controller;
 import com.ifarmr.entity.User;
 import com.ifarmr.entity.enums.Gender;
 import com.ifarmr.entity.enums.Roles;
-import com.ifarmr.payload.request.ForgotPasswordRequest;
-import com.ifarmr.payload.request.LoginRequestDto;
-import com.ifarmr.payload.request.RegistrationRequest;
-import com.ifarmr.payload.request.UpdateUserRequestDto;
+import com.ifarmr.payload.request.*;
 import com.ifarmr.payload.response.*;
 import com.ifarmr.service.*;
 import lombok.RequiredArgsConstructor;
@@ -58,14 +55,6 @@ public class AdminController {
     public ResponseEntity<String> logout(@RequestHeader("Authorization") String authHeader) {
         return ResponseEntity.ok(adminService.logout(authHeader));
     }
-
-    @PostMapping("/forgot-password")
-    public ResponseEntity<ForgotPasswordResponse> forgotPassword(@RequestBody ForgotPasswordRequest request) {
-        ForgotPasswordResponse response = adminService.generateResetToken(request.getEmail());
-        return ResponseEntity.ok(response);
-    }
-
-
 
     @GetMapping("/crops")
     public ResponseEntity<ApiResponse<List<CropResponse>>> getAllCrops() {
