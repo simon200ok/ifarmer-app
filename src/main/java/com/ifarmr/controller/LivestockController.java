@@ -24,6 +24,8 @@ import java.util.List;
 @RestController
 @RequestMapping("api/v1/livestock")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173")
+
 public class LivestockController {
 
     private final AnimalService animalService;
@@ -85,5 +87,12 @@ public class LivestockController {
     public ResponseEntity<String> deleteAnimal(@AuthenticationPrincipal User user,
                                                @PathVariable Long id) {
         return ResponseEntity.ok(animalService.deleteAnimal(user.getId(), id));
+    }
+
+    @PatchMapping("/updateLivestock")
+    public ResponseEntity<ApiResponse<AnimalResponse>> updateLivestock(@RequestParam Long animalId, @RequestPart("data") @Valid String data) throws JsonProcessingException {
+        AnimalRequest animalRequest = objectMapper.readValue(data, AnimalRequest.class);
+        ApiResponse<AnimalResponse> updatedLivestock = animalService.updateLivestock(animalId, animalRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedLivestock);
     }
 }
