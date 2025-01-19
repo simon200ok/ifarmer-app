@@ -33,12 +33,16 @@ public class TokenVerificationServiceImpl implements TokenVerificationService {
 
     @Override
     public TokenVerification validateToken(String token) {
-        return tokenVerificationRepository.findByToken(token)
-                .orElseThrow(() -> new RuntimeException("Invalid token"));
+        return tokenVerificationRepository.findByTokenAndRevokedFalse(token)
+                .orElseThrow(() -> new RuntimeException("Invalid or expired token"));
     }
 
     @Override
     public void deleteToken(TokenVerification token) {
+        token.setRevoked(true);
+        tokenVerificationRepository.save(token);
+        System.out.println("Token with ID " + token.getId() + " marked as revoked.");
+
         tokenVerificationRepository.delete(token);
     }
 

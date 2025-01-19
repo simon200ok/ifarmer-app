@@ -286,6 +286,9 @@ public class UserServiceImpl implements UserService {
     public void resetPassword(String token, ResetPasswordRequest request) {
         TokenVerification resetToken = tokenVerificationService.validateToken(token);
 
+        if (resetToken == null) {
+            throw new IllegalArgumentException("Invalid or expired reset token.");
+        }
         if (!request.getNewPassword().equals(request.getConfirmPassword())) {
             throw new IllegalArgumentException("Passwords do not match");
         }
@@ -294,7 +297,9 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
 
+        System.out.println("Deleting token with ID {}" + resetToken.getId());
         tokenVerificationService.deleteToken(resetToken);
+        System.out.println("Token deleted successfully");
     }
 
 

@@ -16,4 +16,7 @@ public interface TokenVerificationRepository extends JpaRepository<TokenVerifica
     @Modifying
     @Query("DELETE FROM TokenVerification t WHERE t.user.id = :userId")
     void deleteByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT t FROM TokenVerification t WHERE t.token = :token AND t.revoked = false")
+    Optional<TokenVerification> findByTokenAndRevokedFalse(@Param("token") String token);
 }
