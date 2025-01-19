@@ -18,8 +18,6 @@ public interface UserService {
 
     AuthResponse updateUser(UpdateUserRequestDto request);
 
-    ForgotPasswordResponse generateResetToken(String email);
-
     String verifyUser(String token);
 
     String logout(String authHeader);
@@ -27,5 +25,9 @@ public interface UserService {
     List<UserResponse> getAllUsers();
 
     String deleteUser(Long userId);
+
+    ForgotPasswordResponse generateResetToken(String email);
+
+    void resetPassword(String token, ResetPasswordRequest request);
 }
 

@@ -243,58 +243,63 @@ public class UserServiceImpl implements UserService {
     @Override
     public ForgotPasswordResponse generateResetToken(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Email"));
 
-        if (!Roles.ADMIN.equals(user.getRole())) {
-            throw new IllegalArgumentException("User is not an admin");
-        }
+        String token = tokenVerificationService.generateVerificationToken(user);
+        String resetUrl = "http://localhost:8080/api/v1/auth/reset-password?token=" + token;
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                user.getEmail(), null, List.of(new SimpleGrantedAuthority(user.getRole().name()))
+        String emailMessageBody = String.format(
+                """
+                        Dear %s,
+
+                        We received a request to reset your password.
+                        If you did not make this request, you can safely ignore this email.
+
+                        To reset your password, click the link below or copy and paste it into your browser:
+
+                        %s
+
+                        This link will expire in 24 hours.
+
+                        If you have any questions, feel free to contact our support team.
+
+                        Thank you,
+                        The iFarmr Team
+                        """,
+                user.getFirstName(), resetUrl
         );
-        String resetToken = jwtService.generateToken(authentication, user.getId());
-
-
-        user.setResetPasswordToken(resetToken);
-        user.setResetTokenExpiry(LocalDateTime.now().plusHours(1));
-        userRepository.save(user);
-
-        String forgetPasswordToken = resetToken;
-        String forgetPasswordUrl = "http://localhost:8080/api/v1/admin/forgot-password" + resetToken;
-        String emailForgetPassword = String.format(
-                "Dear %s,\n" +
-                        "\n" +
-                        "It seems you requested to reset your password for your iFarmr account. No worries—we’re here to help!\n" +
-                        "\n" +
-                        "Click the link below to create a new password:\n" +
-                        "\n" +
-                        "Reset Password Link: %s\n" +
-                        "\n" +
-                        "If the link doesn’t work, copy and paste the URL into your browser.\n" +
-                        "\n" +
-                        "For further support, feel free to reach us at support@ifarmr.com.\n" +
-                        "\n" +
-                        "Best regards,\n" +
-                        "iFarmr Team\n" +
-                        "Let me know if you need any changes!",
-                user.getFirstName(),
-                forgetPasswordUrl
-
-        );
-
-        EmailDetails forgetPasswordAlert = EmailDetails.builder()
-                .recipient(user.getEmail())
-                .subject("Forgot Your iFarmr Password")
-                .messageBody(emailForgetPassword)
+        EmailDetails resetEmail = EmailDetails.builder()
+                .recipient(email)
+                .subject("Reset Your iFarmr Password")
+                .messageBody(emailMessageBody)
                 .build();
-        emailService.forgetPasswordAlert(forgetPasswordAlert);
-
+        emailService.forgetPasswordAlert(resetEmail);
 
         return ForgotPasswordResponse.builder()
                 .responseCode(AccountUtils.FORGOT_PASSWORD_SUCCESS_CODE)
                 .responseMessage(AccountUtils.FORGOT_PASSWORD_SUCCESS_MESSAGE)
                 .build();
 
+    }
+
+    @Override
+    public void resetPassword(String token, ResetPasswordRequest request) {
+        TokenVerification resetToken = tokenVerificationService.validateToken(token);
+
+        if (resetToken == null) {
+            throw new IllegalArgumentException("Invalid or expired reset token.");
+        }
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new IllegalArgumentException("Passwords do not match");
+        }
+
+        User user = resetToken.getUser();
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+
+        System.out.println("Deleting token with ID {}" + resetToken.getId());
+        tokenVerificationService.deleteToken(resetToken);
+        System.out.println("Token deleted successfully");
     }
 
 

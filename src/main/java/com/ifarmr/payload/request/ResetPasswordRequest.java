@@ -1,5 +1,6 @@
 package com.ifarmr.payload.request;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +10,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ForgotPasswordRequest {
+public class ResetPasswordRequest {
+    @NotBlank
+    private String newPassword;
 
-    private String email;
+    @NotBlank
+    private String confirmPassword;
 }
