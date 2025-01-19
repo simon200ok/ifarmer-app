@@ -20,9 +20,6 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-//@SQLDelete(sql = "UPDATE post_tbl SET deleted_at = NOW() WHERE id = ?")
-//@Where(clause = "deleted_at IS NULL")
-
 public class Post extends BaseClass {
 
     @NotBlank(message = "Title is required")
@@ -30,6 +27,8 @@ public class Post extends BaseClass {
     private String title;
 
     @NotBlank(message = "Description is required")
+    @Size(max = 500, message = "Description must not exceed 255 characters")
+    @Column(length = 500)
     private String description;
 
     private String image;

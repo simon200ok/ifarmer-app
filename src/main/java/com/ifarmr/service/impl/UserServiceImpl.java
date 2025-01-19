@@ -61,14 +61,12 @@ public class UserServiceImpl implements UserService {
     private final PostRepository postRepository;
 
     @Override
-    public AuthResponse register(RegistrationRequest request, Gender gender, Roles role) {
+    public AuthResponse register(RegistrationRequest request, Gender gender) {
 
-        //check if Email Already exists
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new EmailAlreadyExistsException("Email already exists, kindly log into your account");
         }
 
-        // Validate the password
         if (!isValidPassword(request.getPassword())) {
             throw new InvalidPasswordException("Password must be at least 8 characters long and contain at least one special character.");
         }
@@ -88,16 +86,11 @@ public class UserServiceImpl implements UserService {
 
                 .build();
 
-        //save the user to the database
         User savedUser = userRepository.save(newUser);
-
-        // Generate JWT Token for the registered User
         String token = tokenVerificationService.generateVerificationToken(savedUser);
 
 
-        // URL for token verification
         String verificationUrl = "http://localhost:8080/api/v1/auth/verify?token=" + token;
-        // Send an email containing the token
         String emailMessageBody = String.format(
                 "Dear %s \n" +
                         "\n" +
@@ -128,8 +121,6 @@ public class UserServiceImpl implements UserService {
                 .build();
         emailService.sendEmailToken(sendTokenForRegistration);
 
-
-        //Build and return the response
         return AuthResponse.builder()
                 .responseCode(AccountUtils.ACCOUNT_CREATION_SUCCESS_CODE)
                 .responseMessage(AccountUtils.ACCOUNT_CREATION_SUCCESS_MESSAGE)
@@ -176,10 +167,6 @@ public class UserServiceImpl implements UserService {
 
         userSessionRepository.save(session);
 
-
-
-
-        // Return login response
         return LoginResponse.builder()
                 .responseCode(AccountUtils.LOGIN_SUCCESS_CODE)
                 .responseMessage(AccountUtils.LOGIN_SUCCESS_MESSAGE)
@@ -198,7 +185,6 @@ public class UserServiceImpl implements UserService {
         if (jwtService.isBlacklisted(token)) {
             throw new SecurityException("The token is invalid or has been blacklisted, Pls log back in");
         }
-
 
         String email = jwtService.getUserName(token);
 

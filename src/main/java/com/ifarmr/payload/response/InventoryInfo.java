@@ -22,4 +22,5 @@ public class InventoryInfo {
     private Category category;
     private String photoUpload;
     private String location;
+    private BigDecimal cost;
 }

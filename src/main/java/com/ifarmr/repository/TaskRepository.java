@@ -21,4 +21,5 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     List<Task> findByUserIdAndDueDateAfterAndCategory(long userId, LocalDateTime dueDate, Category category);
 
+    boolean existsByTitleAndIdNot(String title, Long taskId);
 }

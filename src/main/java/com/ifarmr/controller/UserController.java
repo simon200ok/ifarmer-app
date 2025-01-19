@@ -26,16 +26,12 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final TokenVerificationService tokenVerificationService;
-    private final UserRepository userRepository;
-    private final JwtService jwtService;
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register
             (@RequestBody RegistrationRequest request,
-             @RequestParam Gender gender,
-             @RequestParam Roles role){
-        return ResponseEntity.ok(userService.register(request, gender, role));
+             @RequestParam Gender gender){
+        return ResponseEntity.ok(userService.register(request, gender));
     }
 
     @GetMapping("/verify")

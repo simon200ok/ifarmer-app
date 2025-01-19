@@ -63,5 +63,10 @@ public class PostController {
         return ResponseEntity.ok(postService.getPostDetails(postId));
     }
 
+//    @DeleteMapping
+//    public ResponseEntity<String> deletePost(Long postId) {
+//
+//    }
+
 
 }

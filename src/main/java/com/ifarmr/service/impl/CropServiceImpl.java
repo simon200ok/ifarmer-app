@@ -7,6 +7,7 @@ import com.ifarmr.entity.enums.CropStatus;
 import com.ifarmr.entity.enums.CropType;
 import com.ifarmr.exception.customExceptions.DuplicateMerchandiseException;
 import com.ifarmr.exception.customExceptions.ResourceNotFoundException;
+import com.ifarmr.payload.request.AnimalRequest;
 import com.ifarmr.payload.request.CropRequest;
 import com.ifarmr.payload.response.ApiResponse;
 import com.ifarmr.payload.response.CropResponse;
@@ -34,7 +35,6 @@ import java.util.List;
 public class CropServiceImpl implements CropService {
 
     private final CropDetailsRepository cropDetailsRepository;
-    private final UserRepository userRepository;
     private final SecurityUtils securityUtils;
     private final CloudinaryService cloudinaryService;
 
@@ -101,7 +101,7 @@ public class CropServiceImpl implements CropService {
     }
 
     @Override
-    public List<CropResponse> getCropsForUser(long userId) {
+    public List<CropResponse> getCropsForUser(Long userId) {
         List<CropDetails> crops = cropDetailsRepository.findByUserId(userId);
         return crops.stream()
                 .map(this::mapToResponse)
@@ -109,8 +109,8 @@ public class CropServiceImpl implements CropService {
     }
 
     @Override
-    public Map<CropStatus, Long> getCropsCountByStatus() {
-        List<Object[]> results = cropDetailsRepository.countCropsByStatus();
+    public Map<CropStatus, Long> getCropsCountByStatus(Long userId) {
+        List<Object[]> results = cropDetailsRepository.countCropsByStatusForUser(userId);
 
         Map<CropStatus, Long> cropsCount = new HashMap<>();
         for (Object[] result : results) {
@@ -122,12 +122,80 @@ public class CropServiceImpl implements CropService {
     }
 
     @Override
-    public String deleteCrop(Long cropId) {
-        CropDetails crop = cropDetailsRepository.findById(cropId)
+    public Map<CropType, Long> getCropsCountByType(Long userId) {
+        List<Object[]> results = cropDetailsRepository.countCropsByCropTypeForUser(userId);
+
+        Map<CropType, Long> cropsCount = new HashMap<>();
+        for (Object[] result : results) {
+            CropType type = (CropType) result[0];
+            Long count = (Long) result[1];
+            cropsCount.put(type, count);
+        }
+        return cropsCount;
+    }
+
+    @Override
+    public Long getTotalCropNumber(Long userId) {
+        return cropDetailsRepository.countByUserId(userId);
+    }
+
+    @Override
+    public List<CropResponse> getCropByType(Long userId, CropType type) {
+        return cropDetailsRepository.findByUserIdAndCropType(userId, type).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CropResponse> getCropByStatus(Long userId, CropStatus status) {
+        return cropDetailsRepository.findByUserIdAndCropStatus(userId, status).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public CropResponse updateCrop(CropRequest cropRequest,
+                                   MultipartFile photo,
+                                   Long cropId,
+                                   Long userId) {
+        CropDetails cropDetails = cropDetailsRepository.findById(cropId)
+                .orElseThrow(() -> new ResourceNotFoundException("Crop", cropId));
+
+        if (cropRequest.getCropName() != null &&
+                cropDetailsRepository.existsByCropNameAndUserIdNotAndIdNot(cropRequest.getCropName(), userId, cropId)) {
+            throw new IllegalArgumentException("A crop with the name '" + cropRequest.getCropName() + "' already exists for this user.");
+        }
+
+        if (cropRequest.getCropName() != null) cropDetails.setCropName(cropRequest.getCropName());
+        if (cropRequest.getCropType() != null) cropDetails.setCropType(cropRequest.getCropType());
+        if (cropRequest.getPlantingSeason() != null) cropDetails.setPlantingSeason(cropRequest.getPlantingSeason());
+        if (cropRequest.getHarvestDate() != null) cropDetails.setHarvestDate(cropRequest.getHarvestDate());
+        if (cropRequest.getSowDate() != null) cropDetails.setSowDate(cropRequest.getSowDate());
+        if (cropRequest.getNumberOfSeedlings() != null) cropDetails.setNumberOfSeedlings(cropRequest.getNumberOfSeedlings());
+        if (cropRequest.getCostOfSeedlings() != null) cropDetails.setCostOfSeedlings(cropRequest.getCostOfSeedlings());
+        if (cropRequest.getWateringFrequency() != null) cropDetails.setWateringFrequency(cropRequest.getWateringFrequency());
+        if (cropRequest.getFertilizingFrequency() != null) cropDetails.setFertilizingFrequency(cropRequest.getFertilizingFrequency());
+        if (cropRequest.getPestsAndDiseases() != null) cropDetails.setPestsAndDiseases(cropRequest.getPestsAndDiseases());
+        if (cropRequest.getQuantity() != null) cropDetails.setQuantity(cropRequest.getQuantity());
+        if (cropRequest.getLocation() != null) cropDetails.setLocation(cropRequest.getLocation());
+        if (cropRequest.getCropStatus() != null) cropDetails.setCropStatus(cropRequest.getCropStatus());
+        if (cropRequest.getDescription() != null) cropDetails.setDescription(cropRequest.getDescription());
+
+        if (photo != null && !photo.isEmpty()) {
+            String fileUrl = cloudinaryService.uploadFile(photo);
+            cropDetails.setPhotoFilePath(fileUrl);
+        }
+        CropDetails updatedCrop = cropDetailsRepository.save(cropDetails);
+        return mapToResponse(updatedCrop);
+    }
+
+    @Override
+    public String deleteCrop(Long userId, Long cropId) {
+        CropDetails crop = cropDetailsRepository.findByUserIdAndId(userId, cropId)
                 .orElseThrow(() -> new ResourceNotFoundException("Crop", cropId));
 
         cropDetailsRepository.delete(crop);
-        return "Task with ID "+ crop.getId() +" has been deleted successfully.";
+        return "Task with ID " + crop.getId() + " has been deleted successfully.";
     }
 
 
