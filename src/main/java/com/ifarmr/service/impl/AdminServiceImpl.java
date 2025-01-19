@@ -10,7 +10,6 @@ import com.ifarmr.entity.enums.Roles;
 import com.ifarmr.exception.customExceptions.*;
 import com.ifarmr.payload.request.LoginRequestDto;
 import com.ifarmr.payload.request.RegistrationRequest;
-import com.ifarmr.payload.request.ResetPasswordRequest;
 import com.ifarmr.payload.request.UpdateUserRequestDto;
 import com.ifarmr.payload.response.*;
 import com.ifarmr.repository.UserRepository;

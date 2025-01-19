@@ -3,12 +3,10 @@ package com.ifarmr.service;
 import com.ifarmr.entity.enums.Gender;
 import com.ifarmr.payload.request.LoginRequestDto;
 import com.ifarmr.payload.request.RegistrationRequest;
-import com.ifarmr.payload.request.ResetPasswordRequest;
 import com.ifarmr.payload.request.UpdateUserRequestDto;
 import com.ifarmr.payload.response.AuthResponse;
-import com.ifarmr.payload.response.ForgotPasswordResponse;
 import com.ifarmr.payload.response.LoginResponse;
-import com.ifarmr.payload.response.UserResponse;
+
 
 import java.util.List;
 import java.util.Map;
