@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface UserService {
 
-    AuthResponse register(RegistrationRequest request, Gender gender, Roles role);
+    AuthResponse register(RegistrationRequest request, Gender gender);
 
     LoginResponse login(LoginRequestDto request);
 

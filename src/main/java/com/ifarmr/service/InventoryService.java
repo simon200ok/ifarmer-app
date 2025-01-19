@@ -15,11 +15,17 @@ public interface InventoryService {
     List<InventoryResponse> getAllInventory();
     List<InventoryResponse> getUserInventory(Long userId, Category category, ItemType itemType);
 
-    Long getInventoryCountByCategory(long id, Category category);
+    Long getInventoryCountByCategory(Long id, Category category);
 
-    Long getInventoryCountByItemType(long id, ItemType itemType);
+    Long getInventoryCountByItemType(Long id, ItemType itemType);
 
-    List<InventoryResponse> getAllInventoryByCategory(long id, Category category);
+    List<InventoryResponse> getAllInventoryByCategory(Long id, Category category);
 
-    List<InventoryResponse> getAllInventoryByItemType(long id, ItemType itemType);
+    List<InventoryResponse> getAllInventoryByItemType(Long id, ItemType itemType);
+
+    String deleteInventory(Long userId, Long inventoryId);
+
+    Long getInventoryCount(Long userId);
+
+    InventoryResponse updateInventory(InventoryRequest request, MultipartFile file, Long id, Long inventoryId);
 }
