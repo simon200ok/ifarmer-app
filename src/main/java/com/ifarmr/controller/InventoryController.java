@@ -28,11 +28,24 @@ public class InventoryController {
         return ResponseEntity.ok(inventoryService.addItemToInventory(request, file, user.getId()));
     }
 
+    @PostMapping(value = "/update", consumes = "multipart/form-data")
+    public ResponseEntity<InventoryResponse> updateInventory(@RequestPart("request") InventoryRequest request,
+                                                             @RequestPart(value = "file") MultipartFile file,
+                                                             @AuthenticationPrincipal User user,
+                                                             @RequestParam Long inventoryId) {
+        return ResponseEntity.ok(inventoryService.updateInventory(request, file, user.getId(), inventoryId));
+    }
+
     @GetMapping(value = "/user")
     public ResponseEntity<List<InventoryResponse>> getUserInventory(@AuthenticationPrincipal User user,
                                                                     @RequestParam(required = false) Category category,
                                                                     @RequestParam(required = false) ItemType itemType) {
         return ResponseEntity.ok(inventoryService.getUserInventory(user.getId(), category, itemType));
+    }
+
+    @GetMapping(value = "/count")
+    public ResponseEntity<Long> getInventoryCount(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(inventoryService.getInventoryCount(user.getId()));
     }
 
     @GetMapping(value = "/count-by-category")
@@ -58,5 +71,11 @@ public class InventoryController {
     public ResponseEntity<List<InventoryResponse>> getAllInventoryByItemType(@AuthenticationPrincipal User user,
                                                                              @RequestParam ItemType itemType) {
         return ResponseEntity.ok(inventoryService.getAllInventoryByItemType(user.getId(), itemType));
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteInventory(@AuthenticationPrincipal User user,
+                                                  @RequestParam Long inventoryId) {
+        return ResponseEntity.ok(inventoryService.deleteInventory(user.getId(), inventoryId));
     }
 }
