@@ -246,7 +246,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("Email"));
 
         String token = tokenVerificationService.generateVerificationToken(user);
-        String resetUrl = "http://localhost:8080/api/v1/admin/reset-password?token=" + token;
+        String resetUrl = "http://localhost:8080/api/v1/auth/reset-password?token=" + token;
 
         String emailMessageBody = String.format(
                 """

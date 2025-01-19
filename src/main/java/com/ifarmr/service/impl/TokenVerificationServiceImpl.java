@@ -6,6 +6,7 @@ import com.ifarmr.repository.TokenVerificationRepository;
 import com.ifarmr.service.TokenVerificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -15,8 +16,12 @@ import java.util.UUID;
 public class TokenVerificationServiceImpl implements TokenVerificationService {
     private final TokenVerificationRepository tokenVerificationRepository;
 
+    @Transactional
     @Override
     public String generateVerificationToken(User user) {
+
+        tokenVerificationRepository.deleteByUserId(user.getId());
+
         String token = UUID.randomUUID().toString();
         TokenVerification tokenVerification = new TokenVerification();
         tokenVerification.setToken(token);
