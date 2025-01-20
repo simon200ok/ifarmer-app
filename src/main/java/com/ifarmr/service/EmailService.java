@@ -9,4 +9,6 @@ public interface EmailService {
     void forgetPasswordAlert(EmailDetails emailDetails);
 
     void sendEmailAlert(EmailDetails emailDetails);
+
+    void forgetPasswordUpdateAlert(EmailDetails emailDetails);
 }

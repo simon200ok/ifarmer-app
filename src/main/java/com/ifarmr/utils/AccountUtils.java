@@ -16,6 +16,7 @@ public class AccountUtils {
 
     public final static String FORGOT_PASSWORD_SUCCESS_CODE = "004";
     public final static String FORGOT_PASSWORD_SUCCESS_MESSAGE = "Password reset instructions sent successfully.";
+    public final static String RESET_PASSWORD_SUCCESS_MESSAGE = "Password changed successfully.";
 
     public final static String UPDATE_USER_SUCCESSFUL_CODE = "005";
 

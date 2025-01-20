@@ -1,5 +1,6 @@
 package com.ifarmr.controller;
 
+import com.ifarmr.entity.Post;
 import com.ifarmr.entity.User;
 import com.ifarmr.payload.request.*;
 import com.ifarmr.payload.response.CommentResponse;
@@ -69,4 +70,8 @@ public class PostController {
 //    }
 
 
+//    @GetMapping("/popular")
+//    public List<Post> getPopularPosts() {
+//        return postService.getPopularPosts();
+//    }
 }

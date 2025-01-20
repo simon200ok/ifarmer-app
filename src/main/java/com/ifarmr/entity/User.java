@@ -35,6 +35,11 @@ public class User extends BaseClass implements UserDetails, Serializable {
     @Size(min = 3, max = 50, message = "Last name must be between 3 and 50 Characters")
     private String lastName;
 
+    public @NotBlank(message = "Username is required") @Size(min = 3, max = 50, message = "Username must be between 3 and 50 Characters") String getUserName() {
+        return userName;
+    }
+
+    @Column(name = "user_name")
     @NotBlank(message = "Username is required")
     @Size(min = 3, max = 50, message = "Username must be between 3 and 50 Characters")
     private String userName;
@@ -71,7 +76,6 @@ public class User extends BaseClass implements UserDetails, Serializable {
 
     private String displayPhoto;
 
-
     @Column(nullable = false)
     private String businessName;
 
@@ -79,7 +83,7 @@ public class User extends BaseClass implements UserDetails, Serializable {
     private boolean isActive = false;
 
     @Column
-    private String resetPasswordToken;
+    private String resetToken;
 
     @Column
     private LocalDateTime resetTokenExpiry;

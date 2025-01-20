@@ -14,4 +14,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query(value = "SELECT * FROM post_tbl ORDER BY likes DESC", nativeQuery = true)
     List<Post> findAllPostsOrderedByLikes();
+
+//    @Query("SELECT p FROM Post p ORDER BY (p.likes + p.comments) DESC")
+//    List<Post> findPopularPosts();
 }

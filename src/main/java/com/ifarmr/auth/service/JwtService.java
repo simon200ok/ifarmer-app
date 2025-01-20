@@ -86,4 +86,12 @@ public class JwtService {
         return blacklistedTokens.contains(token);
     }
 
+    public String extractUsername(String token) {
+        return getClaims(token).getSubject();
+    }
+
+    private Claims getClaims(String token) {
+        return Jwts.parser().setSigningKey(key()).build().parseClaimsJws(token).getBody();
+    }
+
 }

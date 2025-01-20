@@ -51,6 +51,7 @@ public class EmailServiceImpl implements EmailService {
         } catch (MailException e) {
             throw new RuntimeException("Token Email not sent");
         }
+
     }
 
     @Override
@@ -67,6 +68,22 @@ public class EmailServiceImpl implements EmailService {
             System.out.println("Mail sent successfully!");
         } catch (MailException e) {
             throw new RuntimeException("Email not sent");
+        }
+    }
+
+    @Override
+    public void forgetPasswordUpdateAlert(EmailDetails emailDetails) {
+        try {
+            SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+            simpleMailMessage.setFrom(senderEmail);
+            simpleMailMessage.setTo(emailDetails.getRecipient());
+            simpleMailMessage.setText(emailDetails.getMessageBody());
+            simpleMailMessage.setSubject(emailDetails.getSubject());
+
+            javaMailSender.send(simpleMailMessage);
+            System.out.println("Password Reset Successful Notification Email sent successfully!");
+        } catch (MailException e) {
+            throw new RuntimeException("Password Reset Successful Notification Email not sent");
         }
     }
 }

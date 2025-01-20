@@ -15,6 +15,8 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User,Long > {
     Optional<User> findByEmail(String username);
 
+    Optional<User> findByResetToken(String token);
+
     @Query(value = "SELECT EXTRACT(MONTH FROM last_login_time) AS month, " +
             "AVG(EXTRACT(EPOCH FROM (last_logout_time - last_login_time)) / 60) AS average_time " +
             "FROM user_tbl " +

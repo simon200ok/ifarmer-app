@@ -74,6 +74,11 @@ public class PostServiceImpl implements PostService {
 
     }
 
+//    @Override
+//    public List<Post> getPopularPosts() {
+//        return postRepository.findPopularPosts();
+//    }
+
     @Override
     public List<PostDto> getUserPosts(long id) {
         return postRepository.findByUserId(id).stream()
