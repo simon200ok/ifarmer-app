@@ -154,10 +154,7 @@ public class CropServiceImpl implements CropService {
     }
 
     @Override
-    public CropResponse updateCrop(CropRequest cropRequest,
-                                   MultipartFile photo,
-                                   Long cropId,
-                                   Long userId) {
+    public CropResponse updateCrop(CropRequest cropRequest, Long cropId, Long userId) {
         CropDetails cropDetails = cropDetailsRepository.findById(cropId)
                 .orElseThrow(() -> new ResourceNotFoundException("Crop", cropId));
 
@@ -181,11 +178,8 @@ public class CropServiceImpl implements CropService {
         if (cropRequest.getCropStatus() != null) cropDetails.setCropStatus(cropRequest.getCropStatus());
         if (cropRequest.getDescription() != null) cropDetails.setDescription(cropRequest.getDescription());
 
-        if (photo != null && !photo.isEmpty()) {
-            String fileUrl = cloudinaryService.uploadFile(photo);
-            cropDetails.setPhotoFilePath(fileUrl);
-        }
         CropDetails updatedCrop = cropDetailsRepository.save(cropDetails);
+
         return mapToResponse(updatedCrop);
     }
 

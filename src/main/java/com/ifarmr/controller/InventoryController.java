@@ -28,13 +28,13 @@ public class InventoryController {
         return ResponseEntity.ok(inventoryService.addItemToInventory(request, file, user.getId()));
     }
 
-    @PostMapping(value = "/update", consumes = "multipart/form-data")
-    public ResponseEntity<InventoryResponse> updateInventory(@RequestPart("request") InventoryRequest request,
-                                                             @RequestPart(value = "file") MultipartFile file,
+    @PatchMapping(value = "/update")
+    public ResponseEntity<InventoryResponse> updateInventory(@RequestBody InventoryRequest request,
                                                              @AuthenticationPrincipal User user,
                                                              @RequestParam Long inventoryId) {
-        return ResponseEntity.ok(inventoryService.updateInventory(request, file, user.getId(), inventoryId));
+        return ResponseEntity.ok(inventoryService.updateInventory(request, user.getId(), inventoryId));
     }
+
 
     @GetMapping(value = "/user")
     public ResponseEntity<List<InventoryResponse>> getUserInventory(@AuthenticationPrincipal User user,

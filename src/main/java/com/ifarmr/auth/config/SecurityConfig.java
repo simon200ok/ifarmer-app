@@ -43,6 +43,7 @@ public class SecurityConfig {
                         request -> request
                                 .requestMatchers(antMatcher(HttpMethod.POST, "/api/v1/auth/**"),
                                         antMatcher(HttpMethod.GET, "/api/v1/**"),
+                                        antMatcher(HttpMethod.PATCH, "/api/v1/**"),
                                         antMatcher("/api/v2/admin/register"),
                                         antMatcher("/api/v2/admin/verify"),
                                         antMatcher("/api/v2/admin/login"))
@@ -70,7 +71,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:5173")); // React app's origin
-        corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+        corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
         corsConfiguration.setAllowedHeaders(Arrays.asList("*"));
         corsConfiguration.setAllowCredentials(true); // Allow cookies and credentials
         corsConfiguration.setMaxAge(3600L); // Cache CORS response for 1 hour
