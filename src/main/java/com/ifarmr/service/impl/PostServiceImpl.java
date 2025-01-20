@@ -74,6 +74,11 @@ public class PostServiceImpl implements PostService {
 
     }
 
+//    @Override
+//    public List<Post> getPopularPosts() {
+//        return postRepository.findPopularPosts();
+//    }
+
     @Override
     public List<PostDto> getUserPosts(long id) {
         return postRepository.findByUserId(id).stream()
@@ -97,7 +102,7 @@ public class PostServiceImpl implements PostService {
                         comment.getId(),
                         comment.getContent(),
                         comment.getCreatedAt().toString(),
-                        comment.getUser().getUsername(),
+                        comment.getUser().getFirstName(),
                         comment.getUser().getDisplayPhoto()
 
                 ))
@@ -108,7 +113,7 @@ public class PostServiceImpl implements PostService {
                 post.getTitle(),
                 post.getDescription(),
                 post.getImage(),
-                post.getUser().getUsername(),
+                post.getUser().getFirstName(),
                 post.getUser().getDisplayPhoto(),
                 post.getLikes(),
                 post.getCommentCount(),

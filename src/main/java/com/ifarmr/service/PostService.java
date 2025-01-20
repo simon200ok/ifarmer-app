@@ -1,5 +1,6 @@
 package com.ifarmr.service;
 
+import com.ifarmr.entity.Post;
 import com.ifarmr.payload.request.AllPosts;
 import com.ifarmr.payload.request.PostDetailsDto;
 import com.ifarmr.payload.request.PostDto;
@@ -11,6 +12,8 @@ import java.util.List;
 
 public interface PostService {
     PostResponse createPost(PostRequest request, MultipartFile file);
+
+    //List<Post> getPopularPosts();
 
     List<PostDto> getUserPosts(long id);
 

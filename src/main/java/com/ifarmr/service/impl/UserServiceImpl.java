@@ -71,7 +71,6 @@ public class UserServiceImpl implements UserService {
             throw new InvalidPasswordException("Password must be at least 8 characters long and contain at least one special character.");
         }
 
-        // Create and save the user
         User newUser = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
@@ -82,6 +81,8 @@ public class UserServiceImpl implements UserService {
                 .gender(gender)
                 .userName(request.getUserName())
                 .displayPhoto(request.getDisplayPhoto())
+                .resetToken(null)
+                .resetTokenExpiry(null)
                 .isActive(false)
 
                 .build();
@@ -245,22 +246,16 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        if (!Roles.ADMIN.equals(user.getRole())) {
-            throw new IllegalArgumentException("User is not an admin");
-        }
-
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 user.getEmail(), null, List.of(new SimpleGrantedAuthority(user.getRole().name()))
         );
         String resetToken = jwtService.generateToken(authentication, user.getId());
 
-
-        user.setResetPasswordToken(resetToken);
+        user.setResetToken(resetToken);
         user.setResetTokenExpiry(LocalDateTime.now().plusHours(1));
         userRepository.save(user);
 
-        String forgetPasswordToken = resetToken;
-        String forgetPasswordUrl = "http://localhost:8080/api/v1/admin/forgot-password" + resetToken;
+        String forgetPasswordUrl = "http://localhost:5173/reset-password?token=" + resetToken;
         String emailForgetPassword = String.format(
                 "Dear %s,\n" +
                         "\n" +
@@ -296,7 +291,6 @@ public class UserServiceImpl implements UserService {
                 .build();
 
     }
-
 
     @Override
     public String verifyUser(String token) {
@@ -344,4 +338,68 @@ public class UserServiceImpl implements UserService {
         return "Logged Out Successfully";
     }
 
+    @Override
+    public boolean verifyResetToken(String token) {
+        Optional<User> user = userRepository.findByResetToken(token);
+        if (user.isPresent() && user.get().getResetTokenExpiry().isAfter(LocalDateTime.now())) {
+            return true;
+        }
+        return false;
+        }
+
+
+    @Override
+    public void resetPassword(String token, String newPassword) {
+        Optional<User> user = userRepository.findByResetToken(token);
+        if (user.isPresent() && user.get().getResetTokenExpiry().isAfter(LocalDateTime.now())) {
+            user.get().setPassword(passwordEncoder.encode(newPassword));
+            user.get().setResetToken(null);
+            user.get().setResetTokenExpiry(null);
+            userRepository.save(user.get());
+            String emailForgetPasswordUpdate = String.format(
+                    "Dear %s,\n" +
+                            "\n" +
+                            "Your password change was successful\n" +
+                            "\n" +
+                            "For further support, feel free to reach us at support@ifarmr.com.\n" +
+                            "\n" +
+                            "Best regards,\n" +
+                            "iFarmr Team\n",
+                    user.get().getFirstName()
+            );
+
+            EmailDetails forgetPasswordUpdateAlert = EmailDetails.builder()
+                    .recipient(user.get().getEmail())
+                    .subject("Password Change Update")
+                    .messageBody(emailForgetPasswordUpdate)
+                    .build();
+            emailService.forgetPasswordUpdateAlert(forgetPasswordUpdateAlert);
+
+        } else {
+            throw new IllegalArgumentException("Invalid or expired token.");
+        }
+    }
+
+    @Override
+    public UserResponse getUserProfile(String token) throws Exception {
+        try{
+            String userName = jwtService.extractUsername(token);
+            Optional<User> user = userRepository.findByEmail(userName);
+
+            if (user.isEmpty()) {
+                throw new RuntimeException("User not found for username: " + userName);
+            }
+
+            return UserResponse.builder()
+                .fullName(user.get().getFirstName() + " " + user.get().getLastName())
+                .username(user.get().getUserName())
+                .email(user.get().getEmail())
+                .businessName(user.get().getBusinessName())
+                .displayPhoto(user.get().getDisplayPhoto())
+                .build();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error while fetching user profile: " + e.getMessage(), e);
+        }
+    }
 }

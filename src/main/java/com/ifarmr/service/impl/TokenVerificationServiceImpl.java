@@ -6,6 +6,7 @@ import com.ifarmr.repository.TokenVerificationRepository;
 import com.ifarmr.service.TokenVerificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -15,8 +16,12 @@ import java.util.UUID;
 public class TokenVerificationServiceImpl implements TokenVerificationService {
     private final TokenVerificationRepository tokenVerificationRepository;
 
+    @Transactional
     @Override
     public String generateVerificationToken(User user) {
+
+        tokenVerificationRepository.deleteByUserId(user.getId());
+
         String token = UUID.randomUUID().toString();
         TokenVerification tokenVerification = new TokenVerification();
         tokenVerification.setToken(token);
@@ -28,12 +33,16 @@ public class TokenVerificationServiceImpl implements TokenVerificationService {
 
     @Override
     public TokenVerification validateToken(String token) {
-        return tokenVerificationRepository.findByToken(token)
-                .orElseThrow(() -> new RuntimeException("Invalid token"));
+        return tokenVerificationRepository.findByTokenAndRevokedFalse(token)
+                .orElseThrow(() -> new RuntimeException("Invalid or expired token"));
     }
 
     @Override
     public void deleteToken(TokenVerification token) {
+        token.setRevoked(true);
+        tokenVerificationRepository.save(token);
+        System.out.println("Token with ID " + token.getId() + " marked as revoked.");
+
         tokenVerificationRepository.delete(token);
     }
 

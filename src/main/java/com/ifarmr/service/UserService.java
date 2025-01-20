@@ -7,6 +7,7 @@ import com.ifarmr.payload.response.AuthResponse;
 import com.ifarmr.payload.response.ForgotPasswordResponse;
 import com.ifarmr.payload.response.LoginResponse;
 import com.ifarmr.payload.response.UserResponse;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
 
@@ -27,5 +28,11 @@ public interface UserService {
     List<UserResponse> getAllUsers();
 
     String deleteUser(Long userId);
+
+    boolean verifyResetToken(String token);
+
+    void resetPassword(String token, String newPassword);
+
+    UserResponse getUserProfile(String jwt) throws Exception;
 }
 
