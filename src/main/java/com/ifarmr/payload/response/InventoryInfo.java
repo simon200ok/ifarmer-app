@@ -23,4 +23,6 @@ public class InventoryInfo {
     private String photoUpload;
     private String location;
     private BigDecimal cost;
+    private LocalDate createdAt;
+    private LocalDate dateAcquired;
 }

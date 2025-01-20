@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -93,7 +94,6 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Override
     public InventoryResponse updateInventory(InventoryRequest request,
-                                             MultipartFile file,
                                              Long userId,
                                              Long inventoryId) {
         Inventory existingInventory = inventoryRepository.findById(inventoryId)
@@ -113,11 +113,6 @@ public class InventoryServiceImpl implements InventoryService {
         if (request.getCondition() != null) existingInventory.setCondition(request.getCondition());
         if (request.getDateAcquired() != null) existingInventory.setDateAcquired(request.getDateAcquired());
         if (request.getDescription() != null) existingInventory.setDescription(request.getDescription());
-
-        if (file != null && !file.isEmpty()) {
-            String fileUrl = cloudinaryService.uploadFile(file);
-            existingInventory.setPhotoUpload(fileUrl);
-        }
 
         Inventory updatedInventory = inventoryRepository.save(existingInventory);
         return mapToResponse(updatedInventory);
@@ -200,13 +195,12 @@ public class InventoryServiceImpl implements InventoryService {
                         .category(inventory.getCategory())
                         .photoUpload(inventory.getPhotoUpload())
                         .location(inventory.getLocation())
+                        .dateAcquired(inventory.getDateAcquired())
+                        .createdAt(LocalDate.from(inventory.getCreatedAt()))
                         .cost(inventory.getCost())
                         .build())
                 .build();
 
     }
-
-
-
 
 }

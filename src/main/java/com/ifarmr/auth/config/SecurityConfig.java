@@ -45,6 +45,7 @@ public class SecurityConfig {
                         request -> request
                                 .requestMatchers(antMatcher(HttpMethod.POST, "/api/v1/auth/**"),
                                         antMatcher(HttpMethod.GET, "/api/v1/**"),
+                                        antMatcher(HttpMethod.PATCH, "/api/v1/**"),
                                         antMatcher("/api/v2/admin/register"),
                                         antMatcher("/api/v2/admin/verify"),
                                         antMatcher("/api/v2/admin/login"))

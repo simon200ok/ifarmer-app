@@ -27,5 +27,5 @@ public interface InventoryService {
 
     Long getInventoryCount(Long userId);
 
-    InventoryResponse updateInventory(InventoryRequest request, MultipartFile file, Long id, Long inventoryId);
+    InventoryResponse updateInventory(InventoryRequest request, Long id, Long inventoryId);
 }
