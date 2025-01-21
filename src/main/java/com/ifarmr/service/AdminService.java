@@ -5,6 +5,7 @@ import com.ifarmr.payload.request.LoginRequestDto;
 import com.ifarmr.payload.request.RegistrationRequest;
 import com.ifarmr.payload.request.UpdateUserRequestDto;
 import com.ifarmr.payload.response.AuthResponse;
+import com.ifarmr.payload.response.ForgotPasswordResponse;
 import com.ifarmr.payload.response.LoginResponse;
 
 
@@ -34,5 +35,4 @@ public interface AdminService {
     Map<String, Double> getMonthlyAverageUsageTime(Integer year);
 
     Long getCurrentActiveUsers();
-
 }

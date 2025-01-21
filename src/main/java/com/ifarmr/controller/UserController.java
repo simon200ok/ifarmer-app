@@ -77,11 +77,6 @@ public class UserController {
         return ResponseEntity.ok(userService.logout(authHeader));
     }
 
-    @PostMapping("/forgot-password")
-    public ResponseEntity<ForgotPasswordResponse> forgotPassword(@RequestBody ForgotPasswordRequest request) {
-        return ResponseEntity.ok(userService.generateResetToken(request.getEmail()));
-    }
-
     @PostMapping("/reset-password")
     public ResponseEntity<ForgotPasswordResponse> resetPassword(@RequestBody ResetPasswordRequest request) {
         userService.resetPassword(request.getToken(), request.getNewPassword());
