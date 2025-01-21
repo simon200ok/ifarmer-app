@@ -35,5 +35,6 @@ public interface CropService {
 
     List<CropResponse> getCropByStatus(Long userId, CropStatus status);
 
-    CropResponse updateCrop(CropRequest cropRequest, MultipartFile photo, Long cropId, Long userId);
+    CropResponse updateCrop(CropRequest cropRequest, Long cropId, Long userId);
+
 }

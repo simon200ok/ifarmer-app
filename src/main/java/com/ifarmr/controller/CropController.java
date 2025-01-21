@@ -73,14 +73,14 @@ public class CropController {
         return ResponseEntity.ok(cropService.getTotalCropNumber(user.getId()));
     }
 
-    @PutMapping(path = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<CropResponse> updateAnimal(@RequestPart("data") @Valid String data,
-                                                       @RequestPart(value = "photo", required = false) MultipartFile photo,
-                                                       @RequestParam Long cropId,
-                                                       @AuthenticationPrincipal User user) throws JsonProcessingException {
+    @PatchMapping(path = "/update")
+    public ResponseEntity<CropResponse> updateCrop(@RequestParam Long cropId,
+                                                   @RequestPart("data") @Valid String data,
+                                                   @AuthenticationPrincipal User user  ) throws JsonProcessingException {
         CropRequest cropRequest = objectMapper.readValue(data, CropRequest.class);
-        return ResponseEntity.ok(cropService.updateCrop(cropRequest, photo, cropId, user.getId()));
+        return ResponseEntity.ok(cropService.updateCrop(cropRequest, cropId, user.getId()));
     }
+
 
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteCrop(@AuthenticationPrincipal User user,
