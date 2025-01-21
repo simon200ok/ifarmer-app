@@ -64,7 +64,7 @@ public class SecurityConfig {
                 .httpBasic(Customizer.withDefaults());
 
         security.authenticationProvider(authenticationProvider);
-//        security.cors().configurationSource(corsConfigurationSource()); // Enable CORS
+        security.cors().configurationSource(corsConfigurationSource()); // Enable CORS
 
         return security.build();
     }

@@ -5,18 +5,22 @@ import com.ifarmr.entity.User;
 import com.ifarmr.entity.enums.Category;
 import com.ifarmr.exception.customExceptions.ResourceNotFoundException;
 import com.ifarmr.payload.request.CreateTaskRequest;
+import com.ifarmr.payload.request.NotificationRequest;
 import com.ifarmr.payload.request.UpdateTaskRequest;
 import com.ifarmr.payload.response.TaskDto;
 import com.ifarmr.payload.response.TaskResponseDto;
 import com.ifarmr.repository.TaskRepository;
 import com.ifarmr.repository.UserRepository;
 import com.ifarmr.repository.UserSessionRepository;
+import com.ifarmr.service.NotificationService;
 import com.ifarmr.service.TaskService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,6 +30,8 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
     private final UserSessionRepository userSessionRepository;
+    private final NotificationService notificationService;
+
 
     @Override
     public TaskResponseDto createTask(CreateTaskRequest request, Long userId, Category category) {
@@ -171,5 +177,44 @@ public class TaskServiceImpl implements TaskService {
                     ))
                     .collect(Collectors.toList());
         }
+    }
+
+    @Scheduled(fixedRate = 60000)
+    public void scheduleDueDateNotifications() {
+        List<Task> tasks = taskRepository.findAll();
+
+        for (Task task : tasks) {
+            LocalDateTime dueDate = task.getDueDate();
+            LocalDateTime now = LocalDateTime.now(); // Current time
+
+            if (dueDate.minusHours(1).isBefore(now) && dueDate.minusHours(1).isAfter(now.minusMinutes(1))) {
+                sendDueDateNotification(task, "1 hour remaining until the task is due.");
+            }
+
+            if (dueDate.minusMinutes(30).isBefore(now) && dueDate.minusMinutes(30).isAfter(now.minusMinutes(1))) {
+                sendDueDateNotification(task, "30 minutes remaining until the task is due.");
+            }
+
+            if (dueDate.minusMinutes(15).isBefore(now) && dueDate.minusMinutes(15).isAfter(now.minusMinutes(1))) {
+                sendDueDateNotification(task, "15 minutes remaining until the task is due.");
+            }
+
+            if (dueDate.minusMinutes(1).isBefore(now) && dueDate.minusMinutes(1).isAfter(now.minusSeconds(60))) {
+                sendDueDateNotification(task, "1 minute remaining until the task is due.");
+            }
+        }
+    }
+
+    private void sendDueDateNotification(Task task, String message) {
+        NotificationRequest notificationRequest = new NotificationRequest();
+        notificationRequest.setUserId(task.getUser().getId());
+        notificationRequest.setEventType("TASK_DUE_DATE");
+        notificationRequest.setEventDetails(Map.of(
+                "taskTitle", task.getTitle(),
+                "message", message,
+                "dueDate", task.getDueDate().toString()
+        ));
+
+        notificationService.sendNotification(notificationRequest);
     }
 }
