@@ -30,8 +30,11 @@ public class UserResponse {
         @Enumerated(EnumType.STRING)
         private Gender gender;
 
+//        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+//        private LocalDateTime dateCreated;
+
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
-        private LocalDateTime dateCreated;
+        private LocalDateTime createdAt;
 
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
         private LocalDateTime lastLogoutTime;
@@ -40,12 +43,4 @@ public class UserResponse {
 
         private String displayPhoto;
 
-        public UserResponse(long id, String s, String businessName, @NotBlank(message = "Email is required") @Email(message = "Invalid Email Address") String email, Gender gender, LocalDateTime createdAt, LocalDateTime lastLogoutTime) {
-        }
-
-        public UserResponse(String s, String username, @NotBlank(message = "Email is required") @Email(message = "Invalid Email Address") String email, String businessName, String displayPhoto) {
-        }
-
-        public UserResponse(User user) {
-        }
 }

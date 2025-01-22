@@ -40,6 +40,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -217,16 +219,33 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserResponse> getAllUsers() {
+
+//Original
+//        return userRepository.findAll().stream()
+//                .map(user -> new UserResponse(
+//                        user.getId(),
+//                        user.getFirstName() +" "+ user.getLastName(),
+//                        user.getBusinessName(),
+//                        user.getEmail(),
+//                        user.getGender(),
+//                        user.getCreatedAt(),
+//                        user.getLastLogoutTime()
+//                ))
+//                .collect(Collectors.toList());
+//Original ends
+
         return userRepository.findAll().stream()
-                .map(user -> new UserResponse(
-                        user.getId(),
-                        user.getFirstName() +" "+ user.getLastName(),
-                        user.getBusinessName(),
-                        user.getEmail(),
-                        user.getGender(),
-                        user.getCreatedAt(),
-                        user.getLastLogoutTime()
-                ))
+                .map(user -> UserResponse.builder()
+                        .userId(user.getId())
+                        .fullName((user.getFirstName() != null ? user.getFirstName() : "") +
+                                (user.getLastName() != null ? " " + user.getLastName() : ""))
+                        .businessName(user.getBusinessName())
+                        .email(user.getEmail())
+                        .gender(user.getGender())
+                        .createdAt(user.getCreatedAt())
+                        .lastLogoutTime(user.getLastLogoutTime())
+                        .build()
+                )
                 .collect(Collectors.toList());
     }
 
@@ -244,7 +263,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ForgotPasswordResponse generateResetToken(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("Account not found"));
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 user.getEmail(), null, List.of(new SimpleGrantedAuthority(user.getRole().name()))
@@ -259,7 +278,7 @@ public class UserServiceImpl implements UserService {
         String emailForgetPassword = String.format(
                 "Dear %s,\n" +
                         "\n" +
-                        "It seems you requested to reset your password for your iFarmr account. No worries—we’re here to help!\n" +
+                        "It seems you requested to reset your password for your iFarmr account!\n" +
                         "\n" +
                         "Click the link below to create a new password:\n" +
                         "\n" +
@@ -267,14 +286,12 @@ public class UserServiceImpl implements UserService {
                         "\n" +
                         "If the link doesn’t work, copy and paste the URL into your browser.\n" +
                         "\n" +
-                        "For further support, feel free to reach us at support@ifarmr.com.\n" +
+                        "For further support, feel free to reach us at IT@ifarmr.com.\n" +
                         "\n" +
                         "Best regards,\n" +
-                        "iFarmr Team\n" +
-                        "Let me know if you need any changes!",
+                        "iFarmr",
                 user.getFirstName(),
                 forgetPasswordUrl
-
         );
 
         EmailDetails forgetPasswordAlert = EmailDetails.builder()
