@@ -40,6 +40,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -217,16 +219,33 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserResponse> getAllUsers() {
+
+//Original
+//        return userRepository.findAll().stream()
+//                .map(user -> new UserResponse(
+//                        user.getId(),
+//                        user.getFirstName() +" "+ user.getLastName(),
+//                        user.getBusinessName(),
+//                        user.getEmail(),
+//                        user.getGender(),
+//                        user.getCreatedAt(),
+//                        user.getLastLogoutTime()
+//                ))
+//                .collect(Collectors.toList());
+//Original ends
+
         return userRepository.findAll().stream()
-                .map(user -> new UserResponse(
-                        user.getId(),
-                        user.getFirstName() +" "+ user.getLastName(),
-                        user.getBusinessName(),
-                        user.getEmail(),
-                        user.getGender(),
-                        user.getCreatedAt(),
-                        user.getLastLogoutTime()
-                ))
+                .map(user -> UserResponse.builder()
+                        .userId(user.getId())
+                        .fullName((user.getFirstName() != null ? user.getFirstName() : "") +
+                                (user.getLastName() != null ? " " + user.getLastName() : ""))
+                        .businessName(user.getBusinessName())
+                        .email(user.getEmail())
+                        .gender(user.getGender())
+                        .createdAt(user.getCreatedAt())
+                        .lastLogoutTime(user.getLastLogoutTime())
+                        .build()
+                )
                 .collect(Collectors.toList());
     }
 
