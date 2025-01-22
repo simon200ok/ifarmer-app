@@ -4,7 +4,6 @@ import com.ifarmr.entity.User;
 import com.ifarmr.entity.enums.Category;
 import com.ifarmr.payload.request.CreateTaskRequest;
 import com.ifarmr.payload.request.UpdateTaskRequest;
-import com.ifarmr.payload.response.TaskDetailsDto;
 import com.ifarmr.payload.response.TaskDto;
 import com.ifarmr.payload.response.TaskResponseDto;
 import com.ifarmr.service.TaskService;
@@ -13,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -61,6 +61,22 @@ public class TaskController {
     public ResponseEntity<List<TaskResponseDto>> getUpcomingTasks(@AuthenticationPrincipal User user,
                                                                   @RequestParam(value = "category", required = false) Category category) {
         return ResponseEntity.ok(taskService.getUpcomingTasks(user.getId(), category));
+    }
+
+    @GetMapping("/today")
+    public ResponseEntity<List<TaskResponseDto>> getTodayTasks(@AuthenticationPrincipal User user,
+                                                               @RequestParam(value = "category", required = false) Category category) {
+        return ResponseEntity.ok(taskService.getTodayTasks(user.getId(), category));
+    }
+
+    @GetMapping("/count-today")
+    public ResponseEntity<Map<String, Long>> countTodayTasks(
+            @AuthenticationPrincipal User user,
+            @RequestParam(value = "category", required = false) Category category) {
+        long taskCount = taskService.countTodayTasks(user.getId(), category);
+        Map<String, Long> response = new HashMap<>();
+        response.put("totalTasks", taskCount);
+        return ResponseEntity.ok(response);
     }
 
 }

@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -217,4 +218,58 @@ public class TaskServiceImpl implements TaskService {
 
         notificationService.sendNotification(notificationRequest);
     }
+
+    @Override
+    public List<TaskResponseDto> getTodayTasks(long userId, Category category) {
+        LocalDate today = LocalDate.now();
+
+        if (category != null) {
+            return taskRepository.findByUserIdAndCategory(userId, category)
+                    .stream()
+                    .filter(task -> task.getDueDate().toLocalDate().isEqual(today))
+                    .map(task -> new TaskResponseDto(
+                            task.getId(),
+                            task.getTitle(),
+                            task.getDescription(),
+                            task.getCategory(),
+                            task.getType(),
+                            task.getLocation(),
+                            task.getDueDate()
+                    ))
+                    .collect(Collectors.toList());
+        } else {
+            return taskRepository.findByUserId(userId)
+                    .stream()
+                    .filter(task -> task.getDueDate().toLocalDate().isEqual(today))
+                    .map(task -> new TaskResponseDto(
+                            task.getId(),
+                            task.getTitle(),
+                            task.getDescription(),
+                            task.getCategory(),
+                            task.getType(),
+                            task.getLocation(),
+                            task.getDueDate()
+                    ))
+                    .collect(Collectors.toList());
+        }
+    }
+
+    @Override
+    public long countTodayTasks(long userId, Category category) {
+        LocalDate today = LocalDate.now();
+
+        if (category != null) {
+            return taskRepository.findByUserIdAndCategory(userId, category)
+                    .stream()
+                    .filter(task -> task.getDueDate().toLocalDate().isEqual(today))
+                    .count();
+        } else {
+            return taskRepository.findByUserId(userId)
+                    .stream()
+                    .filter(task -> task.getDueDate().toLocalDate().isEqual(today))
+                    .count();
+        }
+    }
+
+
 }
